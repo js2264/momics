@@ -1,0 +1,148 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "momics"
+version = "0.1.1"
+description = "A package to create and manage genome-related TileDB arrays"
+requires-python = ">=3.8"
+license = {text = "CC BY-NC 4.0"}
+readme = "README.md"
+authors = [
+    {name = "Jacques Serizay", email = "jacques.serizay@pasteur.fr"}
+]
+keywords = [
+    "multi-omics",
+    "genomics",
+    "epigenomics",
+    "Tile-DB",
+    "bioinformatics",
+    "matrix",
+    "sparse",
+    "format"
+]
+classifiers = [
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3"
+]
+dependencies = [
+    "tiledb",
+    "pyBigWig",
+    "numpy", 
+    "pandas"
+]
+
+[project.urls]
+homepage = "https://js2264.github.io/momics"
+documentation = "https://js2264.github.io/momics"
+repository = "https://github.com/js2264/momics"
+changelog = "https://github.com/js2264/momics/blob/devel/CHANGES.md"
+
+[project.scripts]
+momics = "momics.cli:cli"
+
+[tool.hatch.version]
+path = "src/momics/_version.py"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[project.optional-dependencies]
+all = [
+    "biopython",
+    "dask[array,dataframe]",
+    "matplotlib",
+    "psutil",
+]
+test = [
+    "coverage[toml]",
+    "isort",
+    "pytest",
+    "pytest-cov",
+    "ruff",
+]
+dev = [
+    "momics[all,test]",
+    "pre-commit",
+    "twine"
+]
+docs = [
+    "autodocsumm",
+    "m2r",
+    "recommonmark",
+    "Sphinx>=1.6",
+    "sphinx-autobuild",
+    "sphinx_rtd_theme",
+]
+
+[tool.ruff]
+src = ["src"]
+exclude = [
+    ".venv",
+    "__main__.py",
+]
+
+[tool.ruff.lint]
+extend-select = [
+    "B",  # bugbear
+    "E",  # style errors
+    "F",  # pyflakes
+    "I",  # isort
+    "RUF", # ruff-specific rules
+    "UP", # pyupgrade
+    "W",  # style  warnings
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["momics"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.pytest.ini_options]
+minversion = "7"
+log_cli_level = "INFO"
+xfail_strict = true
+addopts = [
+    "-ra",
+    "--strict-config",
+    "--strict-markers",
+    "--cov=momics",
+    "--cov-config=pyproject.toml",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+]
+filterwarnings = ["ignore::PendingDeprecationWarning"]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["momics"]
+
+omit = [
+    "*/momics/__main__.py",
+    "*/momics/_version.py",
+    "*/momics/sandbox/*",
+    "*/momics/cli/csort.py"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "return NotImplemented",
+    "raise NotImplementedError"
+]
+
+[tool.hatch.envs.default.scripts]
+fix = "ruff check --fix src tests"
+lint = "ruff check src tests"
+test = "pytest ."
+docs = "sphinx-autobuild docs docs/_build/html"
+
+[tool.hatch.envs.test]
+features = ["dev"]
+
+[[tool.hatch.envs.test.matrix]]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
+

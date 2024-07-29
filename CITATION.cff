@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+type: software
+title: momics
+message: >-
+  Please cite this software using the metadata from "preferred-citation".
+abstract: >-
+  momics is a cloud-native, TileDB-based format for multi-omics data. 
+  Follow momics development on GitHub.
+license: "BSD-3-Clause"
+# doi: "10.5281/zenodo.597976"
+url: "https://js2264.github.io/momics"
+repository-code: "https://github.com/js2264/momics"
+keywords:
+  - multi-omics
+  - genomics
+  - epigenomics
+  - Tile-DB
+  - bioinformatics
+  - matrix
+  - sparse
+  - format
+authors:
+  - given-names: Jacques
+    family-names: Serizay
+    orcid: "https://orcid.org/0000-0002-4295-0624"
+preferred-citation:
+  type: software
+  title: "momics: a cloud-native, TileDB-based format for multi-omics data"
+  authors:
+  - given-names: Jacques
+    family-names: Serizay
+    orcid: "https://orcid.org/0000-0002-4295-0624"
