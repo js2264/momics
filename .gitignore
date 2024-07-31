@@ -12,6 +12,7 @@ __pycache__
 .coverage.*
 coverage.xml
 htmlcov/
+tiledb/
 
 # setup and build artifacts
 docs/_*
@@ -31,6 +32,9 @@ venv/
 .Trashes
 ehthumbs.db
 Thumbs.db
-
 tmp/
 _scratch/
+.vscode
+example.py
+*.momics/
+benchmark.py

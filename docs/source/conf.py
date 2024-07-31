@@ -31,7 +31,7 @@ extensions = [
     "sphinx.ext.ifconfig",
     "sphinx.ext.viewcode",
     "sphinx.ext.autosummary",
-    "sphinx.ext.napoleon", 
+    "sphinx.ext.napoleon",
     "recommonmark",
 ]
 
@@ -39,7 +39,7 @@ numpydoc_show_class_members = False
 napoleon_use_rtype = False
 autodoc_typehints = "description"
 autodoc_class_signature = "separated"
-templates_path = ['_templates']
+templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 source_suffix = {
     ".rst": "restructuredtext",
@@ -52,8 +52,8 @@ master_doc = "index"
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'alabaster'
-html_static_path = ['_static']
+html_theme = "furo"
+html_static_path = ["_static"]
 htmlhelp_basename = "momicsdoc"
 
 # -- Options for manual page output ---------------------------------------

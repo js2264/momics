@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "momics"
-version = "0.1.1"
+version = "0.1.0"
 description = "A package to create and manage genome-related TileDB arrays"
 requires-python = ">=3.8"
 license = {text = "CC BY-NC 4.0"}
@@ -30,7 +30,8 @@ dependencies = [
     "tiledb",
     "pyBigWig",
     "numpy", 
-    "pandas"
+    "pandas", 
+    "pyarrow>=1.0",
 ]
 
 [project.urls]
@@ -74,6 +75,7 @@ docs = [
     "Sphinx>=1.6",
     "sphinx-autobuild",
     "sphinx_rtd_theme",
+    "furo",
 ]
 
 [tool.ruff]

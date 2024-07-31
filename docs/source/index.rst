@@ -15,7 +15,7 @@ The `momics` package aims to facilitate:
 * Scalable: cloud-native, out-of-core operations on the data;
 * Export: data export.
 
-Follow cooler development on `GitHub <https://github.com/js2264/momics>`_.
+Follow `momics` development on `GitHub <https://github.com/js2264/momics>`_.
 
 Contents:
 

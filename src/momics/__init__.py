@@ -10,7 +10,7 @@ Cloud-native, TileDB-based multi-omics data format.
 """
 
 from ._version import __format_version__, __version__
-from .api import Momics
+from .Momics import Momics
 
 __all__ = [
     "__version__",
