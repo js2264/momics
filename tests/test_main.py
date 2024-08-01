@@ -1,7 +1,5 @@
 import os
 
-import tiledb
-import numpy as np
 import pytest
 
 import momics

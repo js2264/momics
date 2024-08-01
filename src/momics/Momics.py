@@ -1,10 +1,12 @@
-import pandas as pd
-from momics import utils
 import os
-import tiledb
-import numpy as np
-import pyBigWig
 from datetime import datetime
+
+import numpy as np
+import pandas as pd
+import pyBigWig
+import tiledb
+
+from momics import utils
 
 
 class Momics:
@@ -19,7 +21,7 @@ class Momics:
 
     def _get_table(self, tdb: str):
         path = os.path.join(self.path, tdb)
-        if os.path.exists(path) == False:
+        if not os.path.exists(path):
             return None
 
         with tiledb.open(path, "r") as A:
@@ -70,7 +72,7 @@ class Momics:
         """
 
         # Abort if `chroms` have not been filled
-        if self.chroms().empty == True:
+        if self.chroms().empty:
             raise ValueError("Please fill out `chroms` table first.")
 
         # Abort if chr lengths in provided bw do not match those in `chroms`
@@ -81,7 +83,7 @@ class Momics:
 
         # If `path/coverage/tracks.tdb` (and `{chroms.tdb}`) do not exist, create it
         tdb = os.path.join(self.path, "coverage", "tracks.tdb")
-        if self.tracks().empty == True:
+        if self.tracks().empty:
             dom = tiledb.Domain(
                 tiledb.Dim(name="idx", domain=(0, 9999), dtype=np.int64),
             )
@@ -158,7 +160,7 @@ class Momics:
             Genome version (default: "")
         """
 
-        if self.chroms().empty == False:
+        if not self.chroms().empty:
             raise ValueError("`chroms` table has already been filled out.")
 
         tdb = os.path.join(self.path, "genome", "chroms.tdb")
@@ -199,7 +201,7 @@ class Momics:
         coverage_path = os.path.join(path, "coverage")
         features_path = os.path.join(path, "features")
 
-        if os.path.exists(path) == False:
+        if not os.path.exists(path):
             tiledb.group_create(path)
             tiledb.group_create(genome_path)
             tiledb.group_create(coverage_path)

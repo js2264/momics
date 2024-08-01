@@ -154,8 +154,9 @@ install_command = pip install -U {opts} {packages}
 deps = 
     .[dev,docs]
 commands = 
-    pytest
-    make -C docs html
+    pytest                  ### Run unit tests
+    make -C docs html       ### Compile docs
+    sybil --check docs/     ### Execute code chunks in docs
 allowlist_externals =
     make
 """

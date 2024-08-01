@@ -1,14 +1,16 @@
 Quickstart
 ==========
 
+.. highlight:: console
+
 Installation
 ------------
 
 Install :py:mod:`momics`  from `PyPI <https://pypi.org/project/momics>`_ using :command:`pip`.
 
-::
+.. code-block:: bash
 
-    $ pip install momics
+    pip install momics
 
 Requirements:
 
@@ -24,9 +26,9 @@ which is just the standalone package manager plus Python.
 
 In the latter case, you can install :py:mod:`momics` and all its dependencies as follows:
 
-::
+.. code-block:: bash
 
-    $ conda install bioconda::momics
+    conda install bioconda::momics
 
 
 Command line interface (CLI)
@@ -37,15 +39,15 @@ See the :ref:`CLI` reference for more information.
 
 The :py:mod:`momics` package includes command-line tools for creating, querying and manipulating `.momics` files.
 
-::
+.. code-block:: bash
 
-    $ momics create --name hg19.momics --chrom hg19.chrom.sizes
-    $ momics ingest hg19.momics a=sample1.bw b=sample2.bw c=sample3.bw
-    $ momics tree hg19.momics
-    $ momics dump --table chroms hg19.momics
-    $ momics dump --table tracks hg19.momics
-    $ momics query --table a --query "I:10-1000" hg19.momics
-    $ momics extract --table a --out a.bw hg19.momics
+    momics create --name hg19.momics --chrom hg19.chrom.sizes
+    momics ingest hg19.momics a=sample1.bw b=sample2.bw c=sample3.bw
+    momics tree hg19.momics
+    momics dump --table chroms hg19.momics
+    momics dump --table tracks hg19.momics
+    momics query --table a --query "I:10-1000" hg19.momics
+    momics extract --table a --out a.bw hg19.momics
 
 
 Python API
