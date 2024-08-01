@@ -8,6 +8,11 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath("../../src/momics/"))
+
 from datetime import datetime
 from importlib.metadata import metadata
 
@@ -35,8 +40,9 @@ extensions = [
     "recommonmark",
 ]
 
-numpydoc_show_class_members = False
-napoleon_use_rtype = False
+autosummary_generate = True
+numpydoc_show_class_members = True
+napoleon_use_rtype = True
 autodoc_typehints = "description"
 autodoc_class_signature = "separated"
 templates_path = ["_templates"]
@@ -52,22 +58,8 @@ master_doc = "index"
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "furo"
+# html_theme = "furo"
+html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
 htmlhelp_basename = "momicsdoc"
-
-# -- Options for manual page output ---------------------------------------
-man_pages = [(master_doc, "momics", "momics Documentation", [author], 1)]
-
-# -- Options for Texinfo output -------------------------------------------
-texinfo_documents = [
-    (
-        master_doc,
-        "momics",
-        "momics Documentation",
-        author,
-        "momics",
-        "One line description of project.",
-        "Miscellaneous",
-    ),
-]
+html_last_updated_fmt = "%b %d, %Y"

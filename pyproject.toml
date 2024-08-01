@@ -70,12 +70,12 @@ dev = [
 ]
 docs = [
     "autodocsumm",
+    "sphinxcontrib-napoleon", 
     "m2r",
     "recommonmark",
     "Sphinx>=1.6",
     "sphinx-autobuild",
-    "sphinx_rtd_theme",
-    "furo",
+    "pydata-sphinx-theme",
 ]
 
 [tool.ruff]

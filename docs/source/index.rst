@@ -22,9 +22,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   api
-   Glossary
+   quickstart
+   momics.rst
+   glossary.rst
    
-* :ref:`genindex`
-* :ref:`Glossary`
-

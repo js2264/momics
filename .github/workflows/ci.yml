@@ -1,4 +1,4 @@
-name: Check
+name: Test & Doc
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 permissions:
   contents: write
-    
+
 jobs:
 
   Test:
@@ -18,11 +18,8 @@ jobs:
         python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12" ]
         include:
           - os: ubuntu-latest
-            python-version: "3.12"
           # - os: windows-latest
-          #   python-version: "3.12"
           - os: macos-latest
-            python-version: "3.12"
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -41,22 +38,31 @@ jobs:
 
       - name: Run tests on ${{ matrix.os }}
         run: |
-          python -m pip install --upgrade pip
-          pip install -e .[dev]
-          # stop the build if there are Python syntax errors or undefined names
           ruff check . --select=E9,F63,F7,F82
           pytest
 
-      - name: Buid Sphinx doc on ${{ matrix.os }}
-        if: runner.os == 'Linux' && ${{ github.event_name == 'push' && github.ref == 'refs/heads/devel' }} && ${{ matrix.python-version == '3.12'}}
+  Doc:
+    runs-on: ubuntu-latest
+    needs: Test 
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
+      - name: Buid Sphinx doc 
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/devel' }} 
         run: |
-          sudo apt-get update && sudo apt-get -y install make
+          python -m pip install --upgrade pip
           pip install -e .[dev,docs]
           make -C docs html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
-        if: runner.os == 'Linux' && ${{ github.event_name == 'push' && github.ref == 'refs/heads/devel' }} && ${{ matrix.python-version == '3.12'}}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/devel' }} 
         with:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
