@@ -75,7 +75,7 @@ docs = [
     "recommonmark",
     "Sphinx>=1.6",
     "sphinx-autobuild",
-    "pydata-sphinx-theme",
+    "furo",
 ]
 
 [tool.ruff]
