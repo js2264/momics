@@ -32,12 +32,10 @@ In the latter case, you can install :py:mod:`momics` and all its dependencies as
 Command line interface (CLI)
 ----------------------------
 
-See:
-
-- The `CLI Reference <http://js2264.github.io/momics/en/latest/cli.html>`_ for more information.
+See the :ref:`CLI` reference for more information.
 
 
-The :py:mod:`momics` package includes command line tools for creating, querying and manipulating `.momics` files.
+The :py:mod:`momics` package includes command-line tools for creating, querying and manipulating `.momics` files.
 
 ::
 

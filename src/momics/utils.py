@@ -1,7 +1,4 @@
-import os
-import shutil
 import pyBigWig
-import numpy as np
 
 
 def get_chr_lengths(bw):

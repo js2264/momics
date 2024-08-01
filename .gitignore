@@ -38,3 +38,4 @@ _scratch/
 example.py
 *.momics/
 benchmark.py
+.tox

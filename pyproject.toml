@@ -44,7 +44,7 @@ changelog = "https://github.com/js2264/momics/blob/devel/CHANGES.md"
 momics = "momics.cli:cli"
 
 [tool.hatch.version]
-path = "src/momics/_version.py"
+path = "src/momics/version.py"
 
 [tool.hatch.metadata]
 allow-direct-references = true
@@ -122,12 +122,7 @@ testpaths = ["tests"]
 [tool.coverage.run]
 source = ["momics"]
 
-omit = [
-    "*/momics/__main__.py",
-    "*/momics/_version.py",
-    "*/momics/sandbox/*",
-    "*/momics/cli/csort.py"
-]
+omit = []
 
 [tool.coverage.report]
 exclude_lines = [
@@ -148,3 +143,19 @@ features = ["dev"]
 [[tool.hatch.envs.test.matrix]]
 python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = 
+    py38
+    
+[testenv]
+install_command = pip install -U {opts} {packages}
+deps = 
+    .[dev,docs]
+commands = 
+    pytest
+    make -C docs html
+allowlist_externals =
+    make
+"""

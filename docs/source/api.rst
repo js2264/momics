@@ -1,31 +1,29 @@
 .. _api:
 
 API
-===
+====
 
-Submodules
-----------
-
-momics.Momics module
---------------------
+momics.Momics
+-------------
 
 .. automodule:: momics.Momics
    :members:
    :undoc-members:
    :show-inheritance:
 
-momics.utils module
--------------------
+momics.utils
+------------
 
 .. automodule:: momics.utils
    :members:
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
+momics.version
+--------------
 
-.. automodule:: momics
+.. automodule:: momics.version
    :members:
    :undoc-members:
    :show-inheritance:
+

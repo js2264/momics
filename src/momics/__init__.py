@@ -9,10 +9,9 @@ Cloud-native, TileDB-based multi-omics data format.
 
 """
 
-from ._version import __format_version__, __version__
+from .version import __format_version__, __version__
 from .Momics import Momics
 
 __all__ = [
     "__version__",
-    "__format_version__",
-]
+    "__format_version__",]

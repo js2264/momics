@@ -20,9 +20,10 @@ Follow `momics` development on `GitHub <https://github.com/js2264/momics>`_.
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    quickstart
-   momics.rst
+   cli.rst
+   api.rst
    glossary.rst
-   
+   py-modindex.rst
