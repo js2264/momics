@@ -3,10 +3,10 @@
 API
 ====
 
-momics.Momics
+momics.api
 -------------
 
-.. automodule:: momics.Momics
+.. automodule:: momics.api
    :members:
    :undoc-members:
    :show-inheritance:
