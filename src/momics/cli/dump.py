@@ -9,13 +9,13 @@ from . import cli
 @click.option(
     "--table",
     "-t",
-    help="Which table to dump.",
+    help="Which supporting table to dump.",
     type=click.Choice(["chroms", "tracks"]),
     default="chroms",
     show_default=True,
 )
 def dump(momics, table):
     if table == "tracks":
-        print(api.Momics(momics).tracks())
+        print(api.Momics(momics, create=False).tracks())
     if table == "chroms":
-        print(api.Momics(momics).chroms())
+        print(api.Momics(momics, create=False).chroms())

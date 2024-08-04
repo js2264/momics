@@ -76,6 +76,7 @@ docs = [
     "recommonmark",
     "Sphinx>=1.6",
     "sphinx-autobuild",
+    "sphinx-click",
     "furo",
 ]
 

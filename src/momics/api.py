@@ -185,7 +185,7 @@ class Momics:
             array.meta["genome_assembly_version"] = genome_version
             array.meta["timestamp"] = datetime.now().isoformat()
 
-    def __init__(self, path: str):
+    def __init__(self, path: str, create=True):
         """
         Initialize the Momics class.
 
@@ -193,17 +193,23 @@ class Momics:
         ----------
         path : str
             Path to a `.momics` repository.
+
+        create : bool
+            If not found, should the repository be initiated?
         """
 
         self.path = path
-        genome_path = os.path.join(path, "genome")
-        seq_path = os.path.join(path, "genome", "sequence")
-        coverage_path = os.path.join(path, "coverage")
-        features_path = os.path.join(path, "features")
 
         if not os.path.exists(path):
-            tiledb.group_create(path)
-            tiledb.group_create(genome_path)
-            tiledb.group_create(coverage_path)
-            tiledb.group_create(features_path)
-            tiledb.group_create(seq_path)
+            if create:
+                genome_path = os.path.join(path, "genome")
+                seq_path = os.path.join(path, "genome", "sequence")
+                coverage_path = os.path.join(path, "coverage")
+                features_path = os.path.join(path, "features")
+                tiledb.group_create(path)
+                tiledb.group_create(genome_path)
+                tiledb.group_create(coverage_path)
+                tiledb.group_create(features_path)
+                tiledb.group_create(seq_path)
+            else:
+                raise OSError("`momics repository not found.")
