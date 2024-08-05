@@ -61,7 +61,9 @@ class Momics:
 
         return tracks
 
-    def add_tracks(self, bws: dict):
+    def add_tracks(
+        self, bws: dict, max_bws: int = 9999, tile: int = 10000, compression: int = 3
+    ):
         """
         A method to ingest big wig coverage tracks to the `.momics` repository.
 
@@ -84,14 +86,17 @@ class Momics:
         # If `path/coverage/tracks.tdb` (and `{chroms.tdb}`) do not exist, create it
         tdb = os.path.join(self.path, "coverage", "tracks.tdb")
         if self.tracks().empty:
+            # Create path/coverage/tracks.tdb
             dom = tiledb.Domain(
-                tiledb.Dim(name="idx", domain=(0, 9999), dtype=np.int64),
+                tiledb.Dim(name="idx", domain=(0, max_bws), dtype=np.int64, tile=1),
             )
             attr1 = tiledb.Attr(name="label", dtype="ascii")
             attr2 = tiledb.Attr(name="path", dtype="ascii")
             schema = tiledb.ArraySchema(domain=dom, attrs=[attr1, attr2], sparse=False)
             tiledb.Array.create(tdb, schema)
             chroms = self.chroms()
+
+            # Create every path/coverage/{chrom}.tdb
             for chrom in chroms["chr"]:
                 chrom_length = np.array(chroms[chroms["chr"] == chrom]["length"])[0]
                 tdb = os.path.join(self.path, "coverage", f"{chrom}.tdb")
@@ -100,18 +105,19 @@ class Momics:
                         name="position",
                         domain=(0, chrom_length - 1),
                         dtype=np.int64,
+                        tile=tile,
                     ),
-                    tiledb.Dim(
-                        name="idx",
-                        domain=(0, 999),
-                        dtype=np.int64,
-                    ),
+                    tiledb.Dim(name="idx", domain=(0, max_bws), dtype=np.int64, tile=1),
                 )
                 attr = tiledb.Attr(
                     name="scores",
                     dtype=np.float32,
                     filters=tiledb.FilterList(
-                        [tiledb.ZstdFilter(level=-3)], chunksize=10000
+                        [
+                            tiledb.LZ4Filter(),
+                            tiledb.ZstdFilter(level=compression),
+                        ],
+                        chunksize=1000,
                     ),
                 )
                 schema = tiledb.ArraySchema(
@@ -119,7 +125,11 @@ class Momics:
                     attrs=[attr],
                     sparse=True,
                     coords_filters=tiledb.FilterList(
-                        [tiledb.ZstdFilter(level=-3)], chunksize=10000
+                        [
+                            tiledb.LZ4Filter(),
+                            tiledb.ZstdFilter(level=compression),
+                        ],
+                        chunksize=1000,
                     ),
                 )
                 tiledb.Array.create(tdb, schema)
@@ -166,7 +176,10 @@ class Momics:
         tdb = os.path.join(self.path, "genome", "chroms.tdb")
         dom_genome = tiledb.Domain(
             tiledb.Dim(
-                name="chrom_index", domain=(0, len(chr_lengths) - 1), dtype=np.int32
+                name="chrom_index",
+                domain=(0, len(chr_lengths) - 1),
+                dtype=np.int32,
+                tile=len(chr_lengths),
             )
         )
         attr_chr = tiledb.Attr(name="chr", dtype="ascii", var=True)
