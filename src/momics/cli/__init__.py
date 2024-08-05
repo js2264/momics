@@ -22,6 +22,6 @@ def cli():
 
 
 # Load and register cli subcommands
-from . import (  # noqa: E402,F401
+from . import (
     dump,
 )

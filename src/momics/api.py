@@ -1,12 +1,13 @@
 import os
 from datetime import datetime
+from typing import Dict, Optional
 
 import numpy as np
 import pandas as pd
 import pyBigWig
 import tiledb
 
-from momics import utils
+from . import utils
 
 
 class Momics:
@@ -19,7 +20,39 @@ class Momics:
         Path to a `.momics` repository.
     """
 
-    def _get_table(self, tdb: str):
+    def __init__(self, path: str, create=True):
+        """
+        Initialize the Momics class.
+
+        Parameters
+        ----------
+        path : str
+            Path to a `.momics` repository.
+
+        create : bool
+            If not found, should the repository be initiated?
+        """
+
+        self.path = path
+
+        if not os.path.exists(path):
+            if create:
+                self._create_repository()
+            else:
+                raise OSError("Momics repository not found.")
+
+    def _create_repository(self):
+        genome_path = os.path.join(self.path, "genome")
+        seq_path = os.path.join(self.path, "genome", "sequence")
+        coverage_path = os.path.join(self.path, "coverage")
+        features_path = os.path.join(self.path, "features")
+        tiledb.group_create(self.path)
+        tiledb.group_create(genome_path)
+        tiledb.group_create(coverage_path)
+        tiledb.group_create(features_path)
+        tiledb.group_create(seq_path)
+
+    def _get_table(self, tdb: str) -> Optional[pd.DataFrame]:
         path = os.path.join(self.path, tdb)
         if not os.path.exists(path):
             return None
@@ -29,48 +62,135 @@ class Momics:
 
         return a
 
-    def chroms(self):
+    def _create_track_schema(self, max_bws: int, tile: int, compression: int):
+        # Create path/coverage/tracks.tdb
+        tdb = os.path.join(self.path, "coverage", "tracks.tdb")
+        dom = tiledb.Domain(
+            tiledb.Dim(name="idx", domain=(0, max_bws), dtype=np.int64, tile=1),
+        )
+        attr1 = tiledb.Attr(name="label", dtype="ascii")
+        attr2 = tiledb.Attr(name="path", dtype="ascii")
+        schema = tiledb.ArraySchema(domain=dom, attrs=[attr1, attr2], sparse=False)
+        tiledb.Array.create(tdb, schema)
+        chroms = self.chroms()
+
+        # Create every path/coverage/{chrom}.tdb
+        for chrom in chroms["chr"]:
+            chrom_length = np.array(chroms[chroms["chr"] == chrom]["length"])[0]
+            tdb = os.path.join(self.path, "coverage", f"{chrom}.tdb")
+            dom = tiledb.Domain(
+                tiledb.Dim(
+                    name="position",
+                    domain=(0, chrom_length - 1),
+                    dtype=np.int64,
+                    tile=tile,
+                ),
+                tiledb.Dim(name="idx", domain=(0, max_bws), dtype=np.int64, tile=1),
+            )
+            attr = tiledb.Attr(
+                name="scores",
+                dtype=np.float32,
+                filters=tiledb.FilterList(
+                    [
+                        tiledb.LZ4Filter(),
+                        tiledb.ZstdFilter(level=compression),
+                    ],
+                    chunksize=1000,
+                ),
+            )
+            schema = tiledb.ArraySchema(
+                domain=dom,
+                attrs=[attr],
+                sparse=True,
+                coords_filters=tiledb.FilterList(
+                    [
+                        tiledb.LZ4Filter(),
+                        tiledb.ZstdFilter(level=compression),
+                    ],
+                    chunksize=1000,
+                ),
+            )
+            tiledb.Array.create(tdb, schema)
+
+    def _populate_track_table(self, bws: Dict[str, str]):
+        try:
+            n = self.tracks().shape[0]
+        except tiledb.cc.TileDBError:
+            n = 0
+
+        tdb = os.path.join(self.path, "coverage", "tracks.tdb")
+        with tiledb.DenseArray(tdb, mode="w") as array:
+            array[n : (n + len(bws))] = {
+                "label": list(bws.keys()),
+                "path": list(bws.values()),
+            }
+
+    def _populate_chroms_table(self, bws: Dict[str, str]):
+        try:
+            n = self.tracks().shape[0]
+        except tiledb.cc.TileDBError:
+            n = 0
+
+        chroms = self.chroms()
+        for chrom in chroms["chr"]:
+            chrom_length = np.array(chroms[chroms["chr"] == chrom]["length"])[0]
+            tdb = os.path.join(self.path, "coverage", f"{chrom}.tdb")
+            for idx, bwf in enumerate(bws):
+                with pyBigWig.open(bws[bwf]) as bw:
+                    arr = np.array(bw.values(chrom, 0, chrom_length), dtype=np.float32)
+                    with tiledb.open(tdb, mode="w") as A:
+                        coord1 = np.arange(0, chrom_length)
+                        coord2 = np.repeat(idx + n, len(coord1))
+                        A[coord1, coord2] = {"scores": arr}
+
+    def chroms(self) -> pd.DataFrame:
         """
-        A method to extract chromosome table from a `.momics` repository.
+        Extract chromosome table from a `.momics` repository.
 
         Returns
         -------
-        pandas.DataFrame
+        pd.DataFrame
             A data frame listing one chromosome per row
         """
-        tdb = os.path.join("genome", "chroms.tdb")
-        chroms = self._get_table(tdb)
-        if chroms is None:
-            return pd.DataFrame(columns=["chrom_index", "chr", "length"])
+        chroms = self._get_table(os.path.join("genome", "chroms.tdb"))
+        return (
+            chroms
+            if chroms is not None
+            else pd.DataFrame(columns=["chrom_index", "chr", "length"])
+        )
 
-        return chroms
-
-    def tracks(self):
+    def tracks(self) -> pd.DataFrame:
         """
-        Extract table of ingested bigwigs
+        Extract table of ingested bigwigs.
 
         Returns
         -------
         pandas.DataFrame
             A data frame listing one ingested bigwig file per row
         """
-        tdb = os.path.join("coverage", "tracks.tdb")
-        tracks = self._get_table(tdb)
-        if tracks is None:
-            return pd.DataFrame(columns=["idx", "label", "path"])
-
-        return tracks
+        tracks = self._get_table(os.path.join("coverage", "tracks.tdb"))
+        return (
+            tracks
+            if tracks is not None
+            else pd.DataFrame(columns=["idx", "label", "path"])
+        )
 
     def add_tracks(
         self, bws: dict, max_bws: int = 9999, tile: int = 10000, compression: int = 3
     ):
         """
-        A method to ingest big wig coverage tracks to the `.momics` repository.
+        Ingest bigwig coverage tracks to the `.momics` repository.
 
         Parameters
         ----------
         bws : dict
             Dictionary of bigwig files
+        max_bws : int
+            Maximum number of bigwig files.
+        tile : int
+            Tile size.
+        compression : int
+            Compression level.
         """
 
         # Abort if `chroms` have not been filled
@@ -84,79 +204,14 @@ class Momics:
         utils._check_track_names(bws, self.tracks())
 
         # If `path/coverage/tracks.tdb` (and `{chroms.tdb}`) do not exist, create it
-        tdb = os.path.join(self.path, "coverage", "tracks.tdb")
         if self.tracks().empty:
-            # Create path/coverage/tracks.tdb
-            dom = tiledb.Domain(
-                tiledb.Dim(name="idx", domain=(0, max_bws), dtype=np.int64, tile=1),
-            )
-            attr1 = tiledb.Attr(name="label", dtype="ascii")
-            attr2 = tiledb.Attr(name="path", dtype="ascii")
-            schema = tiledb.ArraySchema(domain=dom, attrs=[attr1, attr2], sparse=False)
-            tiledb.Array.create(tdb, schema)
-            chroms = self.chroms()
-
-            # Create every path/coverage/{chrom}.tdb
-            for chrom in chroms["chr"]:
-                chrom_length = np.array(chroms[chroms["chr"] == chrom]["length"])[0]
-                tdb = os.path.join(self.path, "coverage", f"{chrom}.tdb")
-                dom = tiledb.Domain(
-                    tiledb.Dim(
-                        name="position",
-                        domain=(0, chrom_length - 1),
-                        dtype=np.int64,
-                        tile=tile,
-                    ),
-                    tiledb.Dim(name="idx", domain=(0, max_bws), dtype=np.int64, tile=1),
-                )
-                attr = tiledb.Attr(
-                    name="scores",
-                    dtype=np.float32,
-                    filters=tiledb.FilterList(
-                        [
-                            tiledb.LZ4Filter(),
-                            tiledb.ZstdFilter(level=compression),
-                        ],
-                        chunksize=1000,
-                    ),
-                )
-                schema = tiledb.ArraySchema(
-                    domain=dom,
-                    attrs=[attr],
-                    sparse=True,
-                    coords_filters=tiledb.FilterList(
-                        [
-                            tiledb.LZ4Filter(),
-                            tiledb.ZstdFilter(level=compression),
-                        ],
-                        chunksize=1000,
-                    ),
-                )
-                tiledb.Array.create(tdb, schema)
-            n = 0
-        else:
-            n = self.tracks().shape[0]
+            self._create_track_schema(max_bws, tile, compression)
 
         # Populate `path/coverage/tracks.tdb`
-        tdb = os.path.join(self.path, "coverage", "tracks.tdb")
-        with tiledb.DenseArray(tdb, mode="w") as array:
-            array[n : (n + len(bws))] = {
-                "label": list(bws.keys()),
-                "path": list(bws.values()),
-            }
+        self._populate_track_table(bws)
 
         # Populate each `path/coverage/{chrom}.tdb`
-        chroms = self.chroms()
-        for chrom in chroms["chr"]:
-            chrom_length = np.array(chroms[chroms["chr"] == chrom]["length"])[0]
-            tdb = os.path.join(self.path, "coverage", f"{chrom}.tdb")
-            for idx, bwf in enumerate(bws):
-                with pyBigWig.open(bws[bwf]) as bw:
-                    arr = np.array(bw.values(chrom, 0, chrom_length), dtype=np.float32)
-                    with tiledb.open(tdb, mode="w") as A:
-                        coord1 = np.arange(0, chrom_length)
-                        coord2 = np.repeat(idx + n, len(coord1))
-                        A[coord1, coord2] = {"scores": arr}
+        self._populate_chroms_table(bws)
 
     def add_chroms(self, chr_lengths: dict, genome_version: str = ""):
         """
@@ -197,32 +252,3 @@ class Momics:
             array[indices] = {"chr": np.array(chr, dtype="S"), "length": length}
             array.meta["genome_assembly_version"] = genome_version
             array.meta["timestamp"] = datetime.now().isoformat()
-
-    def __init__(self, path: str, create=True):
-        """
-        Initialize the Momics class.
-
-        Parameters
-        ----------
-        path : str
-            Path to a `.momics` repository.
-
-        create : bool
-            If not found, should the repository be initiated?
-        """
-
-        self.path = path
-
-        if not os.path.exists(path):
-            if create:
-                genome_path = os.path.join(path, "genome")
-                seq_path = os.path.join(path, "genome", "sequence")
-                coverage_path = os.path.join(path, "coverage")
-                features_path = os.path.join(path, "features")
-                tiledb.group_create(path)
-                tiledb.group_create(genome_path)
-                tiledb.group_create(coverage_path)
-                tiledb.group_create(features_path)
-                tiledb.group_create(seq_path)
-            else:
-                raise OSError("`momics repository not found.")
