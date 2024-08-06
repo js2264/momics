@@ -41,11 +41,12 @@ The :py:mod:`momics` package includes command-line tools for creating, querying 
 
 .. code-block:: bash
 
-    momics create --name hg19.momics --chrom hg19.chrom.sizes
-    momics ingest hg19.momics a=sample1.bw b=sample2.bw c=sample3.bw
+    momics create hg19.momics 
+    momics add chroms hg19.chrom.sizes
+    momics add tracks a=sample1.bw b=sample2.bw c=sample3.bw hg19.momics 
     momics tree hg19.momics
-    momics dump --table chroms hg19.momics
-    momics dump --table tracks hg19.momics
+    momics ls --table chroms hg19.momics
+    momics ls --table tracks hg19.momics
     momics query --table a --query "I:10-1000" hg19.momics
     momics extract --table a --out a.bw hg19.momics
 

@@ -40,6 +40,9 @@ class Momics:
                 self._create_repository()
             else:
                 raise OSError("Momics repository not found.")
+        else:
+            if create:
+                raise OSError(f"{path} repository already exist found.")
 
     def _create_repository(self):
         genome_path = os.path.join(self.path, "genome")
@@ -215,7 +218,7 @@ class Momics:
 
     def add_chroms(self, chr_lengths: dict, genome_version: str = ""):
         """
-        A method to add chromosomes (and genome) information the `.momics` repository.
+        Add chromosomes (and genome) information the `.momics` repository.
 
         Parameters
         ----------

@@ -2,7 +2,7 @@ import click
 
 from ..version import __version__
 
-CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
+CONTEXT_SETTINGS = {"help_option_names": ["--help"]}
 
 
 class UnsortedGroup(click.Group):
@@ -12,16 +12,25 @@ class UnsortedGroup(click.Group):
         return list(self.commands)
 
 
-@click.version_option(__version__, "-V", "--version")
-@click.group(context_settings=CONTEXT_SETTINGS, cls=UnsortedGroup)
+@click.version_option(__version__, "-v", "--version")
+@click.group(
+    context_settings=CONTEXT_SETTINGS,
+    cls=UnsortedGroup,
+    epilog="Check out our docs at https://js2264.github.io/momics/ for more details",
+)
 def cli():
-    """
-    Type -h or --help after any subcommand for more information.
-
-    """
+    pass
 
 
 # Load and register cli subcommands
 from . import (
-    dump,
+    add,
+    create,
+    ls,
 )
+
+__all__ = [
+    "add",
+    "create",
+    "ls",
+]

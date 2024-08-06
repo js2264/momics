@@ -14,3 +14,5 @@ testdir = os.path.dirname(os.path.realpath(__file__))
 def test_Momics(fp):
     mom = momics.Momics(fp)
     print(mom)
+    print(mom.chroms())
+    print(mom.tracks())
