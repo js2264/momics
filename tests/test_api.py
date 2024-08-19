@@ -5,7 +5,7 @@ import momics
 from momics import utils
 
 
-def test_Momics_init(momics_path):
+def test_Momics_init(momics_path: str):
     with pytest.raises(OSError, match=r"Momics repository not found."):
         momics.Momics("asvasdvasdv", create=False)
 
@@ -18,7 +18,7 @@ def test_Momics_init(momics_path):
         momics.Momics(momics_path, create=True)
 
 
-def test_Momics_add_genome(momics_path, bw1):
+def test_Momics_add_genome(momics_path: str, bw1: str):
     mom = momics.Momics(momics_path, create=False)
 
     assert mom.chroms().empty
@@ -42,7 +42,7 @@ def test_Momics_add_genome(momics_path, bw1):
         mom.add_chroms(chroms)
 
 
-def test_Momics_add_tracks(momics_path, bw1, bw2):
+def test_Momics_add_tracks(momics_path: str, bw1: str, bw2: str):
     mom = momics.Momics(momics_path, create=False)
 
     assert mom.tracks().empty
@@ -71,6 +71,10 @@ def test_Momics_add_tracks(momics_path, bw1, bw2):
     print(mom.tracks())
 
 
-def test_Momics_query(momics_path):
+def test_Momics_query(momics_path: str):
     mom = momics.Momics(momics_path, create=False)
-    assert mom.query("I:991-1010").shape == (40, 3)
+    q = mom.query("I:991-1010")
+    assert q.shape == (40, 3)
+
+    q = mom.query("I")
+    assert q.shape == (20000, 3)

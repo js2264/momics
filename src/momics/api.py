@@ -269,12 +269,18 @@ class Momics:
             UCSC-style chromosome interval (e.g. "II:12001-15000")
         """
         tr = self.tracks().drop("path", axis=1)
-        chrom, range_part = query.split(":")
-        start = range_part.split("-")[0]
-        end = range_part.split("-")[1]
-        with tiledb.open(f"test.momics/coverage/{chrom}.tdb", "r") as array:
-            data = array.df[int(start) : int(end), :]
+        if ":" in query:
+            chrom, range_part = query.split(":")
+            print(f"{self.path}/coverage/{chrom}.tdb")
+            start = range_part.split("-")[0]
+            end = range_part.split("-")[1]
+            with tiledb.open(f"{self.path}/coverage/{chrom}.tdb", "r") as array:
+                data = array.df[int(start) : int(end), :]
+        else:
+            chrom = query
+            print(f"{self.path}/coverage/{chrom}.tdb")
+            with tiledb.open(f"{self.path}/coverage/{chrom}.tdb", "r") as array:
+                data = array.df[:]
 
-        data["idx"] = data["idx"] - 1
         mdata = pd.merge(tr, data, on="idx").drop("idx", axis=1)
         return mdata
