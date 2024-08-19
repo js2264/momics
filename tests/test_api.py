@@ -1,18 +1,76 @@
-import os
-
+import pandas as pd
 import pytest
 
 import momics
+from momics import utils
 
-testdir = os.path.dirname(os.path.realpath(__file__))
+
+def test_Momics_init(momics_path):
+    with pytest.raises(OSError, match=r"Momics repository not found."):
+        momics.Momics("asvasdvasdv", create=False)
+
+    momics.Momics(momics_path)
+    x = momics.Momics(momics_path, create=False)
+
+    assert x.path == momics_path
+
+    with pytest.raises(OSError, match=r".* repository already exist found"):
+        momics.Momics(momics_path, create=True)
 
 
-@pytest.mark.parametrize(
-    "fp",
-    [(os.path.join(testdir, "test.momics"))],
-)
-def test_Momics(fp):
-    mom = momics.Momics(fp)
-    print(mom)
-    print(mom.chroms())
+def test_Momics_add_genome(momics_path, bw1):
+    mom = momics.Momics(momics_path, create=False)
+
+    assert mom.chroms().empty
+
+    with pytest.raises(ValueError, match=r"Please fill out `chroms` table first."):
+        mom.add_tracks({"bw1": bw1})
+
+    chroms = utils.get_chr_lengths(bw1)
+    mom.add_chroms(chroms)
+    out = pd.DataFrame(
+        {
+            "chrom_index": [0, 1, 2],
+            "chr": ["I", "II", "III"],
+            "length": [10000, 20000, 30000],
+        }
+    )
+    assert mom.chroms().__eq__(out).all().all()
+    with pytest.raises(
+        ValueError, match=r"`chroms` table has already been filled out."
+    ):
+        mom.add_chroms(chroms)
+
+
+def test_Momics_add_tracks(momics_path, bw1, bw2):
+    mom = momics.Momics(momics_path, create=False)
+
+    assert mom.tracks().empty
+    mom.add_tracks({"bw1": bw1})
+    out = pd.DataFrame(
+        {
+            "idx": [0],
+            "label": ["bw1"],
+            "path": [bw1],
+        }
+    )
+    assert mom.tracks().__eq__(out).all().all()
+    with pytest.raises(ValueError, match=r".*already present in `tracks` table"):
+        mom.add_tracks({"bw1": bw1})
+    with pytest.raises(Exception, match=r".*do not have identical chromomosome.*"):
+        mom.add_tracks({"bw2": bw2})
+    mom.add_tracks({"bw2": bw1})
+    out = pd.DataFrame(
+        {
+            "idx": [0, 1],
+            "label": ["bw1", "bw2"],
+            "path": [bw1, bw1],
+        }
+    )
+    assert mom.tracks().__eq__(out).all().all()
     print(mom.tracks())
+
+
+def test_Momics_query(momics_path):
+    mom = momics.Momics(momics_path, create=False)
+    assert mom.query("I:991-1010").shape == (40, 3)
