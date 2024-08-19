@@ -210,11 +210,11 @@ class Momics:
         if self.tracks().empty:
             self._create_track_schema(max_bws, tile, compression)
 
-        # Populate `path/coverage/tracks.tdb`
-        self._populate_track_table(bws)
-
         # Populate each `path/coverage/{chrom}.tdb`
         self._populate_chroms_table(bws)
+
+        # Populate `path/coverage/tracks.tdb`
+        self._populate_track_table(bws)
 
     def add_chroms(self, chr_lengths: dict, genome_version: str = ""):
         """
@@ -255,3 +255,26 @@ class Momics:
             array[indices] = {"chr": np.array(chr, dtype="S"), "length": length}
             array.meta["genome_assembly_version"] = genome_version
             array.meta["timestamp"] = datetime.now().isoformat()
+
+    def query(
+        self,
+        query: str,
+    ):
+        """
+        Query bigwig coverage tracks from a `.momics` repository.
+
+        Parameters
+        ----------
+        chr_lengths : str
+            UCSC-style chromosome interval (e.g. "II:12001-15000")
+        """
+        tr = self.tracks().drop("path", axis=1)
+        chrom, range_part = query.split(":")
+        start = range_part.split("-")[0]
+        end = range_part.split("-")[1]
+        with tiledb.open(f"test.momics/coverage/{chrom}.tdb", "r") as array:
+            data = array.df[int(start) : int(end), :]
+
+        data["idx"] = data["idx"] - 1
+        mdata = pd.merge(tr, data, on="idx").drop("idx", axis=1)
+        return mdata

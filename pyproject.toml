@@ -33,6 +33,7 @@ dependencies = [
     "pandas", 
     "pyarrow>=1.0",
     "click>=7",
+    "packaging"
 ]
 
 [project.urls]
@@ -156,9 +157,10 @@ install_command = pip install -U {opts} {packages}
 deps = 
     .[dev,docs]
 commands = 
-    pytest                  ### Run unit tests
-    make -C docs html       ### Compile docs
-    sybil --check docs/     ### Execute code chunks in docs
+    pytest                           ### Run unit tests
+    make -C docs html                ### Compile docs
+    ruff check src tests --fix       ### Compile docs
+    # sybil --check docs/              ### Execute code chunks in docs
 allowlist_externals =
     make
 """

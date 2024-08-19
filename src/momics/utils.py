@@ -10,7 +10,7 @@ def get_chr_lengths(bw):
 
 def _check_chr_lengths(bw_files, chroms):
     reference_lengths = dict(zip(chroms["chr"], chroms["length"]))
-    for file in list(bw_files.values())[1:]:
+    for file in list(bw_files.values()):
         with pyBigWig.open(file) as bw:
             lengths = bw.chroms()
             if lengths != reference_lengths:
