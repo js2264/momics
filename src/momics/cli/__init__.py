@@ -27,10 +27,12 @@ from . import (
     add,
     create,
     ls,
+    query,
 )
 
 __all__ = [
     "add",
     "create",
     "ls",
+    "query",
 ]

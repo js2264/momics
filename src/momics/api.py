@@ -271,14 +271,12 @@ class Momics:
         tr = self.tracks().drop("path", axis=1)
         if ":" in query:
             chrom, range_part = query.split(":")
-            print(f"{self.path}/coverage/{chrom}.tdb")
             start = range_part.split("-")[0]
             end = range_part.split("-")[1]
             with tiledb.open(f"{self.path}/coverage/{chrom}.tdb", "r") as array:
                 data = array.df[int(start) : int(end), :]
         else:
             chrom = query
-            print(f"{self.path}/coverage/{chrom}.tdb")
             with tiledb.open(f"{self.path}/coverage/{chrom}.tdb", "r") as array:
                 data = array.df[:]
 
