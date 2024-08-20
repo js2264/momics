@@ -1,4 +1,0 @@
-Index
-=====
-
-:ref:`modindex`

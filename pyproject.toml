@@ -79,6 +79,8 @@ docs = [
     "sphinx-autobuild",
     "sphinx-click",
     "furo",
+    "pydata-sphinx-theme",
+    "myst-parser",
 ]
 
 [tool.ruff]

@@ -11,6 +11,10 @@ CLI
   :prog: momics add
   :nested: full
 
+.. click:: momics.cli.query:query
+  :prog: momics query
+  :show-nested:
+
 .. click:: momics.cli.ls:ls
   :prog: momics ls
   :show-nested:
