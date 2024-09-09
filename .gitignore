@@ -37,5 +37,6 @@ _scratch/
 .vscode
 example.py
 *.momics/
-benchmark.py
 .tox
+benchmark.py
+/*py

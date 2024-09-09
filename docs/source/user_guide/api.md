@@ -1,4 +1,4 @@
 # Python API
 
-See the [API reference](../api/index) for more information.
+See the [full API reference](../api/index) for more information.
 

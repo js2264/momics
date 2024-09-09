@@ -19,7 +19,7 @@ from importlib.metadata import metadata
 info = metadata("momics")
 project = info["Name"]
 author = "Jacques Serizay"
-copyright = f"2023-{datetime.now():%Y}, {author}."
+copyright = f"2023-{datetime.now():%Y}, {author}"
 release = info["Version"]
 version = release.rsplit(".", maxsplit=1)[0]
 
@@ -84,13 +84,6 @@ html_theme_options = {
     "show_toc_level": 2,
     "footer_start": ["copyright"],
     "footer_center": ["sphinx-version"],
-    "secondary_sidebar_items": {
-        "**/*": ["page-toc", "edit-this-page", "sourcelink"],
-        "examples/no-sidebar": [],
-    },
-    "pygments_light_style": "a11y-high-contrast-light",
-    "pygments_dark_style": "a11y-high-contrast-dark",
-    "back_to_top_button": False,
 }
 html_context = {
     "github_url": "https://github.com/js2264/momics/",

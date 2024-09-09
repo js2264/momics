@@ -5,7 +5,7 @@ CLI
 
 .. click:: momics.cli.create:create
   :prog: momics create
-  :show-nested:
+  :nested: full
 
 .. click:: momics.cli.add:add
   :prog: momics add
@@ -13,8 +13,8 @@ CLI
 
 .. click:: momics.cli.query:query
   :prog: momics query
-  :show-nested:
+  :nested: full
 
 .. click:: momics.cli.ls:ls
   :prog: momics ls
-  :show-nested:
+  :nested: full

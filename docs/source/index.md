@@ -2,11 +2,6 @@
 html_theme.sidebar_secondary.remove: true
 ---
 
-<!-- momics documentation master file, created by
-sphinx-quickstart on Mon Jul 29 11:05:32 2024.
-You can adapt this file completely to your liking, but it should at least
-contain the root `toctree` directive. -->
-
 # momics
 
 `momics` is a Python support library for .momics files. 

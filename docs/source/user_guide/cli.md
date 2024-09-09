@@ -2,4 +2,4 @@
 
 The `momics` package includes command-line tools for creating, querying and manipulating `.momics` files.
 
-See the [CLI reference](../cli/index) for more information.
+See the [full CLI reference](../cli/index) for more information.
