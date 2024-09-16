@@ -26,3 +26,16 @@ def _check_track_names(bw_files, tracks):
             raise ValueError(
                 f"Provided label '{element}' already present in `tracks` table"
             )
+
+
+def _check_chr_name(chr, chroms):
+    if chr not in chroms["chr"].values:
+        raise ValueError(f"{chr} chromosome not listed in `chroms` table.")
+
+
+def _check_track_name(track, tracks):
+    labels = set(tracks["label"])
+    if track not in labels:
+        raise ValueError(
+            f"Provided track name '{track}' does not exist in `tracks` table"
+        )

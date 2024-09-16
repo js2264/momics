@@ -24,10 +24,12 @@ def cli():
 
 # Load and register cli subcommands
 from . import (
-    add,
     create,
+    add,
+    remove,
     ls,
     query,
+    export,
 )
 
 __all__ = [
@@ -35,4 +37,6 @@ __all__ = [
     "create",
     "ls",
     "query",
+    "remove",
+    "export",
 ]

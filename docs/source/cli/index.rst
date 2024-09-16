@@ -11,10 +11,18 @@ CLI
   :prog: momics add
   :nested: full
 
-.. click:: momics.cli.query:query
-  :prog: momics query
+.. click:: momics.cli.remove:remove
+  :prog: momics remove
   :nested: full
 
 .. click:: momics.cli.ls:ls
   :prog: momics ls
+  :nested: full
+
+.. click:: momics.cli.query:query
+  :prog: momics query
+  :nested: full
+
+.. click:: momics.cli.export:export
+  :prog: momics export
   :nested: full

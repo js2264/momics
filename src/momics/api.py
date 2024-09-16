@@ -75,9 +75,9 @@ class Momics:
         attr2 = tiledb.Attr(name="path", dtype="ascii")
         schema = tiledb.ArraySchema(domain=dom, attrs=[attr1, attr2], sparse=False)
         tiledb.Array.create(tdb, schema)
-        chroms = self.chroms()
 
         # Create every path/coverage/{chrom}.tdb
+        chroms = self.chroms()
         for chrom in chroms["chr"]:
             chrom_length = np.array(chroms[chroms["chr"] == chrom]["length"])[0]
             tdb = os.path.join(self.path, "coverage", f"{chrom}.tdb")
@@ -146,6 +146,18 @@ class Momics:
                         coord2 = np.repeat(idx + n, len(coord1))
                         A[coord1, coord2] = {"scores": arr}
 
+    def _purge_track(self, track: str):
+        idx = self.tracks()["idx"][self.tracks()["label"] == track].values[0]
+        qc = f"idx == {idx}"
+        for chrom in self.chroms()["chr"]:
+            tdb = os.path.join(self.path, "coverage", f"{chrom}.tdb")
+            with tiledb.open(tdb, mode="d") as A:
+                A.query(cond=qc).submit()
+
+        tdb = os.path.join(self.path, "coverage", "tracks.tdb")
+        with tiledb.open(tdb, mode="w") as A:
+            A[idx] = {"label": None, "path": None}
+
     def chroms(self) -> pd.DataFrame:
         """
         Extract chromosome table from a `.momics` repository.
@@ -173,6 +185,7 @@ class Momics:
         """
         tracks = self._get_table(os.path.join("coverage", "tracks.tdb"))
         return (
+            # tracks[tracks["label"] != "None"]
             tracks
             if tracks is not None
             else pd.DataFrame(columns=["idx", "label", "path"])
@@ -271,14 +284,68 @@ class Momics:
         tr = self.tracks().drop("path", axis=1)
         if ":" in query:
             chrom, range_part = query.split(":")
+            utils._check_chr_name(chrom, self.chroms())
             start = range_part.split("-")[0]
             end = range_part.split("-")[1]
             with tiledb.open(f"{self.path}/coverage/{chrom}.tdb", "r") as array:
                 data = array.df[int(start) : int(end), :]
         else:
             chrom = query
+            utils._check_chr_name(chrom, self.chroms())
             with tiledb.open(f"{self.path}/coverage/{chrom}.tdb", "r") as array:
                 data = array.df[:]
 
         mdata = pd.merge(tr, data, on="idx").drop("idx", axis=1)
         return mdata
+
+    def remove_track(self, track: str):
+        """
+        Remove a track from a `.momics` repository.
+
+        Parameters
+        ----------
+        track : str
+            Which track to remove
+        """
+
+        # Abort if `track` is not listed
+        utils._check_track_name(track, self.tracks())
+
+        # Remove entry from each `path/coverage/{chrom}.tdb` and from `path/coverage/tracks.tdb`
+        self._purge_track(track)
+
+    def export_track(self, track: str, prefix: str):
+        """
+        Export a track from a `.momics` repository as a .bw file.
+
+        Parameters
+        ----------
+        track : str
+            Which track to remove
+        prefix : str
+            Prefix of the output bigwig file
+        """
+
+        # Abort if `track` is not listed
+        utils._check_track_name(track, self.tracks())
+
+        # Init output file
+        output = prefix + ".bw"
+        bw = pyBigWig.open(output, "w")
+        chrom_sizes = self.chroms()[["chr", "length"]].apply(tuple, axis=1).tolist()
+        bw.addHeader(chrom_sizes)
+        for chrom, _ in chrom_sizes:
+            print(chrom)
+            q = self.query(chrom)
+            q = q[q["label"] == track].dropna(subset=["scores"])
+            # starts = q["position"].to_numpy(dtype=np.int64)
+            # ends = starts + 1
+            # values = q["scores"].to_numpy(dtype=np.int64)
+            # chroms = np.array([chrom] * 10)
+
+            starts = q["position"].to_numpy(dtype=np.int64)
+            ends = starts + 1
+            values0 = q["scores"].to_numpy(dtype=np.float32)
+            chroms = np.array([chrom] * len(values0))
+            bw.addEntries(chroms, starts=starts, ends=ends, values=values0)
+        bw.close()

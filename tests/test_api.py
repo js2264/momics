@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -78,3 +79,20 @@ def test_Momics_query(momics_path: str):
 
     q = mom.query("I")
     assert q.shape == (20000, 3)
+
+
+def test_Momics_remove_tracks(momics_path: str, bw1: str, bw2: str):
+    mom = momics.Momics(momics_path, create=False)
+    mom.add_tracks({"bw3": bw1})
+    mom.add_tracks({"bw4": bw1})
+    mom.remove_track("bw1")
+    out = pd.DataFrame(
+        {
+            "idx": [0, 1, 2, 3],
+            "label": ["None", "bw2", "bw3", "bw4"],
+            "path": ["None", bw1, bw1, bw1],
+        }
+    )
+    assert mom.tracks().__eq__(out).all().all()
+    q = mom.query("I:991-1010")
+    assert np.unique(q["label"]).__eq__(["bw2", "bw3", "bw4"]).all()

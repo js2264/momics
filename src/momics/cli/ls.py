@@ -1,4 +1,5 @@
 import click
+import numpy as np
 
 from .. import api
 from . import cli
@@ -17,6 +18,7 @@ from . import cli
 def ls(path, table):
     """List tracks/chromosomes registered in a Momics."""
     if table == "tracks":
-        print(api.Momics(path, create=False).tracks())
+        tr = api.Momics(path, create=False).tracks()
+        print(tr.iloc[np.where(tr["label"] != "None")].iloc[:, 0:2])
     if table == "chroms":
         print(api.Momics(path, create=False).chroms())

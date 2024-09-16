@@ -30,11 +30,11 @@ In the latter case, you can install `momics` and all its dependencies as follows
 
 ```
 momics create hg19.momics 
-momics add chroms hg19.chrom.sizes
-momics add tracks a=sample1.bw b=sample2.bw c=sample3.bw hg19.momics 
-momics tree hg19.momics
+momics add chroms -f hg19.chrom.sizes hg19.momics
 momics ls --table chroms hg19.momics
-momics ls --table tracks hg19.momics
-momics query --query "I:10-1000" hg19.momics
-momics extract --out a.bw hg19.momics
+momics add tracks -f bw_a=sample1.bw -f bw_b=sample2.bw -f bw_c=sample3.bw hg19.momics 
+momics ls hg19.momics
+momics query --coordinates "I:10-1000" hg19.momics
+momics export --track bw_b --prefix b_exported.bw hg19.momics
+momics remove --track bw_c hg19.momics
 ```
