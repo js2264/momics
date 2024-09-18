@@ -1,13 +1,59 @@
 import os
 
+from Bio import SeqIO
+from Bio.SeqRecord import SeqRecord
+from Bio.Seq import Seq
+
 import numpy as np
 import pyBigWig
 import pytest
+import pyfaidx
+import random
 
 
 @pytest.fixture(scope="session")
 def momics_path(tmp_path_factory):
     p = os.path.join(tmp_path_factory.getbasetemp(), "test.momics")
+    return p
+
+
+@pytest.fixture(scope="session")
+def fa1(tmp_path_factory):
+    p = os.path.join(tmp_path_factory.getbasetemp(), "fa1")
+    nucleotides = ["A", "T", "C", "G"]
+    chrom_seqs = {
+        "I": "".join(random.choices(nucleotides, k=10000)),
+        "II": "".join(random.choices(nucleotides, k=20000)),
+        "III": "".join(random.choices(nucleotides, k=30000)),
+    }
+    records = []
+    for chrom, sequence in chrom_seqs.items():
+        record = SeqRecord(Seq(sequence), id=chrom, description="")
+        records.append(record)
+
+    with open(p, "w") as output_handle:
+        SeqIO.write(records, output_handle, "fasta")
+
+    return p
+
+
+@pytest.fixture(scope="session")
+def fa2(tmp_path_factory):
+    p = os.path.join(tmp_path_factory.getbasetemp(), "fa2")
+    nucleotides = ["A", "T", "C", "G"]
+    chrom_seqs = {
+        "I": "".join(random.choices(nucleotides, k=2000)),
+        "II": "".join(random.choices(nucleotides, k=1000)),
+        "III": "".join(random.choices(nucleotides, k=500)),
+    }
+    records = []
+    for chrom, sequence in chrom_seqs.items():
+        record = SeqRecord(Seq(sequence), id=chrom, description="")
+        records.append(record)
+
+    with open(p, "w") as output_handle:
+        SeqIO.write(records, output_handle, "fasta")
+
     return p
 
 

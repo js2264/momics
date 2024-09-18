@@ -72,13 +72,36 @@ def test_Momics_add_tracks(momics_path: str, bw1: str, bw2: str):
     print(mom.tracks())
 
 
-def test_Momics_query(momics_path: str):
+def test_Momics_add_seq(momics_path: str, fa1: str, fa2: str):
     mom = momics.Momics(momics_path, create=False)
-    q = mom.query("I:991-1010")
+
+    with pytest.raises(Exception, match=r".*do not have identical chromomosome.*"):
+        mom.add_sequence(fa2)
+
+    mom.add_sequence(fa1)
+
+    with pytest.raises(ValueError, match=r"Sequence already added to the repository"):
+        mom.add_sequence(fa2)
+
+    print(mom.sequence())
+
+
+def test_Momics_query_tracks(momics_path: str):
+    mom = momics.Momics(momics_path, create=False)
+    q = mom.query_tracks("I:991-1010")
     assert q.shape == (40, 3)
 
-    q = mom.query("I")
+    q = mom.query_tracks("I")
     assert q.shape == (20000, 3)
+
+
+def test_Momics_query_seqs(momics_path: str):
+    mom = momics.Momics(momics_path, create=False)
+    q = mom.query_sequence("I:991-1010")
+    assert q.shape == (20,)
+
+    q = mom.query_sequence("I")
+    assert q.shape == (10000,)
 
 
 def test_Momics_remove_tracks(momics_path: str, bw1: str, bw2: str):
@@ -94,5 +117,5 @@ def test_Momics_remove_tracks(momics_path: str, bw1: str, bw2: str):
         }
     )
     assert mom.tracks().__eq__(out).all().all()
-    q = mom.query("I:991-1010")
+    q = mom.query_tracks("I:991-1010")
     assert np.unique(q["label"]).__eq__(["bw2", "bw3", "bw4"]).all()
