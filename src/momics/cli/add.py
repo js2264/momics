@@ -58,3 +58,20 @@ def tracks(ctx, file, path):
     m = api.Momics(path, create=False)
     m.add_tracks(fs)
     print(m.tracks().iloc[np.where(m.tracks()["label"] != "None")].iloc[:, 0:2])
+
+
+@add.command()
+@click.option(
+    "--file",
+    "-f",
+    help="Fasta file",
+    type=click.Path(exists=True),
+    required=True,
+)
+@click.argument("path", metavar="MOMICS_REPO", required=True)
+@click.pass_context
+def seq(ctx, file, path):
+    """Add genomic sequence to Momics."""
+    m = api.Momics(path, create=False)
+    m.add_sequence(file)
+    print(m.sequence())

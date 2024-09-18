@@ -29,6 +29,7 @@ classifiers = [
 dependencies = [
     "tiledb",
     "pyBigWig",
+    "pyfaidx", 
     "numpy", 
     "pandas", 
     "pyarrow>=1.0",

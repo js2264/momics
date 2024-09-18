@@ -5,6 +5,7 @@ from typing import Dict, Optional
 import numpy as np
 import pandas as pd
 import pyBigWig
+import pyfaidx
 import tiledb
 
 from . import utils
@@ -64,6 +65,45 @@ class Momics:
             a = A.df[:]
 
         return a
+
+    def _create_sequence_schema(self, tile: int, compression: int):
+        # Create every path/genome/sequence/{chrom}.tdb
+        chroms = self.chroms()
+        for chrom in chroms["chr"]:
+            chrom_length = np.array(chroms[chroms["chr"] == chrom]["length"])[0]
+            tdb = os.path.join(self.path, "genome", "sequence", f"{chrom}.tdb")
+            dom = tiledb.Domain(
+                tiledb.Dim(
+                    name="position",
+                    domain=(0, chrom_length - 1),
+                    dtype=np.int64,
+                    tile=tile,
+                )
+            )
+            attr = tiledb.Attr(
+                name="nucleotide",
+                dtype="ascii",
+                filters=tiledb.FilterList(
+                    [
+                        tiledb.LZ4Filter(),
+                        tiledb.ZstdFilter(level=compression),
+                    ],
+                    chunksize=1000,
+                ),
+            )
+            schema = tiledb.ArraySchema(
+                domain=dom,
+                attrs=[attr],
+                sparse=False,
+                coords_filters=tiledb.FilterList(
+                    [
+                        tiledb.LZ4Filter(),
+                        tiledb.ZstdFilter(level=compression),
+                    ],
+                    chunksize=1000,
+                ),
+            )
+            tiledb.DenseArray.create(tdb, schema)
 
     def _create_track_schema(self, max_bws: int, tile: int, compression: int):
         # Create path/coverage/tracks.tdb
@@ -146,6 +186,16 @@ class Momics:
                         coord2 = np.repeat(idx + n, len(coord1))
                         A[coord1, coord2] = {"scores": arr}
 
+    def _populate_sequence_table(self, fasta: str):
+        chroms = self.chroms()
+        for chrom in chroms["chr"]:
+            tdb = os.path.join(self.path, "genome", "sequence", f"{chrom}.tdb")
+            chrom_length = np.array(chroms[chroms["chr"] == chrom]["length"])[0]
+            with pyfaidx.Fasta(fasta) as fa:
+                chrom_seq = fa.get_seq(chrom, 1, chrom_length)
+            with tiledb.DenseArray(tdb, mode="w") as A:
+                A[:] = {"nucleotide": np.array(list(chrom_seq.seq), dtype="S1")}
+
     def _purge_track(self, track: str):
         idx = self.tracks()["idx"][self.tracks()["label"] == track].values[0]
         qc = f"idx == {idx}"
@@ -174,6 +224,30 @@ class Momics:
             else pd.DataFrame(columns=["chrom_index", "chr", "length"])
         )
 
+    def sequence(self) -> pd.DataFrame:
+        """
+        Extract sequence table from a `.momics` repository.
+
+        Returns
+        -------
+        pd.DataFrame
+            A data frame listing one chromosome per row, with first/last 10 nts.
+        """
+        try:
+            self.query_sequence(f"{self.chroms()['chr'][0]}:1-2")
+        except tiledb.cc.TileDBError:
+            raise ValueError("Genomic sequence not added yet to the repository.")
+
+        chroms = self.chroms()
+        chroms["seq"] = pd.Series()
+        for chrom in chroms["chr"]:
+            chrom_len = chroms[chroms["chr"] == chrom]["length"].iloc[0]
+            start_nt = "".join(self.query_sequence(f"{chrom}:1-10"))
+            end_nt = "".join(self.query_sequence(f"{chrom}:{chrom_len-10}-{chrom_len}"))
+            chroms.loc[chroms["chr"] == chrom, "seq"] = start_nt + "..." + end_nt
+
+        return chroms
+
     def tracks(self) -> pd.DataFrame:
         """
         Extract table of ingested bigwigs.
@@ -190,6 +264,40 @@ class Momics:
             if tracks is not None
             else pd.DataFrame(columns=["idx", "label", "path"])
         )
+
+    def add_sequence(self, fasta: str, tile: int = 10000, compression: int = 3):
+        """
+        Ingest multi-sequence fasta file to the `.momics` repository.
+
+        Parameters
+        ----------
+        fasta : str
+            Path to fasta file
+        tile : int
+            Tile size.
+        compression : int
+            Compression level.
+        """
+
+        # Abort if `chroms` have not been filled
+        if self.chroms().empty:
+            raise ValueError("Please fill out `chroms` table first.")
+
+        # Abort if sequence table already exists
+        try:
+            self.query_sequence(f"{self.chroms()['chr'][0]}:1-2")
+            raise ValueError("Sequence already added to the repository.")
+        except tiledb.cc.TileDBError:
+            pass
+
+        # Abort if chr lengths in provided fasta do not match those in `chroms`
+        utils._check_fasta_lengths(fasta, self.chroms())
+
+        # Create sequence tables schema
+        self._create_sequence_schema(tile, compression)
+
+        # Populate each `path/genome/sequence/{chrom}.tdb`
+        self._populate_sequence_table(fasta)
 
     def add_tracks(
         self, bws: dict, max_bws: int = 9999, tile: int = 10000, compression: int = 3
@@ -269,26 +377,29 @@ class Momics:
             array.meta["genome_assembly_version"] = genome_version
             array.meta["timestamp"] = datetime.now().isoformat()
 
-    def query(
+    def query_tracks(
         self,
         query: str,
+        with_seq: bool = False,
     ):
         """
         Query bigwig coverage tracks from a `.momics` repository.
 
         Parameters
         ----------
-        chr_lengths : str
+        query : str
             UCSC-style chromosome interval (e.g. "II:12001-15000")
+        with_seq : bool
+            Append sequence to the resulting DataFrame
         """
         tr = self.tracks().drop("path", axis=1)
         if ":" in query:
             chrom, range_part = query.split(":")
             utils._check_chr_name(chrom, self.chroms())
-            start = range_part.split("-")[0]
-            end = range_part.split("-")[1]
+            start = int(range_part.split("-")[0]) - 1
+            end = int(range_part.split("-")[1]) - 1
             with tiledb.open(f"{self.path}/coverage/{chrom}.tdb", "r") as array:
-                data = array.df[int(start) : int(end), :]
+                data = array.df[start:end, :]
         else:
             chrom = query
             utils._check_chr_name(chrom, self.chroms())
@@ -296,7 +407,41 @@ class Momics:
                 data = array.df[:]
 
         mdata = pd.merge(tr, data, on="idx").drop("idx", axis=1)
+
+        if with_seq:
+            seq = self.query_sequence(query)
+            p = pd.DataFrame({"seq": seq})
+            p = pd.concat([p] * len(tr), ignore_index=True)
+            mdata["seq"] = p["seq"]
+
         return mdata
+
+    def query_sequence(
+        self,
+        query: str,
+    ):
+        """
+        Query chromosome sequence from a `.momics` repository.
+
+        Parameters
+        ----------
+        chr_lengths : str
+            UCSC-style chromosome interval (e.g. "II:12001-15000")
+        """
+        if ":" in query:
+            chrom, range_part = query.split(":")
+            utils._check_chr_name(chrom, self.chroms())
+            start = int(range_part.split("-")[0]) - 1
+            end = int(range_part.split("-")[1]) - 1
+            with tiledb.open(f"{self.path}/genome/sequence/{chrom}.tdb", "r") as A:
+                seq = A.df[start:end]["nucleotide"]
+        else:
+            chrom = query
+            utils._check_chr_name(chrom, self.chroms())
+            with tiledb.open(f"{self.path}/genome/sequence/{chrom}.tdb", "r") as A:
+                seq = A.df[:]["nucleotide"]
+
+        return seq
 
     def remove_track(self, track: str):
         """
@@ -336,7 +481,7 @@ class Momics:
         bw.addHeader(chrom_sizes)
         for chrom, _ in chrom_sizes:
             print(chrom)
-            q = self.query(chrom)
+            q = self.query_tracks(chrom)
             q = q[q["label"] == track].dropna(subset=["scores"])
             # starts = q["position"].to_numpy(dtype=np.int64)
             # ends = starts + 1

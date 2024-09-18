@@ -1,4 +1,5 @@
 import pyBigWig
+import pyfaidx
 
 
 def get_chr_lengths(bw):
@@ -6,6 +7,16 @@ def get_chr_lengths(bw):
         a = bw.chroms()
     bw.close()
     return a
+
+
+def _check_fasta_lengths(fasta, chroms):
+    reference_lengths = dict(zip(chroms["chr"], chroms["length"]))
+    with pyfaidx.Fasta(fasta) as fa:
+        lengths = {name: len(seq) for name, seq in fa.items()}
+    if lengths != reference_lengths:
+        raise Exception(
+            f"{fa} file do not have identical chromomosome lengths."
+        )
 
 
 def _check_chr_lengths(bw_files, chroms):
