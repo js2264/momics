@@ -19,6 +19,11 @@ def ls(path, table):
     """List tracks/chromosomes registered in a Momics."""
     if table == "tracks":
         tr = api.Momics(path, create=False).tracks()
-        print(tr.iloc[np.where(tr["label"] != "None")].iloc[:, 0:2])
+        print(
+            tr.iloc[np.where(tr["label"] != "None")]
+            .iloc[:, 0:2]
+            .to_csv(sep="\t", index=False)
+        )
     if table == "chroms":
-        print(api.Momics(path, create=False).chroms())
+        res = api.Momics(path, create=False).chroms()
+        print(res.iloc[:, 1:].to_csv(sep="\t", index=False, header=False))

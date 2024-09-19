@@ -1,5 +1,6 @@
 import click
 import typing
+import pandas as pd
 
 from .. import api
 from . import cli
@@ -36,7 +37,18 @@ def tracks(ctx, path, coordinates, output: str):
     if output is not None:
         res.to_csv(path_or_buf=output, sep="\t", index=False)
     else:
-        print(res)
+        df = pd.DataFrame(res)
+        chr, range_part = coordinates.split(":")
+        start = int(range_part.split("-")[0])
+        end = int(range_part.split("-")[1]) + 1
+        df["pos"] = range(start, end)
+        df["chr"] = chr
+        new_order = ["chr", "pos"] + [
+            col for col in df.columns if col not in ["chr", "pos"]
+        ]
+        # Reorder the DataFrame columns
+        df_reordered = df[new_order]
+        print(df_reordered.to_csv(sep="\t", index=False))
 
 
 @query.command()
