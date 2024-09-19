@@ -494,3 +494,31 @@ class Momics:
             chroms = np.array([chrom] * len(values0))
             bw.addEntries(chroms, starts=starts, ends=ends, values=values0)
         bw.close()
+
+    def bins(self, width, step, cut_last_bin_out=True):
+        """
+        Generate a DataFrame of tiled genomic bins.
+
+        Parameters:
+        width (int): The width of each bin.
+        step (int): The step size for tiling.
+
+        Returns:
+        pd.DataFrame: DataFrame with columns 'chr', 'start', 'stop'.
+        """
+
+        bins = []
+        chroms = self.chroms().set_index("chr")["length"].to_dict()
+
+        for chrom, length in chroms.items():
+            start = 0
+            while start < length:
+                stop = min(start + width, length)
+                bins.append({"chr": chrom, "start": (start + 1), "stop": stop})
+                start += step
+
+        df = pd.DataFrame(bins)
+        if cut_last_bin_out:
+            df = df[(df["stop"] - df["start"]) == width - 1]
+
+        return df

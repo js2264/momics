@@ -29,6 +29,7 @@ from . import (
     remove,
     ls,
     query,
+    binnify,
     export,
 )
 
@@ -38,5 +39,6 @@ __all__ = [
     "ls",
     "query",
     "remove",
+    "binnify",
     "export",
 ]

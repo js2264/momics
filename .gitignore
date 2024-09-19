@@ -29,6 +29,11 @@ MANIFEST
 venv/
 .idea/
 
+# User resources
+paper/
+data/
+momics-paper.md
+
 # OS-generated files
 .DS_Store
 .Spotlight-V100

@@ -24,4 +24,4 @@ from . import cli
 def export(path, track, prefix):
     """Export a track from a momics repo as a bigwig file."""
     m = api.Momics(path, create=False)
-    m.export_track(track, prefix)
+    m.export_track(track, f"{prefix}.bw")
