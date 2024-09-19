@@ -242,8 +242,8 @@ class Momics:
         chroms["seq"] = pd.Series()
         for chrom in chroms["chr"]:
             chrom_len = chroms[chroms["chr"] == chrom]["length"].iloc[0]
-            start_nt = "".join(self.query_sequence(f"{chrom}:1-10"))
-            end_nt = "".join(self.query_sequence(f"{chrom}:{chrom_len-10}-{chrom_len}"))
+            start_nt = self.query_sequence(f"{chrom}:1-10")
+            end_nt = self.query_sequence(f"{chrom}:{chrom_len-10}-{chrom_len}")
             chroms.loc[chroms["chr"] == chrom, "seq"] = start_nt + "..." + end_nt
 
         return chroms
@@ -406,13 +406,17 @@ class Momics:
             with tiledb.open(f"{self.path}/coverage/{chrom}.tdb", "r") as array:
                 data = array.df[:]
 
-        mdata = pd.merge(tr, data, on="idx").drop("idx", axis=1)
+        mdata = (
+            pd.merge(tr, data, on="idx")
+            .drop("idx", axis=1)
+            .groupby("label")["scores"]
+            .apply(lambda x: x.tolist())
+            .to_dict()
+        )
 
         if with_seq:
             seq = self.query_sequence(query)
-            p = pd.DataFrame({"seq": seq})
-            p = pd.concat([p] * len(tr), ignore_index=True)
-            mdata["seq"] = p["seq"]
+            mdata["seq"] = seq
 
         return mdata
 
@@ -441,7 +445,7 @@ class Momics:
             with tiledb.open(f"{self.path}/genome/sequence/{chrom}.tdb", "r") as A:
                 seq = A.df[:]["nucleotide"]
 
-        return seq
+        return "".join(seq)
 
     def remove_track(self, track: str):
         """
