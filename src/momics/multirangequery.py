@@ -5,11 +5,12 @@ import numpy as np
 import pandas as pd
 import tiledb
 
+from .api import Momics
 from .utils import parse_ucsc_coordinates
 
 
 class MultiRangeQuery:
-    def __init__(self, momics: "Momics", bed: pd.DataFrame):
+    def __init__(self, momics: Momics, bed: pd.DataFrame):
         """
         Initialize the MultiRangeQuery object.
 
