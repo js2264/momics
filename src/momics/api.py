@@ -479,7 +479,6 @@ class Momics:
         """
         tracks = self.tracks().drop("path", axis=1)
         tracks = tracks[[x != "None" for x in tracks["label"]]]
-        print(tracks["label"])
         if ((query is None) & (bed is None)) or (
             (query is not None) & (bed is not None)
         ):
@@ -512,7 +511,6 @@ class Momics:
                 .apply(lambda x: x.tolist())
                 .to_dict()
             )
-            print(tracks["label"])
             l = {x: {query: mdata[x]} for x in list(tracks["label"])}
 
             if with_seq:
