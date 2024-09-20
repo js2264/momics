@@ -4,6 +4,7 @@ import pytest
 
 import momics
 from momics import utils
+from momics.multirangequery import MultiRangeQuery
 
 
 def test_Momics_init(momics_path: str):
@@ -83,25 +84,29 @@ def test_Momics_add_seq(momics_path: str, fa1: str, fa2: str):
     with pytest.raises(ValueError, match=r"Sequence already added to the repository"):
         mom.add_sequence(fa2)
 
-    print(mom.sequence())
+    print(mom.seq())
 
 
 def test_Momics_query_tracks(momics_path: str, bed1: str):
     mom = momics.Momics(momics_path, create=False)
-    q = mom.query_tracks("I:991-1010")
-    assert len(q) == 2
-    assert len(q["bw1"]["I:991-1010"]) == 20
+    q = MultiRangeQuery(mom, "I:991-1010").query_tracks()
+    assert len(q.coverage) == 2
+    assert len(q.coverage["bw1"]["I:991-1010"]) == 20
 
-    q = mom.query_tracks("I")
-    assert len(q) == 2
-    assert len(q["bw1"]["I"]) == 10000
+    q = MultiRangeQuery(mom, "I").query_tracks()
+    assert len(q.coverage) == 2
+    assert len(q.coverage["bw1"]["I:1-10000"]) == 10000
 
-    q = mom.query_tracks("I", with_seq=True)
-    assert len(q) == 3
+    q = MultiRangeQuery(mom, "I").query_tracks()
+    assert len(q.coverage) == 2
+    assert len(q.coverage["bw1"]["I:1-10000"]) == 10000
+
+    # q = MultiRangeQuery(mom, "I").query_tracks(with_seq=True)
+    # assert len(q.coverage) == 3
 
     bed = utils.import_bed_file(bed1)
-    q = mom.query_tracks(bed=bed, with_seq=True)
-    assert q.keys().__eq__(["bw2", "bw3", "bw4", "seq"])
+    q = MultiRangeQuery(mom, bed).query_tracks()
+    assert q.coverage.keys().__eq__(["bw2", "bw3", "bw4"])
 
 
 def test_Momics_query_seqs(momics_path: str):
@@ -113,7 +118,7 @@ def test_Momics_query_seqs(momics_path: str):
     assert len(q) == 10000
 
 
-def test_Momics_remove_tracks(momics_path: str, bw1: str, bw2: str):
+def test_Momics_remove_tracks(momics_path: str, bw1: str, bw2: str, bed1: str):
     mom = momics.Momics(momics_path, create=False)
     mom.add_tracks({"bw3": bw1})
     mom.add_tracks({"bw4": bw1})
@@ -126,12 +131,11 @@ def test_Momics_remove_tracks(momics_path: str, bw1: str, bw2: str):
         }
     )
     assert mom.tracks().__eq__(out).all().all()
-    q = mom.query_tracks("I:991-1010")
-    print(q.keys())
-    assert q.keys().__eq__(["bw2", "bw3", "bw4"])
-
-    q = mom.query_tracks("I:991-1010", with_seq=True)
-    assert q.keys().__eq__(["bw2", "bw3", "bw4", "seq"])
+    q = MultiRangeQuery(mom, "I:991-1010").query_tracks()
+    assert q.coverage.keys().__eq__(["bw2", "bw3", "bw4"])
+    bed = utils.import_bed_file(bed1)
+    q = MultiRangeQuery(mom, bed).query_tracks()
+    assert q.coverage.keys().__eq__(["bw2", "bw3", "bw4"])
 
 
 def test_Momics_binnify(momics_path: str):

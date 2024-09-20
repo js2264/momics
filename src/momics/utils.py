@@ -84,3 +84,30 @@ def import_bed_file(file_path):
 
     df.columns = ["chr", "start", "end"] + [col for col in df.columns[3:]]
     return df
+
+
+def parse_ucsc_coordinates(coords):
+    if isinstance(coords, str):
+        coords = [coords]
+
+    chromosomes = []
+    starts = []
+    ends = []
+    for coord in coords:
+        try:
+            chr_part, range_part = coord.split(":")
+            start, end = range_part.split("-")
+            start = int(start)
+            end = int(end)
+            chromosomes.append(chr_part)
+            starts.append(start)
+            ends.append(end)
+
+        except ValueError:
+            return f"Error: Invalid start/end values in coordinate '{coord}'. Start and end must be integers."
+        except Exception:
+            return f"Error: Invalid format for UCSC-style coordinate '{coord}'. Expected format: 'chr:start-end'."
+
+    df = pd.DataFrame({"chr": chromosomes, "start": starts, "end": ends})
+
+    return df

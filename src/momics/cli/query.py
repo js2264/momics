@@ -2,6 +2,8 @@ import click
 import typing
 import pandas as pd
 
+from momics.multirangequery import MultiRangeQuery
+
 from .. import api
 from .. import utils
 from . import cli
@@ -69,24 +71,22 @@ def tracks(ctx, path, coordinates, file, output: str):
     # Validate that either `file` or `coordinates` is provided, but not both
     _validate_exclusive_options(file, coordinates)
 
+    mom = api.Momics(path, create=False)
+
     if coordinates is not None:
-        res = api.Momics(path, create=False).query_tracks(coordinates)
         chr, range_part = coordinates.split(":")
         start = int(range_part.split("-")[0])
-        end = int(range_part.split("-")[1]) + 1
-        w = end - start
-        df = pd.DataFrame({"chr": [chr] * w, "position": range(start, end)})
-        for key, val in res.items():
-            df[key] = val[coordinates]
-        if output is not None:
-            df.to_csv(path_or_buf=output, sep="\t", index=False)
-        else:
-            print(df.to_csv(sep="\t", index=False))
+        end = int(range_part.split("-")[1])
+        bed = pd.DataFrame([{"chr": chr, "start": start, "end": end}])
     else:
         bed = utils.import_bed_file(file)
-        res = api.Momics(path, create=False).query_tracks(bed=bed)
-        df = _parse_dict_to_df(res)
-        print(df.to_csv(sep="\t", index=False))
+
+    res = MultiRangeQuery(mom, bed).query_tracks().to_df()
+    if output is None:
+        print(res.to_csv(sep="\t", index=False))
+    else:
+        print(res)
+        res.to_csv(path_or_buf=output, sep="\t", index=False)
 
 
 @query.command()

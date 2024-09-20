@@ -74,4 +74,4 @@ def seq(ctx, file, path):
     """Add genomic sequence to Momics."""
     m = api.Momics(path, create=False)
     m.add_sequence(file)
-    print(m.sequence())
+ w    print(m.seq())

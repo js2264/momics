@@ -9,7 +9,6 @@ import pyfaidx
 import tiledb
 
 from . import utils
-from . import multirange_query
 
 
 class Momics:
@@ -225,7 +224,7 @@ class Momics:
             else pd.DataFrame(columns=["chrom_index", "chr", "length"])
         )
 
-    def sequence(self) -> pd.DataFrame:
+    def seq(self) -> pd.DataFrame:
         """
         Extract sequence table from a `.momics` repository.
 
@@ -457,67 +456,6 @@ class Momics:
             chroms = np.array([chrom] * len(values0))
             bw.addEntries(chroms, starts=starts, ends=ends, values=values0)
         bw.close()
-
-    def query_tracks(
-        self,
-        query: str = None,
-        with_seq: bool = False,
-        bed: str = None,
-    ):
-        """
-        Query coverage tracks from a `.momics` repository.
-
-        Parameters
-        ----------
-        query : str
-            UCSC-style chromosome interval (e.g. "II:12001-15000")
-        bed : str
-            (Optional) a pd.DataFrame with at least three columns (chr/start/end).
-            If provided, `query` and `with_seq` are ignored.
-        with_seq : bool
-            Append sequence to the resulting DataFrame
-        """
-        tracks = self.tracks().drop("path", axis=1)
-        tracks = tracks[[x != "None" for x in tracks["label"]]]
-        if ((query is None) & (bed is None)) or (
-            (query is not None) & (bed is not None)
-        ):
-            raise ValueError("Please provide either `query` or `bed` argument.")
-
-        # Multi-range query, from a bed provided by `bed` argument
-        if bed is not None:
-            q = multirange_query.MultiChromRangeQuery(self.path, bed, tracks)
-            l = q.query_tracks()
-
-        # Single-range query, from coordinates
-        if query is not None:
-            if ":" in query:
-                chrom, range_part = query.split(":")
-                utils._check_chr_name(chrom, self.chroms())
-                start = int(range_part.split("-")[0]) - 1
-                end = int(range_part.split("-")[1]) - 1
-                with tiledb.open(f"{self.path}/coverage/{chrom}.tdb", "r") as array:
-                    data = array.df[start:end, :]
-            else:
-                chrom = query
-                utils._check_chr_name(chrom, self.chroms())
-                with tiledb.open(f"{self.path}/coverage/{chrom}.tdb", "r") as array:
-                    data = array.df[:]
-
-            mdata = (
-                pd.merge(tracks, data, on="idx")
-                .drop("idx", axis=1)
-                .groupby("label")["scores"]
-                .apply(lambda x: x.tolist())
-                .to_dict()
-            )
-            l = {x: {query: mdata[x]} for x in list(tracks["label"])}
-
-            if with_seq:
-                seq = self.query_sequence(query)
-                l["seq"] = {query: seq}
-
-        return l
 
     def query_sequence(
         self,
