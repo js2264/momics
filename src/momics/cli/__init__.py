@@ -24,13 +24,13 @@ def cli():
 
 # Load and register cli subcommands
 from . import (
-    create,
     add,
-    remove,
+    binnify,
+    create,
+    export,
     ls,
     query,
-    binnify,
-    export,
+    remove,
 )
 
 __all__ = [

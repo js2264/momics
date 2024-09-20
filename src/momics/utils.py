@@ -1,7 +1,8 @@
+from pathlib import Path
+
+import pandas as pd
 import pyBigWig
 import pyfaidx
-import pandas as pd
-from pathlib import Path
 
 
 def get_chr_lengths(bw):
@@ -75,7 +76,8 @@ def import_bed_file(file_path):
 
         if df[1].isna().any() or df[2].isna().any():
             print(
-                f"Columns 2 and 3 in {file_path} must contain valid numeric values for start and end coordinates."
+                f"Columns 2 and 3 in {file_path} must contain valid numeric "
+                + "values for start and end coordinates."
             )
             return False
 
@@ -104,9 +106,15 @@ def parse_ucsc_coordinates(coords):
             ends.append(end)
 
         except ValueError:
-            return f"Error: Invalid start/end values in coordinate '{coord}'. Start and end must be integers."
+            return (
+                f"Error: Invalid start/end values in coordinate '{coord}'. "
+                + "Start and end must be integers."
+            )
         except Exception:
-            return f"Error: Invalid format for UCSC-style coordinate '{coord}'. Expected format: 'chr:start-end'."
+            return (
+                f"Error: Invalid format for UCSC-style coordinate '{coord}'. "
+                + "Expected format: 'chr:start-end'."
+            )
 
     df = pd.DataFrame({"chr": chromosomes, "start": starts, "end": ends})
 

@@ -1,11 +1,9 @@
 import click
-import typing
 import pandas as pd
 
 from momics.multirangequery import MultiRangeQuery
 
-from .. import api
-from .. import utils
+from .. import api, utils
 from . import cli
 
 
@@ -24,23 +22,6 @@ def _validate_exclusive_options(file, coordinates):
         raise click.BadParameter("You must provide one of --file or --coordinates.")
 
 
-def _parse_dict_to_df(res):
-    # Prepare empty long DataFrame without scores, to merge with results
-    ranges = list(res[list(res.keys())[0]].keys())
-    ranges_str = []
-    for i, coords in enumerate(ranges):
-        chrom, range_part = coords.split(":")
-        start = int(range_part.split("-")[0])
-        end = int(range_part.split("-")[1])
-        w = end - start + 1
-        label = [{"chr": chrom, "position": x} for x in range(start, end + 1)]
-        ranges_str.extend(label)
-    df = pd.DataFrame(ranges_str)
-    for track in list(res.keys()):
-        df[track] = [value for sublist in res[track].values() for value in sublist]
-    return df
-
-
 @query.command()
 @click.option(
     "--coordinates",
@@ -51,7 +32,8 @@ def _parse_dict_to_df(res):
 @click.option(
     "--file",
     "-f",
-    help="BED file listing coordinates to query. If provided, `coordinates` is ignored.",
+    help="BED file listing coordinates to query. If provided, `coordinates` "
+    + "is ignored.",
     type=click.Path(exists=True),
 )
 @click.option(

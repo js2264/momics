@@ -1,14 +1,12 @@
 import os
-
-from Bio import SeqIO
-from Bio.SeqRecord import SeqRecord
-from Bio.Seq import Seq
+import random
 
 import numpy as np
 import pyBigWig
 import pytest
-import pyfaidx
-import random
+from Bio import SeqIO
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
 
 
 @pytest.fixture(scope="session")

@@ -1,5 +1,4 @@
 import click
-import numpy as np
 
 from .. import api
 from . import cli

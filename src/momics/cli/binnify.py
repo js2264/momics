@@ -24,7 +24,8 @@ from . import cli
 @click.option(
     "--cut_last_bin_out",
     "-c",
-    help="Remove the last bin in each chromosome, which likely does not have the same width.",
+    help="Remove the last bin in each chromosome, which likely does not have "
+    + "the same width.",
     type=bool,
     default=True,
     show_default=True,
@@ -43,7 +44,7 @@ def binnify(path, width, step, cut_last_bin_out, prefix):
     m = api.Momics(path, create=False)
     bins = m.bins(width, step, cut_last_bin_out)
     bins = bins.to_csv(sep="\t", index=False, header=False)
-    
+
     if prefix is not None:
         output = f"{prefix}.bed"
         with open(output, "w") as file:

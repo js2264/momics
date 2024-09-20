@@ -43,7 +43,9 @@ def chroms(ctx, file, genome, path):
 @click.option(
     "--file",
     "-f",
-    help="Named track file, provided as `--file key=value` (e.g. `--file bw1=my_file.bw`). The `--file` option can be provided several times.",
+    help="Named track file, provided as `--file key=value` "
+    + "(e.g. `--file bw1=my_file.bw`). The `--file` option can be provided "
+    + "several times.",
     type=str,
     multiple=True,
     required=True,
@@ -74,4 +76,4 @@ def seq(ctx, file, path):
     """Add genomic sequence to Momics."""
     m = api.Momics(path, create=False)
     m.add_sequence(file)
- w    print(m.seq())
+    print(m.seq())

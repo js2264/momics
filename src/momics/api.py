@@ -235,8 +235,8 @@ class Momics:
         """
         try:
             self.query_sequence(f"{self.chroms()['chr'][0]}:1-2")
-        except tiledb.cc.TileDBError:
-            raise ValueError("Genomic sequence not added yet to the repository.")
+        except tiledb.cc.TileDBError as e:
+            raise ValueError("Genomic sequence not added yet to the repository.") from e
 
         chroms = self.chroms()
         chroms["seq"] = pd.Series()
@@ -418,7 +418,8 @@ class Momics:
         # Abort if `track` is not listed
         utils._check_track_name(track, self.tracks())
 
-        # Remove entry from each `path/coverage/{chrom}.tdb` and from `path/coverage/tracks.tdb`
+        # Remove entry from each `path/coverage/{chrom}.tdb`
+        # and from `path/coverage/tracks.tdb`
         self._purge_track(track)
 
     def export_track(self, track: str, prefix: str):

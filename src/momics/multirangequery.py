@@ -1,9 +1,10 @@
-import tiledb
+import multiprocessing
+import os
+
 import numpy as np
 import pandas as pd
-import os
-import multiprocessing
-from .utils import _check_chr_name
+import tiledb
+
 from .utils import parse_ucsc_coordinates
 
 
@@ -51,7 +52,7 @@ class MultiRangeQuery:
 
         # Prepare empty long DataFrame without scores, to merge with results
         ranges_str = []
-        for i, (start, end) in enumerate(ranges):
+        for _, (start, end) in enumerate(ranges):
             breadth = end - start + 1  # breadth = number of elements in the range
             label = f"{chrom}:{start}-{end}"  # Range1, Range2, Range3, ...
             ranges_str.extend([label] * breadth)  # Repeat the label breadth times
@@ -79,15 +80,15 @@ class MultiRangeQuery:
         )
         subarray_df["position"] += 1
         df = pd.merge(ranges_df, subarray_df, on="position", how="left")
-        l = {}
+        res = {}
         for track in list(tr["label"]):
-            l[track] = (
+            res[track] = (
                 df[df["label"] == track]
                 .groupby("range")["scores"]
                 .apply(list)
                 .to_dict()
             )
-        return l
+        return res
 
     def query_tracks(self):
         """
@@ -102,15 +103,15 @@ class MultiRangeQuery:
         multiprocessing.set_start_method("spawn", force=True)
         with multiprocessing.Pool(processes=12) as pool:
             results = pool.starmap(self._query_tracks_per_chr, args)
-        l = {}
+        res = {}
         tr = self.momics.tracks()
         tr = list(tr[[x != "None" for x in tr["label"]]]["label"])
         for track in tr:
             scores_from_all_chrs = [x[track] for x in results]
             d = {k: v for d in scores_from_all_chrs for k, v in d.items()}
-            l[track] = {key: d[key] for key in self.all_range_labels if key in d}
+            res[track] = {key: d[key] for key in self.all_range_labels if key in d}
 
-        self.coverage = l
+        self.coverage = res
         return self
 
     def query_sequence(self):
@@ -126,15 +127,15 @@ class MultiRangeQuery:
         multiprocessing.set_start_method("spawn", force=True)
         with multiprocessing.Pool(processes=12) as pool:
             results = pool.starmap(self._query_tracks_per_chr, args)
-        l = {}
+        res = {}
         tr = self.momics.tracks()
         tr = list(tr[[x != "None" for x in tr["label"]]]["label"])
         for track in tr:
             scores_from_all_chrs = [x[track] for x in results]
             d = {k: v for d in scores_from_all_chrs for k, v in d.items()}
-            l[track] = {key: d[key] for key in self.all_range_labels if key in d}
+            res[track] = {key: d[key] for key in self.all_range_labels if key in d}
 
-        self.coverage = l
+        self.coverage = res
         return self
 
     def to_df(self):
@@ -145,13 +146,12 @@ class MultiRangeQuery:
                 "self.coverage is None. Call `self.query_tracks()` to populate it."
             )
 
-        ranges = list(cov[list(cov.keys())[0]].keys())
+        ranges = list(cov[next(iter(cov.keys()))].keys())
         ranges_str = []
-        for i, coords in enumerate(ranges):
+        for _, coords in enumerate(ranges):
             chrom, range_part = coords.split(":")
             start = int(range_part.split("-")[0])
             end = int(range_part.split("-")[1])
-            w = end - start + 1
             label = [{"chr": chrom, "position": x} for x in range(start, end + 1)]
             ranges_str.extend(label)
         df = pd.DataFrame(ranges_str)
