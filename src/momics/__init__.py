@@ -10,10 +10,12 @@ Cloud-native, TileDB-based multi-omics data format.
 """
 
 from .api import Momics
+from .multirange_query import MultiChromRangeQuery
 from .version import __format_version__, __version__
 
 __all__ = [
     "__version__",
     "__format_version__",
     "Momics",
+    "MultiChromRangeQuery",
 ]

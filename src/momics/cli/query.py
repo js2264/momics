@@ -3,6 +3,7 @@ import typing
 import pandas as pd
 
 from .. import api
+from .. import utils
 from . import cli
 
 
@@ -12,13 +13,44 @@ def query(ctx):
     """Query a Momics table"""
 
 
+def _validate_exclusive_options(file, coordinates):
+    if file and coordinates:
+        raise click.BadParameter(
+            "You must provide either --file or --coordinates, not both."
+        )
+    if not file and not coordinates:
+        raise click.BadParameter("You must provide one of --file or --coordinates.")
+
+
+def _parse_dict_to_df(res):
+    # Prepare empty long DataFrame without scores, to merge with results
+    ranges = list(res[list(res.keys())[0]].keys())
+    ranges_str = []
+    for i, coords in enumerate(ranges):
+        chrom, range_part = coords.split(":")
+        start = int(range_part.split("-")[0])
+        end = int(range_part.split("-")[1])
+        w = end - start + 1
+        label = [{"chr": chrom, "position": x} for x in range(start, end + 1)]
+        ranges_str.extend(label)
+    df = pd.DataFrame(ranges_str)
+    for track in list(res.keys()):
+        df[track] = [value for sublist in res[track].values() for value in sublist]
+    return df
+
+
 @query.command()
 @click.option(
     "--coordinates",
     "-c",
     help="UCSC-style coordinates",
     type=str,
-    required=True,
+)
+@click.option(
+    "--file",
+    "-f",
+    help="BED file listing coordinates to query. If provided, `coordinates` is ignored.",
+    type=click.Path(exists=True),
 )
 @click.option(
     "--output",
@@ -31,24 +63,30 @@ def query(ctx):
 )
 @click.argument("path", metavar="MOMICS_REPO", type=click.Path(exists=True))
 @click.pass_context
-def tracks(ctx, path, coordinates, output: str):
+def tracks(ctx, path, coordinates, file, output: str):
     """Extract track coverages over a chromosome interval."""
-    res = api.Momics(path, create=False).query_tracks(coordinates)
-    if output is not None:
-        res.to_csv(path_or_buf=output, sep="\t", index=False)
-    else:
-        df = pd.DataFrame(res)
+
+    # Validate that either `file` or `coordinates` is provided, but not both
+    _validate_exclusive_options(file, coordinates)
+
+    if coordinates is not None:
+        res = api.Momics(path, create=False).query_tracks(coordinates)
         chr, range_part = coordinates.split(":")
         start = int(range_part.split("-")[0])
         end = int(range_part.split("-")[1]) + 1
-        df["pos"] = range(start, end)
-        df["chr"] = chr
-        new_order = ["chr", "pos"] + [
-            col for col in df.columns if col not in ["chr", "pos"]
-        ]
-        # Reorder the DataFrame columns
-        df_reordered = df[new_order]
-        print(df_reordered.to_csv(sep="\t", index=False))
+        w = end - start
+        df = pd.DataFrame({"chr": [chr] * w, "position": range(start, end)})
+        for key, val in res.items():
+            df[key] = val[coordinates]
+        if output is not None:
+            df.to_csv(path_or_buf=output, sep="\t", index=False)
+        else:
+            print(df.to_csv(sep="\t", index=False))
+    else:
+        bed = utils.import_bed_file(file)
+        res = api.Momics(path, create=False).query_tracks(bed=bed)
+        df = _parse_dict_to_df(res)
+        print(df.to_csv(sep="\t", index=False))
 
 
 @query.command()

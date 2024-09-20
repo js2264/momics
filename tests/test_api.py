@@ -86,18 +86,22 @@ def test_Momics_add_seq(momics_path: str, fa1: str, fa2: str):
     print(mom.sequence())
 
 
-def test_Momics_query_tracks(momics_path: str):
+def test_Momics_query_tracks(momics_path: str, bed1: str):
     mom = momics.Momics(momics_path, create=False)
     q = mom.query_tracks("I:991-1010")
     assert len(q) == 2
-    assert len(q["bw1"]) == 20
+    assert len(q["bw1"]["I:991-1010"]) == 20
 
     q = mom.query_tracks("I")
     assert len(q) == 2
-    assert len(q["bw1"]) == 10000
+    assert len(q["bw1"]["I"]) == 10000
 
     q = mom.query_tracks("I", with_seq=True)
     assert len(q) == 3
+
+    bed = utils.import_bed_file(bed1)
+    q = mom.query_tracks(bed=bed, with_seq=True)
+    assert q.keys().__eq__(["bw2", "bw3", "bw4", "seq"])
 
 
 def test_Momics_query_seqs(momics_path: str):
@@ -123,6 +127,7 @@ def test_Momics_remove_tracks(momics_path: str, bw1: str, bw2: str):
     )
     assert mom.tracks().__eq__(out).all().all()
     q = mom.query_tracks("I:991-1010")
+    print(q.keys())
     assert q.keys().__eq__(["bw2", "bw3", "bw4"])
 
     q = mom.query_tracks("I:991-1010", with_seq=True)

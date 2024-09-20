@@ -91,3 +91,13 @@ def bw2(tmp_path_factory):
         )
     bw.close()
     return p
+
+
+@pytest.fixture(scope="session")
+def bed1(tmp_path_factory):
+    p = os.path.join(tmp_path_factory.getbasetemp(), "bed1")
+    bed = [["I", 10, 30], ["I", 20, 30], ["II", 20, 25]]
+    with open(p, "w") as bedf:
+        for chrom, start, stop in bed:
+            bedf.write(f"{chrom}\t{start}\t{stop}\n")
+    return p

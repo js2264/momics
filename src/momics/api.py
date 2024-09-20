@@ -9,6 +9,7 @@ import pyfaidx
 import tiledb
 
 from . import utils
+from . import multirange_query
 
 
 class Momics:
@@ -265,6 +266,34 @@ class Momics:
             else pd.DataFrame(columns=["idx", "label", "path"])
         )
 
+    def bins(self, width, step, cut_last_bin_out=True):
+        """
+        Generate a DataFrame of tiled genomic bins.
+
+        Parameters:
+        width (int): The width of each bin.
+        step (int): The step size for tiling.
+
+        Returns:
+        pd.DataFrame: DataFrame with columns 'chr', 'start', 'end'.
+        """
+
+        bins = []
+        chroms = self.chroms().set_index("chr")["length"].to_dict()
+
+        for chrom, length in chroms.items():
+            start = 0
+            while start < length:
+                end = min(start + width, length)
+                bins.append({"chr": chrom, "start": (start + 1), "end": end})
+                start += step
+
+        df = pd.DataFrame(bins)
+        if cut_last_bin_out:
+            df = df[(df["end"] - df["start"]) == width - 1]
+
+        return df
+
     def add_sequence(self, fasta: str, tile: int = 10000, compression: int = 3):
         """
         Ingest multi-sequence fasta file to the `.momics` repository.
@@ -377,76 +406,6 @@ class Momics:
             array.meta["genome_assembly_version"] = genome_version
             array.meta["timestamp"] = datetime.now().isoformat()
 
-    def query_tracks(
-        self,
-        query: str,
-        with_seq: bool = False,
-    ):
-        """
-        Query bigwig coverage tracks from a `.momics` repository.
-
-        Parameters
-        ----------
-        query : str
-            UCSC-style chromosome interval (e.g. "II:12001-15000")
-        with_seq : bool
-            Append sequence to the resulting DataFrame
-        """
-        tr = self.tracks().drop("path", axis=1)
-        if ":" in query:
-            chrom, range_part = query.split(":")
-            utils._check_chr_name(chrom, self.chroms())
-            start = int(range_part.split("-")[0]) - 1
-            end = int(range_part.split("-")[1]) - 1
-            with tiledb.open(f"{self.path}/coverage/{chrom}.tdb", "r") as array:
-                data = array.df[start:end, :]
-        else:
-            chrom = query
-            utils._check_chr_name(chrom, self.chroms())
-            with tiledb.open(f"{self.path}/coverage/{chrom}.tdb", "r") as array:
-                data = array.df[:]
-
-        mdata = (
-            pd.merge(tr, data, on="idx")
-            .drop("idx", axis=1)
-            .groupby("label")["scores"]
-            .apply(lambda x: x.tolist())
-            .to_dict()
-        )
-
-        if with_seq:
-            seq = self.query_sequence(query)
-            mdata["seq"] = seq
-
-        return mdata
-
-    def query_sequence(
-        self,
-        query: str,
-    ):
-        """
-        Query chromosome sequence from a `.momics` repository.
-
-        Parameters
-        ----------
-        chr_lengths : str
-            UCSC-style chromosome interval (e.g. "II:12001-15000")
-        """
-        if ":" in query:
-            chrom, range_part = query.split(":")
-            utils._check_chr_name(chrom, self.chroms())
-            start = int(range_part.split("-")[0]) - 1
-            end = int(range_part.split("-")[1]) - 1
-            with tiledb.open(f"{self.path}/genome/sequence/{chrom}.tdb", "r") as A:
-                seq = A.df[start:end]["nucleotide"]
-        else:
-            chrom = query
-            utils._check_chr_name(chrom, self.chroms())
-            with tiledb.open(f"{self.path}/genome/sequence/{chrom}.tdb", "r") as A:
-                seq = A.df[:]["nucleotide"]
-
-        return "".join(seq)
-
     def remove_track(self, track: str):
         """
         Remove a track from a `.momics` repository.
@@ -499,30 +458,92 @@ class Momics:
             bw.addEntries(chroms, starts=starts, ends=ends, values=values0)
         bw.close()
 
-    def bins(self, width, step, cut_last_bin_out=True):
+    def query_tracks(
+        self,
+        query: str = None,
+        with_seq: bool = False,
+        bed: str = None,
+    ):
         """
-        Generate a DataFrame of tiled genomic bins.
+        Query coverage tracks from a `.momics` repository.
 
-        Parameters:
-        width (int): The width of each bin.
-        step (int): The step size for tiling.
-
-        Returns:
-        pd.DataFrame: DataFrame with columns 'chr', 'start', 'stop'.
+        Parameters
+        ----------
+        query : str
+            UCSC-style chromosome interval (e.g. "II:12001-15000")
+        bed : str
+            (Optional) a pd.DataFrame with at least three columns (chr/start/end).
+            If provided, `query` and `with_seq` are ignored.
+        with_seq : bool
+            Append sequence to the resulting DataFrame
         """
+        tracks = self.tracks().drop("path", axis=1)
+        tracks = tracks[[x != "None" for x in tracks["label"]]]
+        print(tracks["label"])
+        if ((query is None) & (bed is None)) or (
+            (query is not None) & (bed is not None)
+        ):
+            raise ValueError("Please provide either `query` or `bed` argument.")
 
-        bins = []
-        chroms = self.chroms().set_index("chr")["length"].to_dict()
+        # Multi-range query, from a bed provided by `bed` argument
+        if bed is not None:
+            q = multirange_query.MultiChromRangeQuery(self.path, bed, tracks)
+            l = q.query_tracks()
 
-        for chrom, length in chroms.items():
-            start = 0
-            while start < length:
-                stop = min(start + width, length)
-                bins.append({"chr": chrom, "start": (start + 1), "stop": stop})
-                start += step
+        # Single-range query, from coordinates
+        if query is not None:
+            if ":" in query:
+                chrom, range_part = query.split(":")
+                utils._check_chr_name(chrom, self.chroms())
+                start = int(range_part.split("-")[0]) - 1
+                end = int(range_part.split("-")[1]) - 1
+                with tiledb.open(f"{self.path}/coverage/{chrom}.tdb", "r") as array:
+                    data = array.df[start:end, :]
+            else:
+                chrom = query
+                utils._check_chr_name(chrom, self.chroms())
+                with tiledb.open(f"{self.path}/coverage/{chrom}.tdb", "r") as array:
+                    data = array.df[:]
 
-        df = pd.DataFrame(bins)
-        if cut_last_bin_out:
-            df = df[(df["stop"] - df["start"]) == width - 1]
+            mdata = (
+                pd.merge(tracks, data, on="idx")
+                .drop("idx", axis=1)
+                .groupby("label")["scores"]
+                .apply(lambda x: x.tolist())
+                .to_dict()
+            )
+            print(tracks["label"])
+            l = {x: {query: mdata[x]} for x in list(tracks["label"])}
 
-        return df
+            if with_seq:
+                seq = self.query_sequence(query)
+                l["seq"] = {query: seq}
+
+        return l
+
+    def query_sequence(
+        self,
+        query: str,
+    ):
+        """
+        Query chromosome sequence from a `.momics` repository.
+
+        Parameters
+        ----------
+        chr_lengths : str
+            UCSC-style chromosome interval (e.g. "II:12001-15000")
+        """
+        if ":" in query:
+            chrom, range_part = query.split(":")
+            utils._check_chr_name(chrom, self.chroms())
+            start = int(range_part.split("-")[0]) - 1
+            end = int(range_part.split("-")[1]) - 1
+            with tiledb.open(f"{self.path}/genome/sequence/{chrom}.tdb", "r") as A:
+                seq = A.df[start:end]["nucleotide"]
+        else:
+            chrom = query
+            utils._check_chr_name(chrom, self.chroms())
+            with tiledb.open(f"{self.path}/genome/sequence/{chrom}.tdb", "r") as A:
+                seq = A.df[:]["nucleotide"]
+
+        return "".join(seq)
