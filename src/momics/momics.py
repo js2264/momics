@@ -223,17 +223,20 @@ class Momics:
         Returns:
             pd.DataFrame: A data frame listing one chromosome per row, with first/last 10 nts.
         """
-        try:
-            self.query_sequence(f"{self.chroms()['chr'][0]}:1-2")
-        except tiledb.cc.TileDBError as e:
-            raise ValueError("Genomic sequence not added yet to the repository.") from e
+        tdb = os.path.join(
+            self.path, "genome", "sequence", f"{self.chroms()['chr'][0]}.tdb"
+        )
+        if not os.path.exists(tdb):
+            raise tiledb.cc.TileDBError(f"Genomic TileDB '{tdb}' do not exist yet.")
 
         chroms = self.chroms()
         chroms["seq"] = pd.Series()
         for chrom in chroms["chr"]:
+            tdb = os.path.join(self.path, "genome", "sequence", f"{chrom}.tdb")
             chrom_len = chroms[chroms["chr"] == chrom]["length"].iloc[0]
-            start_nt = self.query_sequence(f"{chrom}:1-10")
-            end_nt = self.query_sequence(f"{chrom}:{chrom_len-10}-{chrom_len}")
+            with tiledb.open(tdb, "r") as A:
+                start_nt = "".join(A.df[0:9]["nucleotide"])
+                end_nt = "".join(A.df[(chrom_len - 10) : (chrom_len - 1)]["nucleotide"])
             chroms.loc[chroms["chr"] == chrom, "seq"] = start_nt + "..." + end_nt
 
         return chroms
@@ -298,11 +301,11 @@ class Momics:
             raise ValueError("Please fill out `chroms` table first.")
 
         # Abort if sequence table already exists
-        try:
-            self.query_sequence(f"{self.chroms()['chr'][0]}:1-2")
-            raise ValueError("Sequence already added to the repository.")
-        except tiledb.cc.TileDBError:
-            pass
+        tdb = os.path.join(
+            self.path, "genome", "sequence", f"{self.chroms()['chr'][0]}.tdb"
+        )
+        if os.path.exists(tdb):
+            raise tiledb.cc.TileDBError(f"Error: TileDB '{tdb}' already exists.")
 
         # Abort if chr lengths in provided fasta do not match those in `chroms`
         utils._check_fasta_lengths(fasta, self.chroms())
@@ -433,30 +436,3 @@ class Momics:
             chroms = np.array([chrom] * len(values0))
             bw.addEntries(chroms, starts=starts, ends=ends, values=values0)
         bw.close()
-
-    def query_sequence(
-        self,
-        query: str,
-    ) -> "Momics":
-        """Query chromosome sequence from a `.momics` repository.
-
-        Args:
-            query (str): UCSC-style chromosome interval (e.g. "II:12001-15000")
-
-        Returns:
-            Momics: An updated Momics object
-        """
-        if ":" in query:
-            chrom, range_part = query.split(":")
-            utils._check_chr_name(chrom, self.chroms())
-            start = int(range_part.split("-")[0]) - 1
-            end = int(range_part.split("-")[1]) - 1
-            with tiledb.open(f"{self.path}/genome/sequence/{chrom}.tdb", "r") as A:
-                seq = A.df[start:end]["nucleotide"]
-        else:
-            chrom = query
-            utils._check_chr_name(chrom, self.chroms())
-            with tiledb.open(f"{self.path}/genome/sequence/{chrom}.tdb", "r") as A:
-                seq = A.df[:]["nucleotide"]
-
-        return "".join(seq)

@@ -1,5 +1,6 @@
 import click
 import pandas as pd
+from Bio import SeqIO
 
 from momics.multirangequery import MultiRangeQuery
 
@@ -67,7 +68,7 @@ def tracks(ctx, path, coordinates, file, output: str):
     if output is None:
         print(res.to_csv(sep="\t", index=False))
     else:
-        print(res)
+        print(f"Writing coverage data to {output} file...")
         res.to_csv(path_or_buf=output, sep="\t", index=False)
 
 
@@ -77,7 +78,13 @@ def tracks(ctx, path, coordinates, file, output: str):
     "-c",
     help="UCSC-style coordinates",
     type=str,
-    required=True,
+)
+@click.option(
+    "--file",
+    "-f",
+    help="BED file listing coordinates to query. If provided, `coordinates` "
+    + "is ignored.",
+    type=click.Path(exists=True),
 )
 @click.option(
     "--output",
@@ -90,15 +97,28 @@ def tracks(ctx, path, coordinates, file, output: str):
 )
 @click.argument("path", metavar="MOMICS_REPO", required=True)
 @click.pass_context
-def seq(ctx, path, coordinates, output: str):
-    """Extract chromosomal sequence over a chromosome interval."""
-    seq = momics.Momics(path, create=False).query_sequence(coordinates)
-    seq = "".join(seq)
-    if output is not None:
-        with open(output, "w") as file:
-            file.write(f">{coordinates}\n")
-            # Split the sequence into lines of 60 characters
-            for i in range(0, len(seq), 60):
-                file.write(seq[i : i + 60] + "\n")
+def seq(ctx, path, coordinates, file, output: str):
+    """Extract chromosomal sequences over chromosome intervals."""
+
+    # Validate that either `file` or `coordinates` is provided, but not both
+    _validate_exclusive_options(file, coordinates)
+
+    mom = momics.Momics(path, create=False)
+
+    if coordinates is not None:
+        chr, range_part = coordinates.split(":")
+        start = int(range_part.split("-")[0])
+        end = int(range_part.split("-")[1])
+        bed = pd.DataFrame([{"chr": chr, "start": start, "end": end}])
     else:
-        print(seq)
+        bed = utils.import_bed_file(file)
+
+    res = MultiRangeQuery(mom, bed).query_sequence().to_fasta()
+    if output is None:
+        for record in res:
+            print(f">{record.id}")
+            print(record.seq)
+    else:
+        print(f"Writing sequences to {output} file...")
+        with open(output, "w") as fasta_file:
+            SeqIO.write(res, fasta_file, "fasta")

@@ -4,6 +4,8 @@ import os
 import numpy as np
 import pandas as pd
 import tiledb
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
 
 from .momics import Momics
 from .utils import parse_ucsc_coordinates
@@ -99,6 +101,23 @@ class MultiRangeQuery:
             )
         return res
 
+    def _query_seq_per_chr(self, chrom, group):
+
+        print(chrom)
+        ranges = list(zip(group["start"], group["end"]))
+
+        # Get sequences
+        seqs = {}
+        for _, (start, end) in enumerate(ranges):
+            with tiledb.open(
+                os.path.join(self.momics.path, "genome", "sequence", f"{chrom}.tdb"),
+                "r",
+            ) as A:
+                seq = A.df[(start - 1) : (end - 1)]["nucleotide"]
+            seqs[f"{chrom}:{start}-{end}"] = "".join(seq)
+
+        return seqs
+
     def query_tracks(self) -> "MultiRangeQuery":
         """Query multiple coverage ranges from a Momics repo.
 
@@ -131,16 +150,12 @@ class MultiRangeQuery:
         args = [(chrom, group) for (chrom, group) in self.queries.items()]
         multiprocessing.set_start_method("spawn", force=True)
         with multiprocessing.Pool(processes=12) as pool:
-            results = pool.starmap(self._query_tracks_per_chr, args)
-        res = {}
-        tr = self.momics.tracks()
-        tr = list(tr[[x != "None" for x in tr["label"]]]["label"])
-        for track in tr:
-            scores_from_all_chrs = [x[track] for x in results]
-            d = {k: v for d in scores_from_all_chrs for k, v in d.items()}
-            res[track] = {key: d[key] for key in self.query_labels if key in d}
+            seqs = pool.starmap(self._query_seq_per_chr, args)
 
-        self.coverage = res
+        mseqs = {}
+        for d in seqs:
+            mseqs.update(d)
+        self.seq = {"seq": mseqs}
         return self
 
     def to_df(self) -> pd.DataFrame:
@@ -156,9 +171,8 @@ class MultiRangeQuery:
                 "self.coverage is None. Call `self.query_tracks()` to populate it."
             )
 
-        ranges = list(cov[next(iter(cov.keys()))].keys())
         ranges_str = []
-        for _, coords in enumerate(ranges):
+        for _, coords in enumerate(self.query_labels):
             chrom, range_part = coords.split(":")
             start = int(range_part.split("-")[0])
             end = int(range_part.split("-")[1])
@@ -172,3 +186,23 @@ class MultiRangeQuery:
         for track in list(cov.keys()):
             df[track] = [value for sublist in cov[track].values() for value in sublist]
         return df
+
+    def to_fasta(self) -> SeqRecord:
+        """Parse self.seq attribute to a SeqRecord
+
+        Returns:
+            SeqRecord: `self.seq` dictionary wrangled into a SeqRecord
+        """
+
+        seq = self.seq
+        if seq is None:
+            raise AttributeError(
+                "self.seq is None. Call `self.query_sequence()` to populate it."
+            )
+
+        seq_records = []
+        for header, sequence in seq["seq"].items():
+            seq_record = SeqRecord(Seq(sequence), id=header, description="")
+            seq_records.append(seq_record)
+
+        return seq_records

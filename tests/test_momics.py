@@ -1,5 +1,6 @@
 import pandas as pd
 import pytest
+import tiledb
 
 import momics
 from momics import utils
@@ -80,19 +81,10 @@ def test_Momics_add_seq(momics_path: str, fa1: str, fa2: str):
 
     mom.add_sequence(fa1)
 
-    with pytest.raises(ValueError, match=r"Sequence already added to the repository"):
+    with pytest.raises(tiledb.cc.TileDBError, match=r"already exists"):
         mom.add_sequence(fa2)
 
     print(mom.seq())
-
-
-def test_Momics_query_seqs(momics_path: str):
-    mom = momics.Momics(momics_path, create=False)
-    q = mom.query_sequence("I:991-1010")
-    assert len(q) == 20
-
-    q = mom.query_sequence("I")
-    assert len(q) == 10000
 
 
 def test_Momics_remove_tracks(momics_path: str, bw1: str, bw2: str, bed1: str):
