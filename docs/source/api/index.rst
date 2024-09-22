@@ -3,10 +3,18 @@
 API
 ====
 
-momics.api
+momics.momics
 -------------
 
-.. automodule:: momics.api
+.. automodule:: momics.momics
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+momics.multirangequery
+----------------------
+
+.. automodule:: momics.multirangequery
    :members:
    :undoc-members:
    :show-inheritance:

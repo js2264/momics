@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 from typing import Dict, Optional
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -22,18 +23,13 @@ class Momics:
     """
 
     def __init__(self, path: str, create=True):
+        """Initialize the Momics class.
+
+        Args:
+            path (str): Path to a `.momics` repository.
+            create (bool, optional): If not found, should the repository be initiated?
+            Defaults to True.
         """
-        Initialize the Momics class.
-
-        Parameters
-        ----------
-        path : str
-            Path to a `.momics` repository.
-
-        create : bool
-            If not found, should the repository be initiated?
-        """
-
         self.path = path
 
         if not os.path.exists(path):
@@ -209,13 +205,10 @@ class Momics:
             A[idx] = {"label": None, "path": None}
 
     def chroms(self) -> pd.DataFrame:
-        """
-        Extract chromosome table from a `.momics` repository.
+        """Extract chromosome table from a `.momics` repository.
 
-        Returns
-        -------
-        pd.DataFrame
-            A data frame listing one chromosome per row
+        Returns:
+            pd.DataFrame: A data frame listing one chromosome per row
         """
         chroms = self._get_table(os.path.join("genome", "chroms.tdb"))
         return (
@@ -225,13 +218,10 @@ class Momics:
         )
 
     def seq(self) -> pd.DataFrame:
-        """
-        Extract sequence table from a `.momics` repository.
+        """Extract sequence table from a `.momics` repository.
 
-        Returns
-        -------
-        pd.DataFrame
-            A data frame listing one chromosome per row, with first/last 10 nts.
+        Returns:
+            pd.DataFrame: A data frame listing one chromosome per row, with first/last 10 nts.
         """
         try:
             self.query_sequence(f"{self.chroms()['chr'][0]}:1-2")
@@ -249,13 +239,10 @@ class Momics:
         return chroms
 
     def tracks(self) -> pd.DataFrame:
-        """
-        Extract table of ingested bigwigs.
+        """Extract table of ingested bigwigs.
 
-        Returns
-        -------
-        pandas.DataFrame
-            A data frame listing one ingested bigwig file per row
+        Returns:
+            pd.DataFrame: A data frame listing one ingested bigwig file per row
         """
         tracks = self._get_table(os.path.join("coverage", "tracks.tdb"))
         return (
@@ -293,20 +280,19 @@ class Momics:
 
         return df
 
-    def add_sequence(self, fasta: str, tile: int = 10000, compression: int = 3):
-        """
-        Ingest multi-sequence fasta file to the `.momics` repository.
+    def add_sequence(
+        self, fasta: Path, tile: int = 10000, compression: int = 3
+    ) -> "Momics":
+        """Ingest a fasta file into a Momics repository
 
-        Parameters
-        ----------
-        fasta : str
-            Path to fasta file
-        tile : int
-            Tile size.
-        compression : int
-            Compression level.
-        """
+        Args:
+            fasta (str): Path to a Fasta file containing the genome reference sequence.
+            tile (int, optional): Tile size for TileDB. Defaults to 10000.
+            compression (int, optional): Compression level for TileDB. Defaults to 3.
 
+        Returns:
+            Momics: The updated Momics object
+        """
         # Abort if `chroms` have not been filled
         if self.chroms().empty:
             raise ValueError("Please fill out `chroms` table first.")
@@ -329,22 +315,18 @@ class Momics:
 
     def add_tracks(
         self, bws: dict, max_bws: int = 9999, tile: int = 10000, compression: int = 3
-    ):
-        """
-        Ingest bigwig coverage tracks to the `.momics` repository.
+    ) -> "Momics":
+        """Ingest bigwig coverage tracks to the `.momics` repository.
 
-        Parameters
-        ----------
-        bws : dict
-            Dictionary of bigwig files
-        max_bws : int
-            Maximum number of bigwig files.
-        tile : int
-            Tile size.
-        compression : int
-            Compression level.
-        """
+        Args:
+            bws (dict): Dictionary of bigwig files
+            max_bws (int, optional): Maximum number of bigwig files. Defaults to 9999.
+            tile (int, optional): Tile size. Defaults to 10000.
+            compression (int, optional): Compression level. Defaults to 3.
 
+        Returns:
+            Momics: The updated Momics object
+        """
         # Abort if `chroms` have not been filled
         if self.chroms().empty:
             raise ValueError("Please fill out `chroms` table first.")
@@ -365,18 +347,16 @@ class Momics:
         # Populate `path/coverage/tracks.tdb`
         self._populate_track_table(bws)
 
-    def add_chroms(self, chr_lengths: dict, genome_version: str = ""):
-        """
-        Add chromosomes (and genome) information the `.momics` repository.
+    def add_chroms(self, chr_lengths: dict, genome_version: str = "") -> "Momics":
+        """Add chromosomes (and genome) information the `.momics` repository.
 
-        Parameters
-        ----------
-        chr_lengths : dict
-            Chromosome lengths
-        genome_version : str
-            Genome version (default: "")
-        """
+        Args:
+            chr_lengths (dict): Chromosome lengths
+            genome_version (str, optional): Genome version (default: ""). Defaults to "".
 
+        Returns:
+            Momics: An updated Momics object
+        """
         if not self.chroms().empty:
             raise ValueError("`chroms` table has already been filled out.")
 
@@ -405,16 +385,15 @@ class Momics:
             array.meta["genome_assembly_version"] = genome_version
             array.meta["timestamp"] = datetime.now().isoformat()
 
-    def remove_track(self, track: str):
-        """
-        Remove a track from a `.momics` repository.
+    def remove_track(self, track: str) -> "Momics":
+        """Remove a track from a `.momics` repository.
 
-        Parameters
-        ----------
-        track : str
-            Which track to remove
-        """
+        Args:
+            track (str): Which track to remove
 
+        Returns:
+            Momics: An updated Momics object
+        """
         # Abort if `track` is not listed
         utils._check_track_name(track, self.tracks())
 
@@ -422,23 +401,20 @@ class Momics:
         # and from `path/coverage/tracks.tdb`
         self._purge_track(track)
 
-    def export_track(self, track: str, prefix: str):
-        """
-        Export a track from a `.momics` repository as a .bw file.
+    def export_track(self, track: str, output: Path) -> "Momics":
+        """Export a track from a `.momics` repository as a .bw file.
 
-        Parameters
-        ----------
-        track : str
-            Which track to remove
-        prefix : str
-            Prefix of the output bigwig file
-        """
+        Args:
+            track (str): Which track to remove
+            output (Path): Prefix of the output bigwig file
 
+        Returns:
+            Momics: An updated Momics object
+        """
         # Abort if `track` is not listed
         utils._check_track_name(track, self.tracks())
 
         # Init output file
-        output = prefix + ".bw"
         bw = pyBigWig.open(output, "w")
         chrom_sizes = self.chroms()[["chr", "length"]].apply(tuple, axis=1).tolist()
         bw.addHeader(chrom_sizes)
@@ -461,14 +437,14 @@ class Momics:
     def query_sequence(
         self,
         query: str,
-    ):
-        """
-        Query chromosome sequence from a `.momics` repository.
+    ) -> "Momics":
+        """Query chromosome sequence from a `.momics` repository.
 
-        Parameters
-        ----------
-        chr_lengths : str
-            UCSC-style chromosome interval (e.g. "II:12001-15000")
+        Args:
+            query (str): UCSC-style chromosome interval (e.g. "II:12001-15000")
+
+        Returns:
+            Momics: An updated Momics object
         """
         if ":" in query:
             chrom, range_part = query.split(":")

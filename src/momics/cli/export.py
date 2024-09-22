@@ -1,6 +1,6 @@
 import click
 
-from .. import api
+from .. import momics
 from . import cli
 
 
@@ -13,14 +13,14 @@ from . import cli
     required=True,
 )
 @click.option(
-    "--prefix",
-    "-p",
-    help="Prefix of bigwig file to write",
+    "--output",
+    "-o",
+    help="Path of bigwig file to write",
     type=str,
     required=True,
 )
-@click.argument("path", metavar="MOMICS_REPO", type=click.Path(exists=True))
-def export(path, track, prefix):
+@click.argument("path", metavar="MOMICS_REPO", required=True)
+def export(path, track, output):
     """Export a track from a momics repo as a bigwig file."""
-    m = api.Momics(path, create=False)
-    m.export_track(track, f"{prefix}.bw")
+    m = momics.Momics(path, create=False)
+    m.export_track(track, output)

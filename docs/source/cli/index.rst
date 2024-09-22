@@ -26,3 +26,7 @@ CLI
 .. click:: momics.cli.export:export
   :prog: momics export
   :nested: full
+
+.. click:: momics.cli.binnify:binnify
+  :prog: momics binnify
+  :nested: full

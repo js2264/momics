@@ -41,6 +41,6 @@ momics ls --table tracks hg19.momics
 momics query seq --coordinates "I:10-1000" hg19.momics
 momics query tracks --coordinates "I:10-1000" hg19.momics
 
-momics export --track bw_b --prefix b_exported.bw hg19.momics
+momics export --track bw_b --output b_exported.bw hg19.momics
 momics remove --track bw_c hg19.momics
 ```

@@ -5,7 +5,15 @@ import pyBigWig
 import pyfaidx
 
 
-def get_chr_lengths(bw):
+def get_chr_lengths(bw: Path) -> dict:
+    """Parse bigwig header to extract chromosome lengths
+
+    Args:
+        bw (Path): path to a bigwig file
+
+    Returns:
+        dict: Dictionary of chromosome lengths
+    """
     with pyBigWig.open(bw) as bw:
         a = bw.chroms()
     bw.close()
@@ -53,7 +61,16 @@ def _check_track_name(track, tracks):
         )
 
 
-def import_bed_file(file_path):
+def import_bed_file(file_path: Path) -> pd.DataFrame:
+    """Import a local bed file as a DataFrame
+
+    Args:
+        file_path (Path): Path to a local bed file
+
+    Returns:
+        pd.DataFrame: A pd.DataFrame with at least three columns (`chr`, `start`, `end`),
+        and any other columns stored in the local bed file.
+    """
     # Convert file_path to a Path object
     file_path = Path(file_path)
 
@@ -88,7 +105,17 @@ def import_bed_file(file_path):
     return df
 
 
-def parse_ucsc_coordinates(coords):
+def parse_ucsc_coordinates(coords: str) -> pd.DataFrame:
+    """Parse UCSC-style coordinates as a DataFrame
+
+    Args:
+        coords (str): A UCSC-style set of coordinates (e.g., "I:11-100"). Note
+        that the coordinates are 1-based.
+
+    Returns:
+        pd.DataFrame: A pd.DataFrame with at least three columns (`chr`, `start`, `end`),
+        and any other columns stored in the local bed file.
+    """
     if isinstance(coords, str):
         coords = [coords]
 

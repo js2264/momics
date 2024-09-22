@@ -3,7 +3,7 @@ import pandas as pd
 
 from momics.multirangequery import MultiRangeQuery
 
-from .. import api, utils
+from .. import momics, utils
 from . import cli
 
 
@@ -45,7 +45,7 @@ def _validate_exclusive_options(file, coordinates):
     default=None,
     show_default=True,
 )
-@click.argument("path", metavar="MOMICS_REPO", type=click.Path(exists=True))
+@click.argument("path", metavar="MOMICS_REPO", required=True)
 @click.pass_context
 def tracks(ctx, path, coordinates, file, output: str):
     """Extract track coverages over a chromosome interval."""
@@ -53,7 +53,7 @@ def tracks(ctx, path, coordinates, file, output: str):
     # Validate that either `file` or `coordinates` is provided, but not both
     _validate_exclusive_options(file, coordinates)
 
-    mom = api.Momics(path, create=False)
+    mom = momics.Momics(path, create=False)
 
     if coordinates is not None:
         chr, range_part = coordinates.split(":")
@@ -88,11 +88,11 @@ def tracks(ctx, path, coordinates, file, output: str):
     default=None,
     show_default=True,
 )
-@click.argument("path", metavar="MOMICS_REPO", type=click.Path(exists=True))
+@click.argument("path", metavar="MOMICS_REPO", required=True)
 @click.pass_context
 def seq(ctx, path, coordinates, output: str):
     """Extract chromosomal sequence over a chromosome interval."""
-    seq = api.Momics(path, create=False).query_sequence(coordinates)
+    seq = momics.Momics(path, create=False).query_sequence(coordinates)
     seq = "".join(seq)
     if output is not None:
         with open(output, "w") as file:

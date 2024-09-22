@@ -1,6 +1,6 @@
 import click
 
-from .. import api
+from .. import momics
 from . import cli
 
 
@@ -32,21 +32,20 @@ from . import cli
     required=False,
 )
 @click.option(
-    "--prefix",
-    "-p",
-    help="Prefix of bed file to write",
+    "--output",
+    "-o",
+    help="Path to a bed file to write",
     type=str,
     required=False,
 )
-@click.argument("path", metavar="MOMICS_REPO", type=click.Path(exists=False))
-def binnify(path, width, step, cut_last_bin_out, prefix):
+@click.argument("path", metavar="MOMICS_REPO", required=True)
+def binnify(path, width, step, cut_last_bin_out, output):
     """Binnify chromosomes from a Momics repository."""
-    m = api.Momics(path, create=False)
+    m = momics.Momics(path, create=False)
     bins = m.bins(width, step, cut_last_bin_out)
     bins = bins.to_csv(sep="\t", index=False, header=False)
 
-    if prefix is not None:
-        output = f"{prefix}.bed"
+    if output is not None:
         with open(output, "w") as file:
             file.write(bins)
     else:

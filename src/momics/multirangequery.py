@@ -5,20 +5,29 @@ import numpy as np
 import pandas as pd
 import tiledb
 
-from .api import Momics
+from .momics import Momics
 from .utils import parse_ucsc_coordinates
 
 
 class MultiRangeQuery:
+    """A class to query `.momics` repositories.
+
+    Attributes
+    ----------
+    momics (Momics): a local `.momics` repository.
+    queries (dict): Dict. of pd.DataFrames with at least three columns `chr`, `start` and `end`, one per chromosome.
+    query_labels (list): List of UCSC-style coordinates.
+    coverage (dict): Dictionary of coverage scores extracted from the `.momics` repository, populated after calling `q.query_tracks()`
+    seq (dict): Dictionary of sequences extracted from the `.momics` repository, populated after calling `q.query_seq()`
+    """
+
     def __init__(self, momics: Momics, bed: pd.DataFrame):
-        """
-        Initialize the MultiRangeQuery object.
+        """Initialize the MultiRangeQuery object.
 
-        Parameters:
-        - momics: a Momics object
-        - bed: pd.DataFrame with at least three columns `chr`, `start` and `end`.
+        Args:
+            momics (Momics): a Momics object
+            bed (pd.DataFrame): pd.DataFrame with at least three columns `chr`, `start` and `end`.
         """
-
         self.momics = momics
         if isinstance(bed, str):
             if ":" in bed:
@@ -29,22 +38,21 @@ class MultiRangeQuery:
                 chrlength = chroms[chroms["chr"] == chrom]["length"][0]
                 bed = parse_ucsc_coordinates(f"{chrom}:1-{chrlength}")
 
-        self.bed = bed
-        self.coverage = None
-        self.seq = None
-        groups = self.bed.groupby("chr")
-        chrs, indices = np.unique(self.bed["chr"], return_index=True)
+        groups = bed.groupby("chr")
+        chrs, indices = np.unique(bed["chr"], return_index=True)
         sorted_chrs = chrs[np.argsort(indices)]
-        ordered_groups = {key: group for key, group in groups}
-        ordered_groups = {key: ordered_groups[key] for key in list(sorted_chrs)}
-        all_range_labels = [
+        queries = {key: group for key, group in groups}
+        queries = {key: queries[key] for key in list(sorted_chrs)}
+        self.queries = queries
+        query_labels = [
             f"{chr}:{start}-{end}"
-            for i, (chr, start, end) in enumerate(
-                list(zip(self.bed["chr"], self.bed["start"], self.bed["end"]))
+            for _, (chr, start, end) in enumerate(
+                list(zip(bed["chr"], bed["start"], bed["end"]))
             )
         ]
-        self.ordered_groups = ordered_groups
-        self.all_range_labels = all_range_labels
+        self.query_labels = query_labels
+        self.coverage = None
+        self.seq = None
 
     def _query_tracks_per_chr(self, chrom, group):
 
@@ -91,16 +99,14 @@ class MultiRangeQuery:
             )
         return res
 
-    def query_tracks(self):
-        """
-        Query multiple coverage ranges from a Momics repo.
+    def query_tracks(self) -> "MultiRangeQuery":
+        """Query multiple coverage ranges from a Momics repo.
 
         Returns:
-        - A MultiRangeQuery object
+            MultiRangeQuery: An updated MultiRangeQuery object
         """
-
         ## Process each chr separately
-        args = [(chrom, group) for (chrom, group) in self.ordered_groups.items()]
+        args = [(chrom, group) for (chrom, group) in self.queries.items()]
         multiprocessing.set_start_method("spawn", force=True)
         with multiprocessing.Pool(processes=12) as pool:
             results = pool.starmap(self._query_tracks_per_chr, args)
@@ -110,21 +116,19 @@ class MultiRangeQuery:
         for track in tr:
             scores_from_all_chrs = [x[track] for x in results]
             d = {k: v for d in scores_from_all_chrs for k, v in d.items()}
-            res[track] = {key: d[key] for key in self.all_range_labels if key in d}
+            res[track] = {key: d[key] for key in self.query_labels if key in d}
 
         self.coverage = res
         return self
 
-    def query_sequence(self):
-        """
-        Query multiple sequence ranges from a Momics repo.
+    def query_sequence(self) -> "MultiRangeQuery":
+        """Query multiple sequence ranges from a Momics repo.
 
         Returns:
-        - A MultiRangeQuery object
+            MultiRangeQuery: An updated MultiRangeQuery object
         """
-
         ## Process each chr separately
-        args = [(chrom, group) for (chrom, group) in self.ordered_groups.items()]
+        args = [(chrom, group) for (chrom, group) in self.queries.items()]
         multiprocessing.set_start_method("spawn", force=True)
         with multiprocessing.Pool(processes=12) as pool:
             results = pool.starmap(self._query_tracks_per_chr, args)
@@ -134,12 +138,17 @@ class MultiRangeQuery:
         for track in tr:
             scores_from_all_chrs = [x[track] for x in results]
             d = {k: v for d in scores_from_all_chrs for k, v in d.items()}
-            res[track] = {key: d[key] for key in self.all_range_labels if key in d}
+            res[track] = {key: d[key] for key in self.query_labels if key in d}
 
         self.coverage = res
         return self
 
-    def to_df(self):
+    def to_df(self) -> pd.DataFrame:
+        """Parse self.coverage attribute to a pd.DataFrame
+
+        Returns:
+            pd.DataFrame: `self.coverage` dictionary wrangled into a pd.DataFrame
+        """
         # Prepare empty long DataFrame without scores, to merge with results
         cov = self.coverage
         if cov is None:
@@ -153,7 +162,10 @@ class MultiRangeQuery:
             chrom, range_part = coords.split(":")
             start = int(range_part.split("-")[0])
             end = int(range_part.split("-")[1])
-            label = [{"chr": chrom, "position": x} for x in range(start, end + 1)]
+            label = [
+                {"range": coords, "chr": chrom, "position": x}
+                for x in range(start, end + 1)
+            ]
             ranges_str.extend(label)
         df = pd.DataFrame(ranges_str)
 

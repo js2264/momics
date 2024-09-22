@@ -1,13 +1,13 @@
 import click
 
-from .. import api
+from .. import momics
 from . import cli
 
 
 @cli.command()
-@click.argument("path", metavar="MOMICS_REPO", type=click.Path(exists=False))
+@click.argument("path", metavar="MOMICS_REPO", required=True)
 def create(path):
     """Initiate a Momics repository."""
     path = click.format_filename(path)
     print(path)
-    print(api.Momics(path, create=True))
+    print(momics.Momics(path, create=True))
