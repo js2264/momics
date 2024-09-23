@@ -161,9 +161,7 @@ class MultiRangeQuery:
         ## Process each chr separately
         args = [(chrom, group) for (chrom, group) in self.queries.items()]
         if threads == 1:
-            results = [
-                self._query_tracks_per_chr(chrom, group) for chrom, group in args
-            ]
+            seqs = [self._query_seq_per_chr(chrom, group) for chrom, group in args]
         else:
             multiprocessing.set_start_method("spawn", force=True)
             with multiprocessing.Pool(processes=threads) as pool:

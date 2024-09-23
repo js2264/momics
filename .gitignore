@@ -31,8 +31,15 @@ venv/
 
 # User resources
 paper/
-data/
+data
 momics-paper.md
+test.fa
+test.csv
+*bw
+*bins*bed
+*bins*tsv
+out.*
+*test.bed*
 
 # OS-generated files
 .DS_Store
