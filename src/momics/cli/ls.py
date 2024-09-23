@@ -15,7 +15,8 @@ from . import cli
     default="tracks",
     show_default=True,
 )
-def ls(path, table):
+@click.pass_context
+def ls(ctx, path, table):
     """List tracks/chromosomes registered in a Momics."""
     if table == "tracks":
         tr = momics.Momics(path, create=False).tracks()

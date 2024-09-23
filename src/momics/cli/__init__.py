@@ -1,8 +1,9 @@
 import click
+import multiprocessing
 
 from ..version import __version__
 
-CONTEXT_SETTINGS = {"help_option_names": ["--help"]}
+CONTEXT_SETTINGS = {"help_option_names": ["--help", "-h"]}
 
 
 class UnsortedGroup(click.Group):
@@ -18,7 +19,17 @@ class UnsortedGroup(click.Group):
     cls=UnsortedGroup,
     epilog="Check out our docs at https://js2264.github.io/momics/ for more details",
 )
-def cli():
+@click.option(
+    "-@",
+    "--threads",
+    default=1,
+    help="Number of threads to use in parallel operations (default: 1)",
+)
+@click.pass_context
+def cli(ctx, threads):
+    """Command-line software to manage momics repositories."""
+    ctx.ensure_object(dict)
+    ctx.obj["threads"] = threads
     pass
 
 

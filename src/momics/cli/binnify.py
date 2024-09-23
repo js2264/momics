@@ -39,7 +39,8 @@ from . import cli
     required=False,
 )
 @click.argument("path", metavar="MOMICS_REPO", required=True)
-def binnify(path, width, step, cut_last_bin_out, output):
+@click.pass_context
+def binnify(ctx, path, width, step, cut_last_bin_out, output):
     """Binnify chromosomes from a Momics repository."""
     m = momics.Momics(path, create=False)
     bins = m.bins(width, step, cut_last_bin_out)

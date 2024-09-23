@@ -6,7 +6,8 @@ from . import cli
 
 @cli.command()
 @click.argument("path", metavar="MOMICS_REPO", required=True)
-def create(path):
+@click.pass_context
+def create(ctx, path):
     """Initiate a Momics repository."""
     path = click.format_filename(path)
     print(path)

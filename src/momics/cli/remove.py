@@ -15,7 +15,8 @@ from . import cli
     required=True,
 )
 @click.argument("path", metavar="MOMICS_REPO", required=True)
-def remove(path, track):
+@click.pass_context
+def remove(ctx, path, track):
     """Remove tracks from a momics repo."""
     m = momics.Momics(path, create=False)
     for tr in track:

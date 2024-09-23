@@ -8,12 +8,6 @@ from .. import momics, utils
 from . import cli
 
 
-@cli.group()
-@click.pass_context
-def query(ctx):
-    """Query a Momics table"""
-
-
 def _validate_exclusive_options(file, coordinates):
     if file and coordinates:
         raise click.BadParameter(
@@ -21,6 +15,12 @@ def _validate_exclusive_options(file, coordinates):
         )
     if not file and not coordinates:
         raise click.BadParameter("You must provide one of --file or --coordinates.")
+
+
+@cli.group()
+@click.pass_context
+def query(ctx):
+    """Query a Momics table"""
 
 
 @query.command()
@@ -46,15 +46,23 @@ def _validate_exclusive_options(file, coordinates):
     default=None,
     show_default=True,
 )
+@click.option(
+    "-@",
+    "--threads",
+    default=1,
+    help="Number of threads to use in parallel operations (default: 1)",
+)
 @click.argument("path", metavar="MOMICS_REPO", required=True)
 @click.pass_context
-def tracks(ctx, path, coordinates, file, output: str):
+def tracks(ctx, path, coordinates, file, output: str, threads: int = 1):
     """Extract track coverages over a chromosome interval."""
 
     # Validate that either `file` or `coordinates` is provided, but not both
     _validate_exclusive_options(file, coordinates)
 
     mom = momics.Momics(path, create=False)
+    if ctx.obj["threads"] > threads:
+        threads = ctx.obj["threads"]
 
     if coordinates is not None:
         chr, range_part = coordinates.split(":")
@@ -64,7 +72,7 @@ def tracks(ctx, path, coordinates, file, output: str):
     else:
         bed = utils.import_bed_file(file)
 
-    res = MultiRangeQuery(mom, bed).query_tracks().to_df()
+    res = MultiRangeQuery(mom, bed).query_tracks(threads=threads).to_df()
     if output is None:
         print(res.to_csv(sep="\t", index=False))
     else:
@@ -95,9 +103,15 @@ def tracks(ctx, path, coordinates, file, output: str):
     default=None,
     show_default=True,
 )
+@click.option(
+    "-@",
+    "--threads",
+    default=1,
+    help="Number of threads to use in parallel operations (default: 1)",
+)
 @click.argument("path", metavar="MOMICS_REPO", required=True)
 @click.pass_context
-def seq(ctx, path, coordinates, file, output: str):
+def seq(ctx, path, coordinates, file, output: str, threads: int = 1):
     """Extract chromosomal sequences over chromosome intervals."""
 
     # Validate that either `file` or `coordinates` is provided, but not both
@@ -113,7 +127,7 @@ def seq(ctx, path, coordinates, file, output: str):
     else:
         bed = utils.import_bed_file(file)
 
-    res = MultiRangeQuery(mom, bed).query_sequence().to_fasta()
+    res = MultiRangeQuery(mom, bed).query_sequence(threads=threads).to_fasta()
     if output is None:
         for record in res:
             print(f">{record.id}")

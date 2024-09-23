@@ -20,7 +20,8 @@ from . import cli
     required=True,
 )
 @click.argument("path", metavar="MOMICS_REPO", required=True)
-def export(path, track, output):
+@click.pass_context
+def export(ctx, path, track, output):
     """Export a track from a momics repo as a bigwig file."""
     m = momics.Momics(path, create=False)
     m.export_track(track, output)

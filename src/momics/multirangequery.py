@@ -118,17 +118,26 @@ class MultiRangeQuery:
 
         return seqs
 
-    def query_tracks(self) -> "MultiRangeQuery":
+    def query_tracks(self, threads: int = 1) -> "MultiRangeQuery":
         """Query multiple coverage ranges from a Momics repo.
 
+        Args:
+            threads (int, optional): Number of threads for parallel query. Defaults to 1.
+
         Returns:
-            MultiRangeQuery: An updated MultiRangeQuery object
+            MultiRangeQuery: MultiRangeQuery: An updated MultiRangeQuery object
         """
         ## Process each chr separately
         args = [(chrom, group) for (chrom, group) in self.queries.items()]
-        multiprocessing.set_start_method("spawn", force=True)
-        with multiprocessing.Pool(processes=12) as pool:
-            results = pool.starmap(self._query_tracks_per_chr, args)
+        if threads == 1:
+            results = [
+                self._query_tracks_per_chr(chrom, group) for chrom, group in args
+            ]
+        else:
+            multiprocessing.set_start_method("spawn", force=True)
+            with multiprocessing.Pool(processes=threads) as pool:
+                results = pool.starmap(self._query_tracks_per_chr, args)
+
         res = {}
         tr = self.momics.tracks()
         tr = list(tr[[x != "None" for x in tr["label"]]]["label"])
@@ -140,17 +149,25 @@ class MultiRangeQuery:
         self.coverage = res
         return self
 
-    def query_sequence(self) -> "MultiRangeQuery":
+    def query_sequence(self, threads: int = 1) -> "MultiRangeQuery":
         """Query multiple sequence ranges from a Momics repo.
+
+        Args:
+            threads (int, optional): Number of threads for parallel query. Defaults to 1.
 
         Returns:
             MultiRangeQuery: An updated MultiRangeQuery object
         """
         ## Process each chr separately
         args = [(chrom, group) for (chrom, group) in self.queries.items()]
-        multiprocessing.set_start_method("spawn", force=True)
-        with multiprocessing.Pool(processes=12) as pool:
-            seqs = pool.starmap(self._query_seq_per_chr, args)
+        if threads == 1:
+            results = [
+                self._query_tracks_per_chr(chrom, group) for chrom, group in args
+            ]
+        else:
+            multiprocessing.set_start_method("spawn", force=True)
+            with multiprocessing.Pool(processes=threads) as pool:
+                seqs = pool.starmap(self._query_seq_per_chr, args)
 
         mseqs = {}
         for d in seqs:
