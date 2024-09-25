@@ -1,5 +1,4 @@
 import click
-import multiprocessing
 
 from ..version import __version__
 
@@ -42,6 +41,7 @@ from . import (
     ls,
     query,
     remove,
+    cloudconfig,
 )
 
 __all__ = [
@@ -50,6 +50,7 @@ __all__ = [
     "ls",
     "query",
     "remove",
-    "binnify",
     "export",
+    "binnify",
+    "cloudconfig",
 ]

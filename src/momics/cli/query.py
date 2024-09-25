@@ -5,7 +5,7 @@ from pybedtools import BedTool
 
 from momics.multirangequery import MultiRangeQuery
 
-from .. import momics, utils
+from .. import momics
 from . import cli
 
 
@@ -22,6 +22,7 @@ def _validate_exclusive_options(file, coordinates):
 @click.pass_context
 def query(ctx):
     """Query a Momics table"""
+    pass
 
 
 @query.command()
