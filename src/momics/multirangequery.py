@@ -1,5 +1,4 @@
-import multiprocessing
-import os
+import concurrent.futures
 
 import numpy as np
 import pandas as pd
@@ -79,8 +78,8 @@ class MultiRangeQuery:
 
         # Extract scores from tileDB and wrangle them into DataFrame
         ranges_1 = list(zip(group["start"] - 1, group["end"] - 1))
-        tdb = os.path.join(self.momics.path, "coverage", f"{chrom}.tdb")
-        with tiledb.open(tdb, "r") as A:
+        tdb = self.momics._build_uri("coverage", f"{chrom}.tdb")
+        with tiledb.open(tdb, "r", ctx=self.momics.ctx) as A:
             subarray = A.multi_index[ranges_1, :]
 
         # Reformat to add track and range labels
@@ -108,11 +107,9 @@ class MultiRangeQuery:
 
         # Get sequences
         seqs = {}
+        tdb = self.momics._build_uri("genome", "sequence", f"{chrom}.tdb")
         for _, (start, end) in enumerate(ranges):
-            with tiledb.open(
-                os.path.join(self.momics.path, "genome", "sequence", f"{chrom}.tdb"),
-                "r",
-            ) as A:
+            with tiledb.open(tdb, "r", ctx=self.momics.ctx) as A:
                 seq = A.df[(start - 1) : (end - 1)]["nucleotide"]
             seqs[f"{chrom}:{start}-{end}"] = "".join(seq)
 
@@ -134,9 +131,11 @@ class MultiRangeQuery:
                 self._query_tracks_per_chr(chrom, group) for chrom, group in args
             ]
         else:
-            multiprocessing.set_start_method("spawn", force=True)
-            with multiprocessing.Pool(processes=threads) as pool:
-                results = pool.starmap(self._query_tracks_per_chr, args)
+            print(threads)
+            with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+                results = list(
+                    executor.map(lambda p: self._query_tracks_per_chr(*p), args)
+                )
 
         res = {}
         tr = self.momics.tracks()
@@ -163,9 +162,9 @@ class MultiRangeQuery:
         if threads == 1:
             seqs = [self._query_seq_per_chr(chrom, group) for chrom, group in args]
         else:
-            multiprocessing.set_start_method("spawn", force=True)
-            with multiprocessing.Pool(processes=threads) as pool:
-                seqs = pool.starmap(self._query_seq_per_chr, args)
+            print(threads)
+            with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+                seqs = list(executor.map(lambda p: self._query_seq_per_chr(*p), args))
 
         mseqs = {}
         for d in seqs:

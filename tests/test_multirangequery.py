@@ -24,6 +24,9 @@ def test_multirangequery_tracks(momics_path: str, bed1: str):
     q = MultiRangeQuery(mom, bed).query_tracks()
     assert q.coverage.keys().__eq__(["bw2", "bw3", "bw4"])
 
+    q = MultiRangeQuery(mom, bed).query_tracks(threads=4)
+    assert q.coverage.keys().__eq__(["bw2", "bw3", "bw4"])
+
 
 def test_multirangequery_seq(momics_path: str, bed1: str):
     mom = momics.Momics(momics_path, create=False)
@@ -34,4 +37,7 @@ def test_multirangequery_seq(momics_path: str, bed1: str):
     assert q.to_fasta()[0].id == "I:1-10"
 
     q = MultiRangeQuery(mom, "I").query_sequence()
+    assert len(q.seq["seq"]["I:1-10000"]) == 10000
+
+    q = MultiRangeQuery(mom, "I").query_sequence(4)
     assert len(q.seq["seq"]["I:1-10000"]) == 10000
