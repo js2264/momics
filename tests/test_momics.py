@@ -1,6 +1,7 @@
 import pandas as pd
 import pytest
 import tiledb
+from pybedtools import BedTool
 
 import momics
 from momics import utils
@@ -33,7 +34,7 @@ def test_Momics_add_genome(momics_path: str, bw1: str):
     out = pd.DataFrame(
         {
             "chrom_index": [0, 1, 2],
-            "chr": ["I", "II", "III"],
+            "chrom": ["I", "II", "III"],
             "length": [10000, 20000, 30000],
         }
     )
@@ -102,7 +103,7 @@ def test_Momics_remove_tracks(momics_path: str, bw1: str, bw2: str, bed1: str):
     assert mom.tracks().__eq__(out).all().all()
     q = MultiRangeQuery(mom, "I:991-1010").query_tracks()
     assert q.coverage.keys().__eq__(["bw2", "bw3", "bw4"])
-    bed = utils.import_bed_file(bed1)
+    bed = BedTool(bed1).to_dataframe()
     q = MultiRangeQuery(mom, bed).query_tracks()
     assert q.coverage.keys().__eq__(["bw2", "bw3", "bw4"])
 

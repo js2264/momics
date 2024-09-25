@@ -65,8 +65,8 @@ class Momics:
     def _create_sequence_schema(self, tile: int, compression: int):
         # Create every path/genome/sequence/{chrom}.tdb
         chroms = self.chroms()
-        for chrom in chroms["chr"]:
-            chrom_length = np.array(chroms[chroms["chr"] == chrom]["length"])[0]
+        for chrom in chroms["chrom"]:
+            chrom_length = np.array(chroms[chroms["chrom"] == chrom]["length"])[0]
             tdb = os.path.join(self.path, "genome", "sequence", f"{chrom}.tdb")
             dom = tiledb.Domain(
                 tiledb.Dim(
@@ -114,8 +114,8 @@ class Momics:
 
         # Create every path/coverage/{chrom}.tdb
         chroms = self.chroms()
-        for chrom in chroms["chr"]:
-            chrom_length = np.array(chroms[chroms["chr"] == chrom]["length"])[0]
+        for chrom in chroms["chrom"]:
+            chrom_length = np.array(chroms[chroms["chrom"] == chrom]["length"])[0]
             tdb = os.path.join(self.path, "coverage", f"{chrom}.tdb")
             dom = tiledb.Domain(
                 tiledb.Dim(
@@ -171,8 +171,8 @@ class Momics:
             n = 0
 
         chroms = self.chroms()
-        for chrom in chroms["chr"]:
-            chrom_length = np.array(chroms[chroms["chr"] == chrom]["length"])[0]
+        for chrom in chroms["chrom"]:
+            chrom_length = np.array(chroms[chroms["chrom"] == chrom]["length"])[0]
             tdb = os.path.join(self.path, "coverage", f"{chrom}.tdb")
             for idx, bwf in enumerate(bws):
                 with pyBigWig.open(bws[bwf]) as bw:
@@ -184,9 +184,9 @@ class Momics:
 
     def _populate_sequence_table(self, fasta: str):
         chroms = self.chroms()
-        for chrom in chroms["chr"]:
+        for chrom in chroms["chrom"]:
             tdb = os.path.join(self.path, "genome", "sequence", f"{chrom}.tdb")
-            chrom_length = np.array(chroms[chroms["chr"] == chrom]["length"])[0]
+            chrom_length = np.array(chroms[chroms["chrom"] == chrom]["length"])[0]
             with pyfaidx.Fasta(fasta) as fa:
                 chrom_seq = fa.get_seq(chrom, 1, chrom_length)
             with tiledb.DenseArray(tdb, mode="w") as A:
@@ -195,7 +195,7 @@ class Momics:
     def _purge_track(self, track: str):
         idx = self.tracks()["idx"][self.tracks()["label"] == track].values[0]
         qc = f"idx == {idx}"
-        for chrom in self.chroms()["chr"]:
+        for chrom in self.chroms()["chrom"]:
             tdb = os.path.join(self.path, "coverage", f"{chrom}.tdb")
             with tiledb.open(tdb, mode="d") as A:
                 A.query(cond=qc).submit()
@@ -214,7 +214,7 @@ class Momics:
         return (
             chroms
             if chroms is not None
-            else pd.DataFrame(columns=["chrom_index", "chr", "length"])
+            else pd.DataFrame(columns=["chrom_index", "chrom", "length"])
         )
 
     def seq(self) -> pd.DataFrame:
@@ -224,20 +224,20 @@ class Momics:
             pd.DataFrame: A data frame listing one chromosome per row, with first/last 10 nts.
         """
         tdb = os.path.join(
-            self.path, "genome", "sequence", f"{self.chroms()['chr'][0]}.tdb"
+            self.path, "genome", "sequence", f"{self.chroms()['chrom'][0]}.tdb"
         )
         if not os.path.exists(tdb):
             raise tiledb.cc.TileDBError(f"Genomic TileDB '{tdb}' do not exist yet.")
 
         chroms = self.chroms()
         chroms["seq"] = pd.Series()
-        for chrom in chroms["chr"]:
+        for chrom in chroms["chrom"]:
             tdb = os.path.join(self.path, "genome", "sequence", f"{chrom}.tdb")
-            chrom_len = chroms[chroms["chr"] == chrom]["length"].iloc[0]
+            chrom_len = chroms[chroms["chrom"] == chrom]["length"].iloc[0]
             with tiledb.open(tdb, "r") as A:
                 start_nt = "".join(A.df[0:9]["nucleotide"])
                 end_nt = "".join(A.df[(chrom_len - 10) : (chrom_len - 1)]["nucleotide"])
-            chroms.loc[chroms["chr"] == chrom, "seq"] = start_nt + "..." + end_nt
+            chroms.loc[chroms["chrom"] == chrom, "seq"] = start_nt + "..." + end_nt
 
         return chroms
 
@@ -264,17 +264,17 @@ class Momics:
         step (int): The step size for tiling.
 
         Returns:
-        pd.DataFrame: DataFrame with columns 'chr', 'start', 'end'.
+        pd.DataFrame: DataFrame with columns "chrom", 'start', 'end'.
         """
 
         bins = []
-        chroms = self.chroms().set_index("chr")["length"].to_dict()
+        chroms = self.chroms().set_index("chrom")["length"].to_dict()
 
         for chrom, length in chroms.items():
             start = 0
             while start < length:
                 end = min(start + width, length)
-                bins.append({"chr": chrom, "start": (start + 1), "end": end})
+                bins.append({"chrom": chrom, "start": (start + 1), "end": end})
                 start += step
 
         df = pd.DataFrame(bins)
@@ -302,7 +302,7 @@ class Momics:
 
         # Abort if sequence table already exists
         tdb = os.path.join(
-            self.path, "genome", "sequence", f"{self.chroms()['chr'][0]}.tdb"
+            self.path, "genome", "sequence", f"{self.chroms()['chrom'][0]}.tdb"
         )
         if os.path.exists(tdb):
             raise tiledb.cc.TileDBError(f"Error: TileDB '{tdb}' already exists.")
@@ -372,7 +372,7 @@ class Momics:
                 tile=len(chr_lengths),
             )
         )
-        attr_chr = tiledb.Attr(name="chr", dtype="ascii", var=True)
+        attr_chr = tiledb.Attr(name="chrom", dtype="ascii", var=True)
         attr_length = tiledb.Attr(name="length", dtype=np.int64)
         schema = tiledb.ArraySchema(
             domain=dom_genome, attrs=[attr_chr, attr_length], sparse=True
@@ -384,7 +384,7 @@ class Momics:
         length = list(chr_lengths.values())
         with tiledb.open(tdb, "w") as array:
             indices = np.arange(len(chr))
-            array[indices] = {"chr": np.array(chr, dtype="S"), "length": length}
+            array[indices] = {"chrom": np.array(chr, dtype="S"), "length": length}
             array.meta["genome_assembly_version"] = genome_version
             array.meta["timestamp"] = datetime.now().isoformat()
 
@@ -419,7 +419,7 @@ class Momics:
 
         # Init output file
         bw = pyBigWig.open(output, "w")
-        chrom_sizes = self.chroms()[["chr", "length"]].apply(tuple, axis=1).tolist()
+        chrom_sizes = self.chroms()[["chrom", "length"]].apply(tuple, axis=1).tolist()
         bw.addHeader(chrom_sizes)
         for chrom, _ in chrom_sizes:
             print(chrom)

@@ -1,6 +1,7 @@
 import click
 import pandas as pd
 from Bio import SeqIO
+from pybedtools import BedTool
 
 from momics.multirangequery import MultiRangeQuery
 
@@ -68,9 +69,9 @@ def tracks(ctx, path, coordinates, file, output: str, threads: int = 1):
         chr, range_part = coordinates.split(":")
         start = int(range_part.split("-")[0])
         end = int(range_part.split("-")[1])
-        bed = pd.DataFrame([{"chr": chr, "start": start, "end": end}])
+        bed = pd.DataFrame([{"chrom": chr, "start": start, "end": end}])
     else:
-        bed = utils.import_bed_file(file)
+        bed = BedTool(file).to_dataframe()
 
     res = MultiRangeQuery(mom, bed).query_tracks(threads=threads).to_df()
     if output is None:
@@ -123,9 +124,9 @@ def seq(ctx, path, coordinates, file, output: str, threads: int = 1):
         chr, range_part = coordinates.split(":")
         start = int(range_part.split("-")[0])
         end = int(range_part.split("-")[1])
-        bed = pd.DataFrame([{"chr": chr, "start": start, "end": end}])
+        bed = pd.DataFrame([{"chrom": chr, "start": start, "end": end}])
     else:
-        bed = utils.import_bed_file(file)
+        bed = BedTool(file).to_dataframe()
 
     res = MultiRangeQuery(mom, bed).query_sequence(threads=threads).to_fasta()
     if output is None:

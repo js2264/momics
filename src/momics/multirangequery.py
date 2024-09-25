@@ -17,7 +17,7 @@ class MultiRangeQuery:
     Attributes
     ----------
     momics (Momics): a local `.momics` repository.
-    queries (dict): Dict. of pd.DataFrames with at least three columns `chr`, `start` and `end`, one per chromosome.
+    queries (dict): Dict. of pd.DataFrames with at least three columns `chrom`, `start` and `end`, one per chromosome.
     query_labels (list): List of UCSC-style coordinates.
     coverage (dict): Dictionary of coverage scores extracted from the `.momics` repository, populated after calling `q.query_tracks()`
     seq (dict): Dictionary of sequences extracted from the `.momics` repository, populated after calling `q.query_seq()`
@@ -28,7 +28,7 @@ class MultiRangeQuery:
 
         Args:
             momics (Momics): a Momics object
-            bed (pd.DataFrame): pd.DataFrame with at least three columns `chr`, `start` and `end`.
+            bed (pd.DataFrame): pd.DataFrame with at least three columns `chrom`, `start` and `end`.
         """
         self.momics = momics
         if isinstance(bed, str):
@@ -37,11 +37,11 @@ class MultiRangeQuery:
             else:
                 chrom = bed
                 chroms = self.momics.chroms()
-                chrlength = chroms[chroms["chr"] == chrom]["length"][0]
+                chrlength = chroms[chroms["chrom"] == chrom]["length"][0]
                 bed = parse_ucsc_coordinates(f"{chrom}:1-{chrlength}")
 
-        groups = bed.groupby("chr")
-        chrs, indices = np.unique(bed["chr"], return_index=True)
+        groups = bed.groupby("chrom")
+        chrs, indices = np.unique(bed["chrom"], return_index=True)
         sorted_chrs = chrs[np.argsort(indices)]
         queries = {key: group for key, group in groups}
         queries = {key: queries[key] for key in list(sorted_chrs)}
@@ -49,7 +49,7 @@ class MultiRangeQuery:
         query_labels = [
             f"{chr}:{start}-{end}"
             for _, (chr, start, end) in enumerate(
-                list(zip(bed["chr"], bed["start"], bed["end"]))
+                list(zip(bed["chrom"], bed["start"], bed["end"]))
             )
         ]
         self.query_labels = query_labels
@@ -70,7 +70,7 @@ class MultiRangeQuery:
         ranges_df = pd.DataFrame(
             {
                 "range": ranges_str,
-                "chr": chrom,
+                "chrom": chrom,
                 "position": [
                     item for X in ranges for item in np.arange(X[0], X[1] + 1)
                 ],
@@ -192,7 +192,7 @@ class MultiRangeQuery:
             start = int(range_part.split("-")[0])
             end = int(range_part.split("-")[1])
             label = [
-                {"range": coords, "chr": chrom, "position": x}
+                {"range": coords, "chrom": chrom, "position": x}
                 for x in range(start, end + 1)
             ]
             ranges_str.extend(label)

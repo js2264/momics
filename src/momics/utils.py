@@ -21,7 +21,7 @@ def get_chr_lengths(bw: Path) -> dict:
 
 
 def _check_fasta_lengths(fasta, chroms):
-    reference_lengths = dict(zip(chroms["chr"], chroms["length"]))
+    reference_lengths = dict(zip(chroms["chrom"], chroms["length"]))
     with pyfaidx.Fasta(fasta) as fa:
         lengths = {name: len(seq) for name, seq in fa.items()}
     if lengths != reference_lengths:
@@ -29,7 +29,7 @@ def _check_fasta_lengths(fasta, chroms):
 
 
 def _check_chr_lengths(bw_files, chroms):
-    reference_lengths = dict(zip(chroms["chr"], chroms["length"]))
+    reference_lengths = dict(zip(chroms["chrom"], chroms["length"]))
     for file in list(bw_files.values()):
         with pyBigWig.open(file) as bw:
             lengths = bw.chroms()
@@ -49,7 +49,7 @@ def _check_track_names(bw_files, tracks):
 
 
 def _check_chr_name(chr, chroms):
-    if chr not in chroms["chr"].values:
+    if chr not in chroms["chrom"].values:
         raise ValueError(f"{chr} chromosome not listed in `chroms` table.")
 
 
@@ -68,7 +68,7 @@ def import_bed_file(file_path: Path) -> pd.DataFrame:
         file_path (Path): Path to a local bed file
 
     Returns:
-        pd.DataFrame: A pd.DataFrame with at least three columns (`chr`, `start`, `end`),
+        pd.DataFrame: A pd.DataFrame with at least three columns (`chrom`, `start`, `end`),
         and any other columns stored in the local bed file.
     """
     # Convert file_path to a Path object
@@ -101,7 +101,7 @@ def import_bed_file(file_path: Path) -> pd.DataFrame:
     except Exception as e:
         raise e
 
-    df.columns = ["chr", "start", "end"] + [col for col in df.columns[3:]]
+    df.columns = ["chrom", "start", "end"] + [col for col in df.columns[3:]]
     return df
 
 
@@ -113,7 +113,7 @@ def parse_ucsc_coordinates(coords: str) -> pd.DataFrame:
         that the coordinates are 1-based.
 
     Returns:
-        pd.DataFrame: A pd.DataFrame with at least three columns (`chr`, `start`, `end`),
+        pd.DataFrame: A pd.DataFrame with at least three columns (`chrom`, `start`, `end`),
         and any other columns stored in the local bed file.
     """
     if isinstance(coords, str):
@@ -140,9 +140,9 @@ def parse_ucsc_coordinates(coords: str) -> pd.DataFrame:
         except Exception:
             return (
                 f"Error: Invalid format for UCSC-style coordinate '{coord}'. "
-                + "Expected format: 'chr:start-end'."
+                + "Expected format: 'chrom:start-end'."
             )
 
-    df = pd.DataFrame({"chr": chromosomes, "start": starts, "end": ends})
+    df = pd.DataFrame({"chrom": chromosomes, "start": starts, "end": ends})
 
     return df

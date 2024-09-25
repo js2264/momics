@@ -29,12 +29,13 @@ classifiers = [
 dependencies = [
     "tiledb",
     "pyBigWig",
+    "pybedtools",
     "pyfaidx", 
     "numpy", 
     "pandas", 
     "pyarrow>=1.0",
     "click>=7",
-    "packaging"
+    "packaging",
 ]
 
 [project.urls]
