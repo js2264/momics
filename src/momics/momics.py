@@ -403,36 +403,3 @@ class Momics:
         # Remove entry from each `path/coverage/{chrom}.tdb`
         # and from `path/coverage/tracks.tdb`
         self._purge_track(track)
-
-    def export_track(self, track: str, output: Path) -> "Momics":
-        """Export a track from a `.momics` repository as a .bw file.
-
-        Args:
-            track (str): Which track to remove
-            output (Path): Prefix of the output bigwig file
-
-        Returns:
-            Momics: An updated Momics object
-        """
-        # Abort if `track` is not listed
-        utils._check_track_name(track, self.tracks())
-
-        # Init output file
-        bw = pyBigWig.open(output, "w")
-        chrom_sizes = self.chroms()[["chrom", "length"]].apply(tuple, axis=1).tolist()
-        bw.addHeader(chrom_sizes)
-        for chrom, _ in chrom_sizes:
-            print(chrom)
-            q = self.query_tracks(chrom)
-            q = q[q["label"] == track].dropna(subset=["scores"])
-            # starts = q["position"].to_numpy(dtype=np.int64)
-            # ends = starts + 1
-            # values = q["scores"].to_numpy(dtype=np.int64)
-            # chroms = np.array([chrom] * 10)
-
-            starts = q["position"].to_numpy(dtype=np.int64)
-            ends = starts + 1
-            values0 = q["scores"].to_numpy(dtype=np.float32)
-            chroms = np.array([chrom] * len(values0))
-            bw.addEntries(chroms, starts=starts, ends=ends, values=values0)
-        bw.close()
