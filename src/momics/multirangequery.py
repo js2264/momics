@@ -131,7 +131,6 @@ class MultiRangeQuery:
                 self._query_tracks_per_chr(chrom, group) for chrom, group in args
             ]
         else:
-            print(threads)
             with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
                 results = list(
                     executor.map(lambda p: self._query_tracks_per_chr(*p), args)
@@ -162,7 +161,6 @@ class MultiRangeQuery:
         if threads == 1:
             seqs = [self._query_seq_per_chr(chrom, group) for chrom, group in args]
         else:
-            print(threads)
             with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
                 seqs = list(executor.map(lambda p: self._query_seq_per_chr(*p), args))
 
