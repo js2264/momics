@@ -36,7 +36,7 @@ class MultiRangeQuery:
             else:
                 chrom = bed
                 chroms = self.momics.chroms()
-                chrlength = chroms[chroms["chrom"] == chrom]["length"][0]
+                chrlength = chroms[chroms["chrom"] == chrom]["length"].iloc[0]
                 bed = parse_ucsc_coordinates(f"{chrom}:1-{chrlength}")
 
         groups = bed.groupby("chrom")
@@ -79,7 +79,7 @@ class MultiRangeQuery:
         # Extract scores from tileDB and wrangle them into DataFrame
         ranges_1 = list(zip(group["start"] - 1, group["end"] - 1))
         tdb = self.momics._build_uri("coverage", f"{chrom}.tdb")
-        with tiledb.open(tdb, "r", ctx=self.momics.ctx) as A:
+        with tiledb.open(tdb, "r", ctx=self.momics.cfg.ctx) as A:
             subarray = A.multi_index[ranges_1, :]
 
         # Reformat to add track and range labels
@@ -109,7 +109,7 @@ class MultiRangeQuery:
         seqs = {}
         tdb = self.momics._build_uri("genome", "sequence", f"{chrom}.tdb")
         for _, (start, end) in enumerate(ranges):
-            with tiledb.open(tdb, "r", ctx=self.momics.ctx) as A:
+            with tiledb.open(tdb, "r", ctx=self.momics.cfg.ctx) as A:
                 seq = A.df[(start - 1) : (end - 1)]["nucleotide"]
             seqs[f"{chrom}:{start}-{end}"] = "".join(seq)
 

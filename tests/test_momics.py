@@ -8,6 +8,7 @@ from momics import utils
 from momics.multirangequery import MultiRangeQuery
 
 
+@pytest.mark.order(1)
 def test_Momics_init(momics_path: str):
     with pytest.raises(OSError, match=r"Momics repository not found."):
         momics.Momics("asvasdvasdv", create=False)
@@ -21,6 +22,7 @@ def test_Momics_init(momics_path: str):
         momics.Momics(momics_path, create=True)
 
 
+@pytest.mark.order(1)
 def test_Momics_add_genome(momics_path: str, bw1: str):
     mom = momics.Momics(momics_path, create=False)
 
@@ -45,6 +47,7 @@ def test_Momics_add_genome(momics_path: str, bw1: str):
         mom.add_chroms(chroms)
 
 
+@pytest.mark.order(1)
 def test_Momics_add_tracks(momics_path: str, bw1: str, bw2: str):
     mom = momics.Momics(momics_path, create=False)
 
@@ -74,6 +77,7 @@ def test_Momics_add_tracks(momics_path: str, bw1: str, bw2: str):
     print(mom.tracks())
 
 
+@pytest.mark.order(1)
 def test_Momics_add_seq(momics_path: str, fa1: str, fa2: str):
     mom = momics.Momics(momics_path, create=False)
 
@@ -88,6 +92,7 @@ def test_Momics_add_seq(momics_path: str, fa1: str, fa2: str):
     print(mom.seq())
 
 
+@pytest.mark.order(1)
 def test_Momics_remove_tracks(momics_path: str, bw1: str, bw2: str, bed1: str):
     mom = momics.Momics(momics_path, create=False)
     mom.add_tracks({"bw3": bw1})
@@ -108,6 +113,7 @@ def test_Momics_remove_tracks(momics_path: str, bw1: str, bw2: str, bed1: str):
     assert q.coverage.keys().__eq__(["bw2", "bw3", "bw4"])
 
 
+@pytest.mark.order(2)
 def test_Momics_binnify(momics_path: str):
     mom = momics.Momics(momics_path, create=False)
     q = mom.bins(width=1000, step=1000)

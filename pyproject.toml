@@ -65,6 +65,7 @@ test = [
     "isort",
     "pytest",
     "pytest-cov",
+    "pytest-ordering",
     "ruff",
 ]
 dev = [
@@ -113,6 +114,7 @@ known-first-party = ["momics"]
 convention = "numpy"
 
 [tool.pytest.ini_options]
+markers = ["order: mark test to run in a specific order"]
 minversion = "7"
 log_cli_level = "INFO"
 xfail_strict = true

@@ -1,10 +1,12 @@
 import pandas as pd
 from pybedtools import BedTool
+import pytest
 
 import momics
 from momics.multirangequery import MultiRangeQuery
 
 
+@pytest.mark.order(2)
 def test_multirangequery_tracks(momics_path: str, bed1: str):
     mom = momics.Momics(momics_path, create=False)
     q = MultiRangeQuery(mom, "I:991-1010").query_tracks()
@@ -28,6 +30,7 @@ def test_multirangequery_tracks(momics_path: str, bed1: str):
     assert q.coverage.keys().__eq__(["bw2", "bw3", "bw4"])
 
 
+@pytest.mark.order(2)
 def test_multirangequery_seq(momics_path: str, bed1: str):
     mom = momics.Momics(momics_path, create=False)
     q = MultiRangeQuery(mom, "I:1-10").query_sequence()
