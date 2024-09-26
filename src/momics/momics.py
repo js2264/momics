@@ -1,7 +1,10 @@
-import os
 from datetime import datetime
+from time import sleep
 from typing import Dict, Optional
 from pathlib import Path
+import concurrent.futures
+from .logging import logger
+import threading
 
 import numpy as np
 import pandas as pd
@@ -11,6 +14,9 @@ import tiledb
 
 from . import utils
 from . import config
+
+
+lock = threading.Lock()
 
 
 class Momics:
@@ -182,33 +188,95 @@ class Momics:
                 "path": list(bws.values()),
             }
 
-    def _populate_chroms_table(self, bws: Dict[str, str]):
+    def _populate_chroms_table(self, bws: Dict[str, str], threads: int):
         try:
             n = self.tracks().shape[0]
         except tiledb.cc.TileDBError:
             n = 0
 
+        def _process_chrom_bwf(self, chrom, chrom_length, idx, bwf, bws, n):
+            sleep(1)
+            tdb = self._build_uri("coverage", f"{chrom}.tdb")
+            with pyBigWig.open(bws[bwf]) as bw:
+                arr = np.array(bw.values(chrom, 0, chrom_length), dtype=np.float32)
+                with tiledb.open(tdb, mode="w", ctx=self.cfg.ctx) as A:
+                    coord1 = np.arange(0, chrom_length)
+                    coord2 = np.repeat(idx + n, len(coord1))
+                    A[coord1, coord2] = {"scores": arr}
+
+        def _log_task_completion(future, bwf, chrom, ntasks, completed_tasks):
+            if future.exception() is not None:
+                logger.error(
+                    f"Bigwig {bwf} ingestion over {chrom} failed with exception: {future.exception()}"
+                )
+            else:
+                with lock:
+                    completed_tasks[0] += 1
+                logger.info(
+                    f"task {completed_tasks[0]}/{ntasks} :: ingested bigwig {bwf} over {chrom}."
+                )
+
+        tasks = []
         chroms = self.chroms()
         for chrom in chroms["chrom"]:
             chrom_length = np.array(chroms[chroms["chrom"] == chrom]["length"])[0]
-            tdb = self._build_uri("coverage", f"{chrom}.tdb")
             for idx, bwf in enumerate(bws):
-                with pyBigWig.open(bws[bwf]) as bw:
-                    arr = np.array(bw.values(chrom, 0, chrom_length), dtype=np.float32)
-                    with tiledb.open(tdb, mode="w", ctx=self.cfg.ctx) as A:
-                        coord1 = np.arange(0, chrom_length)
-                        coord2 = np.repeat(idx + n, len(coord1))
-                        A[coord1, coord2] = {"scores": arr}
+                tasks.append((chrom, chrom_length, idx, bwf))
+        ntasks = len(tasks)
+        completed_tasks = [0]
 
-    def _populate_sequence_table(self, fasta: str):
-        chroms = self.chroms()
-        for chrom in chroms["chrom"]:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+            futures = []
+            for chrom, chrom_length, idx, bwf in tasks:
+                future = executor.submit(
+                    _process_chrom_bwf, self, chrom, chrom_length, idx, bwf, bws, n
+                )
+                future.add_done_callback(
+                    lambda f, b=bwf, c=chrom: _log_task_completion(
+                        f, b, c, ntasks, completed_tasks
+                    )
+                )
+                futures.append(future)
+            concurrent.futures.wait(futures)
+
+    def _populate_sequence_table(self, fasta: str, threads: int):
+
+        def _process_chrom(self, chrom, chroms, fasta):
+            sleep(1)
             tdb = self._build_uri("genome", "sequence", f"{chrom}.tdb")
             chrom_length = np.array(chroms[chroms["chrom"] == chrom]["length"])[0]
             with pyfaidx.Fasta(fasta) as fa:
                 chrom_seq = fa.get_seq(chrom, 1, chrom_length)
             with tiledb.DenseArray(tdb, mode="w", ctx=self.cfg.ctx) as A:
                 A[:] = {"nucleotide": np.array(list(chrom_seq.seq), dtype="S1")}
+
+        def _log_task_completion(future, chrom, ntasks, completed_tasks):
+            if future.exception() is not None:
+                logger.error(
+                    f"Fasta ingestion over {chrom} failed with exception: {future.exception()}"
+                )
+            else:
+                with lock:
+                    completed_tasks[0] += 1
+                logger.info(
+                    f"task {completed_tasks[0]}/{ntasks} :: ingested fasta over {chrom}."
+                )
+
+        chroms = self.chroms()
+        tasks = chroms["chrom"]
+        ntasks = len(tasks)
+        completed_tasks = [0]
+        with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+            futures = []
+            for chrom in tasks:
+                future = executor.submit(_process_chrom, self, chrom, chroms, fasta)
+                future.add_done_callback(
+                    lambda f, c=chrom: _log_task_completion(
+                        f, c, ntasks, completed_tasks
+                    )
+                )
+                futures.append(future)
+            concurrent.futures.wait(futures)
 
     def _purge_track(self, track: str):
         idx = self.tracks()["idx"][self.tracks()["label"] == track].values[0]
@@ -345,12 +413,13 @@ class Momics:
             array.meta["timestamp"] = datetime.now().isoformat()
 
     def add_sequence(
-        self, fasta: Path, tile: int = 10000, compression: int = 3
+        self, fasta: Path, threads: int = 1, tile: int = 10000, compression: int = 3
     ) -> "Momics":
         """Ingest a fasta file into a Momics repository
 
         Args:
             fasta (str): Path to a Fasta file containing the genome reference sequence.
+            threads (int, optional): Threads to parallelize I/O. Defaults to 1.
             tile (int, optional): Tile size for TileDB. Defaults to 10000.
             compression (int, optional): Compression level for TileDB. Defaults to 3.
 
@@ -373,15 +442,21 @@ class Momics:
         self._create_sequence_schema(tile, compression)
 
         # Populate each `/genome/sequence/{chrom}.tdb`
-        self._populate_sequence_table(fasta)
+        self._populate_sequence_table(fasta, threads)
 
     def add_tracks(
-        self, bws: dict, max_bws: int = 9999, tile: int = 10000, compression: int = 3
+        self,
+        bws: dict,
+        threads: int = 1,
+        max_bws: int = 9999,
+        tile: int = 10000,
+        compression: int = 3,
     ) -> "Momics":
         """Ingest bigwig coverage tracks to the `.momics` repository.
 
         Args:
             bws (dict): Dictionary of bigwig files
+            threads (int, optional): Threads to parallelize I/O. Defaults to 1.
             max_bws (int, optional): Maximum number of bigwig files. Defaults to 9999.
             tile (int, optional): Tile size. Defaults to 10000.
             compression (int, optional): Compression level. Defaults to 3.
@@ -404,7 +479,7 @@ class Momics:
             self._create_track_schema(max_bws, tile, compression)
 
         # Populate each `path/coverage/{chrom}.tdb`
-        self._populate_chroms_table(bws)
+        self._populate_chroms_table(bws, threads)
 
         # Populate `path/coverage/tracks.tdb`
         self._populate_track_table(bws)

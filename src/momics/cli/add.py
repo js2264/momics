@@ -51,14 +51,20 @@ def chroms(ctx, file, genome, path):
     required=True,
 )
 @click.argument("path", metavar="MOMICS_REPO", required=True)
+@click.option(
+    "-@",
+    "--threads",
+    default=1,
+    help="Number of threads to use in parallel operations (default: 1)",
+)
 @click.pass_context
-def tracks(ctx, file, path):
+def tracks(ctx, file, path, threads):
     """Add tracks to Momics."""
     fs = {}
     for f in file:
         fs[f.split("=", 1)[0]] = f.split("=", 1)[1]
     m = momics.Momics(path, create=False)
-    m.add_tracks(fs)
+    m.add_tracks(fs, threads=threads)
     print(m.tracks().iloc[np.where(m.tracks()["label"] != "None")].iloc[:, 0:2])
 
 
@@ -71,9 +77,15 @@ def tracks(ctx, file, path):
     required=True,
 )
 @click.argument("path", metavar="MOMICS_REPO", required=True)
+@click.option(
+    "-@",
+    "--threads",
+    default=1,
+    help="Number of threads to use in parallel operations (default: 1)",
+)
 @click.pass_context
-def seq(ctx, file, path):
+def seq(ctx, file, path, threads):
     """Add genomic sequence to Momics."""
     m = momics.Momics(path, create=False)
-    m.add_sequence(file)
+    m.add_sequence(file, threads=threads)
     print(m.seq())
