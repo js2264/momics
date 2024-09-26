@@ -10,6 +10,7 @@ import pyfaidx
 import tiledb
 
 from . import utils
+from . import config
 
 
 class Momics:
@@ -22,22 +23,18 @@ class Momics:
         Path to a `.momics` repository.
     """
 
-    def __init__(
-        self, path: str, create=True, config: tiledb.ctx.Config = tiledb.Config()
-    ):
+    def __init__(self, path: str, create=True):
         """Initialize the Momics class.
 
         Args:
             path (str): Path to a `.momics` repository.
             create (bool, optional): If not found, should the repository be initiated? Defaults to True.
-            config (tiledb.ctx.Config, optional): A specific `tiledb` config can be used to specifiy security key, e.g. for AWS.
         """
         self.path = path
-        self.ctx = tiledb.cc.Context(config)
-        self.vfs = tiledb.VFS(config=config, ctx=self.ctx)
+        self.cfg = config.MomicsConfig()
 
         ## Check if folder exists:
-        if self.vfs.is_dir(self.path):
+        if self.cfg.vfs.is_dir(self.path):
             ## If it exists and `create` = True, raise Error
             if create:
                 raise OSError(f"{path} repository already exist found.")
@@ -64,17 +61,17 @@ class Momics:
         seq_path = self._build_uri("genome", "sequence")
         coverage_path = self._build_uri("coverage")
         features_path = self._build_uri("features")
-        tiledb.group_create(self.path, ctx=self.ctx)
-        tiledb.group_create(genome_path, ctx=self.ctx)
-        tiledb.group_create(coverage_path, ctx=self.ctx)
-        tiledb.group_create(features_path, ctx=self.ctx)
-        tiledb.group_create(seq_path, ctx=self.ctx)
+        tiledb.group_create(self.path, ctx=self.cfg.ctx)
+        tiledb.group_create(genome_path, ctx=self.cfg.ctx)
+        tiledb.group_create(coverage_path, ctx=self.cfg.ctx)
+        tiledb.group_create(features_path, ctx=self.cfg.ctx)
+        tiledb.group_create(seq_path, ctx=self.cfg.ctx)
 
     def _get_table(self, uri: str) -> Optional[pd.DataFrame]:
-        if not self.vfs.is_dir(uri):
+        if not self.cfg.vfs.is_dir(uri):
             raise FileExistsError(f"{uri} does not exist.")
 
-        with tiledb.open(uri, "r", ctx=self.ctx) as A:
+        with tiledb.open(uri, "r", ctx=self.cfg.ctx) as A:
             a = A.df[:]
 
         return a
@@ -105,7 +102,7 @@ class Momics:
                 ),
             )
             schema = tiledb.ArraySchema(
-                ctx=self.ctx,
+                ctx=self.cfg.ctx,
                 domain=dom,
                 attrs=[attr],
                 sparse=False,
@@ -128,7 +125,7 @@ class Momics:
         attr1 = tiledb.Attr(name="label", dtype="ascii")
         attr2 = tiledb.Attr(name="path", dtype="ascii")
         schema = tiledb.ArraySchema(
-            ctx=self.ctx, domain=dom, attrs=[attr1, attr2], sparse=False
+            ctx=self.cfg.ctx, domain=dom, attrs=[attr1, attr2], sparse=False
         )
         tiledb.Array.create(tdb, schema)
 
@@ -158,7 +155,7 @@ class Momics:
                 ),
             )
             schema = tiledb.ArraySchema(
-                ctx=self.ctx,
+                ctx=self.cfg.ctx,
                 domain=dom,
                 attrs=[attr],
                 sparse=True,
@@ -179,7 +176,7 @@ class Momics:
             n = 0
 
         tdb = self._build_uri("coverage", "tracks.tdb")
-        with tiledb.DenseArray(tdb, mode="w", ctx=self.ctx) as array:
+        with tiledb.DenseArray(tdb, mode="w", ctx=self.cfg.ctx) as array:
             array[n : (n + len(bws))] = {
                 "label": list(bws.keys()),
                 "path": list(bws.values()),
@@ -198,7 +195,7 @@ class Momics:
             for idx, bwf in enumerate(bws):
                 with pyBigWig.open(bws[bwf]) as bw:
                     arr = np.array(bw.values(chrom, 0, chrom_length), dtype=np.float32)
-                    with tiledb.open(tdb, mode="w", ctx=self.ctx) as A:
+                    with tiledb.open(tdb, mode="w", ctx=self.cfg.ctx) as A:
                         coord1 = np.arange(0, chrom_length)
                         coord2 = np.repeat(idx + n, len(coord1))
                         A[coord1, coord2] = {"scores": arr}
@@ -210,7 +207,7 @@ class Momics:
             chrom_length = np.array(chroms[chroms["chrom"] == chrom]["length"])[0]
             with pyfaidx.Fasta(fasta) as fa:
                 chrom_seq = fa.get_seq(chrom, 1, chrom_length)
-            with tiledb.DenseArray(tdb, mode="w", ctx=self.ctx) as A:
+            with tiledb.DenseArray(tdb, mode="w", ctx=self.cfg.ctx) as A:
                 A[:] = {"nucleotide": np.array(list(chrom_seq.seq), dtype="S1")}
 
     def _purge_track(self, track: str):
@@ -218,11 +215,11 @@ class Momics:
         qc = f"idx == {idx}"
         for chrom in self.chroms()["chrom"]:
             tdb = self._build_uri("coverage", f"{chrom}.tdb")
-            with tiledb.open(tdb, mode="d", ctx=self.ctx) as A:
+            with tiledb.open(tdb, mode="d", ctx=self.cfg.ctx) as A:
                 A.query(cond=qc).submit()
 
         tdb = self._build_uri("coverage", "tracks.tdb")
-        with tiledb.open(tdb, mode="w", ctx=self.ctx) as A:
+        with tiledb.open(tdb, mode="w", ctx=self.cfg.ctx) as A:
             A[idx] = {"label": None, "path": None}
 
     def chroms(self) -> pd.DataFrame:
@@ -260,7 +257,7 @@ class Momics:
         for chrom in chroms["chrom"]:
             tdb = self._build_uri("genome", "sequence", f"{chrom}.tdb")
             chrom_len = chroms[chroms["chrom"] == chrom]["length"].iloc[0]
-            with tiledb.open(tdb, "r", ctx=self.ctx) as A:
+            with tiledb.open(tdb, "r", ctx=self.cfg.ctx) as A:
                 start_nt = "".join(A.df[0:9]["nucleotide"])
                 end_nt = "".join(A.df[(chrom_len - 10) : (chrom_len - 1)]["nucleotide"])
             chroms.loc[chroms["chrom"] == chrom, "seq"] = start_nt + "..." + end_nt
@@ -331,14 +328,17 @@ class Momics:
         attr_chr = tiledb.Attr(name="chrom", dtype="ascii", var=True)
         attr_length = tiledb.Attr(name="length", dtype=np.int64)
         schema = tiledb.ArraySchema(
-            ctx=self.ctx, domain=dom_genome, attrs=[attr_chr, attr_length], sparse=True
+            ctx=self.cfg.ctx,
+            domain=dom_genome,
+            attrs=[attr_chr, attr_length],
+            sparse=True,
         )
         tiledb.Array.create(tdb, schema)
 
         # Populate `chrom` array
         chr = list(chr_lengths.keys())
         length = list(chr_lengths.values())
-        with tiledb.open(tdb, "w", ctx=self.ctx) as array:
+        with tiledb.open(tdb, "w", ctx=self.cfg.ctx) as array:
             indices = np.arange(len(chr))
             array[indices] = {"chrom": np.array(chr, dtype="S"), "length": length}
             array.meta["genome_assembly_version"] = genome_version
@@ -363,7 +363,7 @@ class Momics:
 
         # Abort if sequence table already exists
         tdb = self._build_uri("genome", "sequence", f"{self.chroms()['chrom'][0]}.tdb")
-        if self.vfs.is_dir(tdb):
+        if self.cfg.vfs.is_dir(tdb):
             raise tiledb.cc.TileDBError(f"Error: TileDB '{tdb}' already exists.")
 
         # Abort if chr lengths in provided fasta do not match those in `chroms`
