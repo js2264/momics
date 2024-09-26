@@ -63,8 +63,6 @@ def tracks(ctx, path, coordinates, file, output: str, threads: int = 1):
     _validate_exclusive_options(file, coordinates)
 
     mom = momics.Momics(path, create=False)
-    if ctx.obj["threads"] > threads:
-        threads = ctx.obj["threads"]
 
     if coordinates is not None:
         chr, range_part = coordinates.split(":")

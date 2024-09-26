@@ -16,37 +16,32 @@ class UnsortedGroup(click.Group):
 @click.group(
     context_settings=CONTEXT_SETTINGS,
     cls=UnsortedGroup,
+    invoke_without_command=True,
     epilog="Check out our docs at https://js2264.github.io/momics/ for more details",
 )
-@click.option(
-    "-@",
-    "--threads",
-    default=1,
-    help="Number of threads to use in parallel operations (default: 1)",
-)
 @click.pass_context
-def cli(ctx, threads):
+def cli(ctx):
     """Command-line software to manage momics repositories."""
     ctx.ensure_object(dict)
-    ctx.obj["threads"] = threads
-    pass
+    if ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
 
 
 # Load and register cli subcommands
 from . import (
-    add,
-    binnify,
     create,
-    export,
+    add,
     ls,
     query,
     remove,
+    export,
+    binnify,
     cloudconfig,
 )
 
 __all__ = [
-    "add",
     "create",
+    "add",
     "ls",
     "query",
     "remove",
