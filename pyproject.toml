@@ -76,7 +76,6 @@ dev = [
 docs = [
     'autodoc',
     'sphinx-autoapi',
-    'sphinx.ext.autosummary',
     "autodocsumm",
     "sphinxcontrib-napoleon", 
     "m2r",
