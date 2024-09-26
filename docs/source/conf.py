@@ -28,6 +28,7 @@ version = release.rsplit(".", maxsplit=1)[0]
 
 extensions = [
     "sphinx.ext.autodoc",
+    "autoapi.extension",
     "sphinx.ext.doctest",
     "sphinx.ext.todo",
     "sphinx.ext.coverage",
@@ -59,7 +60,6 @@ master_doc = "index"
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-# html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
 html_logo = "_static/logo.svg"
 html_favicon = "_static/logo.svg"
@@ -84,6 +84,7 @@ html_theme_options = {
     "show_toc_level": 2,
     "footer_start": ["copyright"],
     "footer_center": ["sphinx-version"],
+    "content_footer_items": ["last-updated"],
 }
 html_context = {
     "github_url": "https://github.com/js2264/momics/",
@@ -95,12 +96,18 @@ html_context = {
 html_static_path = ["_static"]
 
 autosummary_generate = True
-autodoc_typehints = "description"
-autodoc_member_order = "groupwise"
 
 # -- Options for autoapi -------------------------------------------------------
 autoapi_type = "python"
-autoapi_dirs = ["../src/pydata_sphinx_theme"]
-autoapi_keep_files = True
+autoapi_dirs = ["../../src/momics"]
+autoapi_options = [
+    "members",
+    "undoc-members",
+    "show-inheritance",
+    "show-module-summary",
+    "special-members",
+    "imported-members",
+]
+autoapi_keep_files = False
 autoapi_root = "api"
 autoapi_member_order = "groupwise"

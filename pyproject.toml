@@ -73,6 +73,9 @@ dev = [
     "twine"
 ]
 docs = [
+    'sphinx.ext.autodoc',
+    'sphinx-autoapi',
+    'sphinx.ext.autosummary',
     "autodocsumm",
     "sphinxcontrib-napoleon", 
     "m2r",
