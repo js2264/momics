@@ -29,7 +29,12 @@ class Momics:
         Path to a `.momics` repository.
     """
 
-    def __init__(self, path: str, create=True):
+    def __init__(
+        self,
+        path: str,
+        create=True,
+        config: config.MomicsConfig = config.MomicsConfig(),
+    ):
         """Initialize the Momics class.
 
         Args:
@@ -37,7 +42,7 @@ class Momics:
             create (bool, optional): If not found, should the repository be initiated? Defaults to True.
         """
         self.path = path
-        self.cfg = config.MomicsConfig()
+        self.cfg = config
 
         ## Check if folder exists:
         if self.cfg.vfs.is_dir(self.path):

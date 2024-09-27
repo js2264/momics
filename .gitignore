@@ -40,6 +40,7 @@ test.csv
 *bins*tsv
 out.*
 *test.bed*
+ranges*
 
 # OS-generated files
 .DS_Store
