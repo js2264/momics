@@ -13,3 +13,6 @@ def test_utils():
     assert (
         c.__eq__(pd.DataFrame({"chrom": ["I"], "start": [1], "end": [10]})).all().all()
     )
+
+    with pytest.raises(ValueError, match=r"Invalid"):
+        utils.parse_ucsc_coordinates("I:1-asdc")

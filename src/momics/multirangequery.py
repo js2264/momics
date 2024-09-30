@@ -290,7 +290,8 @@ class MultiRangeQuery:
         serialized_cov = pickle.dumps(self.coverage)
         serialized_seq = pickle.dumps(self.seq)
         logger.info(f"Saving results of multi-range query to {output}...")
-        np.savez_compressed(output, coverage=serialized_cov, sequence=serialized_seq)
+        with open(output, 'wb') as f:
+            np.savez_compressed(f, coverage=serialized_cov, seq=serialized_seq)
 
     def to_json(self, output: Path):
         """Write the results of a multi-range query to a JSON file.

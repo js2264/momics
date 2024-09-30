@@ -84,13 +84,13 @@ def parse_ucsc_coordinates(coords: str) -> pd.DataFrame:
             ends.append(end)
 
         except ValueError:
-            return (
-                f"Error: Invalid start/end values in coordinate '{coord}'. "
+            raise ValueError(
+                f"Invalid start/end values in coordinate '{coord}'. "
                 + "Start and end must be integers."
             )
         except Exception:
-            return (
-                f"Error: Invalid format for UCSC-style coordinate '{coord}'. "
+            raise ValueError(
+                f"Invalid format for UCSC-style coordinate '{coord}'. "
                 + "Expected format: 'chrom:start-end'."
             )
 

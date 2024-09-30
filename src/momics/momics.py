@@ -13,7 +13,7 @@ import pyfaidx
 import tiledb
 
 from . import utils
-from . import config
+from .config import MomicsConfig
 
 
 lock = threading.Lock()
@@ -33,7 +33,7 @@ class Momics:
         self,
         path: str,
         create=True,
-        config: config.MomicsConfig = config.MomicsConfig(),
+        config: Optional[MomicsConfig] = None,
     ):
         """Initialize the Momics class.
 
@@ -42,6 +42,8 @@ class Momics:
             create (bool, optional): If not found, should the repository be initiated? Defaults to True.
         """
         self.path = path
+        if config is None:
+            config = MomicsConfig()
         self.cfg = config
 
         ## Check if folder exists:

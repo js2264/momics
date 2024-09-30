@@ -1,8 +1,10 @@
 import os
+from pathlib import Path
 import pytest
 import tempfile
 
 import momics
+from momics import multirangequery
 from momics.export import export_track
 
 
