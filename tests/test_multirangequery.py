@@ -37,7 +37,12 @@ def test_multirangequery_seq(momics_path: str, bed1: str):
     assert len(q.seq) == 1
     assert q.seq["seq"]["I:1-10"] == "ATCGATCGAT"
 
-    assert q.to_fasta()[0].id == "I:1-10"
+    bed = BedTool(bed1).to_dataframe()
+    q = MultiRangeQuery(mom, bed).query_sequence()
+    assert len(q.seq["seq"]) == 3
+    assert q.seq["seq"]["I:1-10"] == "ATCGATCGAT"
+
+    assert q.to_fa()[0].id == "I:1-10"
 
     q = MultiRangeQuery(mom, "I").query_sequence()
     assert len(q.seq["seq"]["I:1-10000"]) == 10000

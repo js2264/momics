@@ -48,7 +48,7 @@ class Momics:
         if self.cfg.vfs.is_dir(self.path):
             ## If it exists and `create` = True, raise Error
             if create:
-                raise OSError(f"{path} repository already exist found.")
+                raise OSError(f"{path} repository already exists.")
         ## If does not exist:
         else:
             ## Check if we want to create it
@@ -229,6 +229,7 @@ class Momics:
                 tasks.append((chrom, chrom_length, idx, bwf))
         ntasks = len(tasks)
         completed_tasks = [0]
+        threads = min(threads, ntasks)
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
             futures = []
@@ -271,6 +272,7 @@ class Momics:
         tasks = chroms["chrom"]
         ntasks = len(tasks)
         completed_tasks = [0]
+        threads = min(threads, ntasks)
         with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
             futures = []
             for chrom in tasks:
@@ -282,18 +284,6 @@ class Momics:
                 )
                 futures.append(future)
             concurrent.futures.wait(futures)
-
-    def _purge_track(self, track: str):
-        idx = self.tracks()["idx"][self.tracks()["label"] == track].values[0]
-        qc = f"idx == {idx}"
-        for chrom in self.chroms()["chrom"]:
-            tdb = self._build_uri("coverage", f"{chrom}.tdb")
-            with tiledb.open(tdb, mode="d", ctx=self.cfg.ctx) as A:
-                A.query(cond=qc).submit()
-
-        tdb = self._build_uri("coverage", "tracks.tdb")
-        with tiledb.open(tdb, mode="w", ctx=self.cfg.ctx) as A:
-            A[idx] = {"label": None, "path": None}
 
     def chroms(self) -> pd.DataFrame:
         """Extract chromosome table from a `.momics` repository.
@@ -503,4 +493,13 @@ class Momics:
 
         # Remove entry from each `path/coverage/{chrom}.tdb`
         # and from `path/coverage/tracks.tdb`
-        self._purge_track(track)
+        idx = self.tracks()["idx"][self.tracks()["label"] == track].values[0]
+        qc = f"idx == {idx}"
+        for chrom in self.chroms()["chrom"]:
+            tdb = self._build_uri("coverage", f"{chrom}.tdb")
+            with tiledb.open(tdb, mode="d", ctx=self.cfg.ctx) as A:
+                A.query(cond=qc).submit()
+
+        tdb = self._build_uri("coverage", "tracks.tdb")
+        with tiledb.open(tdb, mode="w", ctx=self.cfg.ctx) as A:
+            A[idx] = {"label": None, "path": None}

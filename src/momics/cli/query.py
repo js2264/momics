@@ -127,7 +127,7 @@ def seq(ctx, path, coordinates, file, output: str, threads: int = 1):
     else:
         bed = BedTool(file).to_dataframe()
 
-    res = MultiRangeQuery(mom, bed).query_sequence(threads=threads).to_fasta()
+    res = MultiRangeQuery(mom, bed).query_sequence(threads=threads).to_fa()
     if output is None:
         for record in res:
             print(f">{record.id}")

@@ -66,7 +66,7 @@ def test_momicsconfig_with_local_config(local_config):
 
 def test_momicsconfig_without_valid_config():
     """Test MomicsConfig without valid configuration."""
-    momics_config = MomicsConfig()
+    momics_config = MomicsConfig(local_cfg=Path("dasdcasdcasdcasdc"))
 
     assert (
         momics_config.type is None

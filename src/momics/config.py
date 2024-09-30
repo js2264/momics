@@ -3,6 +3,8 @@ from typing import Optional
 import configparser
 import tiledb
 
+from .logging import logger
+
 
 class LocalConfig:
     """
@@ -49,9 +51,11 @@ class S3Config:
     """
     This class is used to provide manual configuration for S3 access. It requires
     the following parameters:
+
     - `region`: The region of the S3 bucket
     - `access_key_id`: The access key ID for the S3 bucket
     - `secret_access_key`: The secret access key for the S3 bucket
+
     """
 
     def __init__(self, region=None, access_key_id=None, secret_access_key=None):
@@ -80,18 +84,19 @@ class MomicsConfig:
 
     To ensure that the config file is complete, the `[s3]` section should contain
     the following keys:
+
     - `region`
     - `access_key_id`
     - `secret_access_key`
 
     For example, a local config file might look like:
 
-        ```
+    ::
+
         [s3]
         region = us-west-1
         access_key_id = key
         secret_access_key = secret
-        ```
 
     A manual configuration can also be used to access a specific cloud provider.
     To access an S3 bucket, pass an `S3Config` object to the `s3` parameter.
@@ -108,6 +113,7 @@ class MomicsConfig:
         if s3 is not None:
             self.type = "s3"
             self.cfg = self._create_manual_tiledb_config(s3)
+            logger.info(f"Using S3 config.")
         # Otherwise, parse local config.
         else:
             local_cfg = LocalConfig(local_cfg)
@@ -115,10 +121,14 @@ class MomicsConfig:
             if local_cfg._validate_local_config():
                 self.type = "local"
                 self.cfg = self._create_tiledb_config_from_local(local_cfg)
+                logger.info(f"Using local config from {local_cfg.config_path} file.")
             # Otherwise, use blank configuration.
             else:
                 self.type = None
                 self.cfg = tiledb.Config()
+                logger.info(
+                    f"No cloud config found for momics. Consider populating a ~/.momics_config.ini file with configuration settings for cloud access."
+                )
 
         self.ctx = tiledb.cc.Context(self.cfg)
         self.vfs = tiledb.VFS(config=self.cfg, ctx=self.ctx)

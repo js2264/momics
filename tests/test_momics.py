@@ -18,7 +18,7 @@ def test_Momics_init(momics_path: str):
 
     assert x.path == momics_path
 
-    with pytest.raises(OSError, match=r".* repository already exist found"):
+    with pytest.raises(OSError, match=r".* repository already exists"):
         momics.Momics(momics_path, create=True)
 
 
