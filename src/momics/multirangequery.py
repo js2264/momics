@@ -1,7 +1,10 @@
 import concurrent.futures
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import json
+import pickle
 import tiledb
 import threading
 from Bio.Seq import Seq
@@ -269,3 +272,34 @@ class MultiRangeQuery:
             seq_records.append(seq_record)
 
         return seq_records
+
+    def to_npz(self, output: Path):
+        """Write the results of a multi-range query to a NPZ file.
+
+        Args:
+            output (Path): Path to the output NPZ file.
+        """
+        if self.coverage is None:
+            raise AttributeError(
+                "self.coverage is None. Call `self.query_tracks()` to populate it."
+            )
+        if self.seq is None:
+            raise AttributeError(
+                "self.seq is None. Call `self.query_sequence()` to populate it."
+            )
+        serialized_cov = pickle.dumps(self.coverage)
+        serialized_seq = pickle.dumps(self.seq)
+        logger.info(f"Saving results of multi-range query to {output}...")
+        np.savez_compressed(output, coverage=serialized_cov, sequence=serialized_seq)
+
+    def to_json(self, output: Path):
+        """Write the results of a multi-range query to a JSON file.
+
+        Args:
+            output (Path): Path to the output JSON file.
+        """
+        data = self.coverage
+        data["seq"] = self.seq["seq"]
+        logger.info(f"Saving results of multi-range query to {output}...")
+        with open(output, "w") as json_file:
+            json.dump(data, json_file, indent=4)

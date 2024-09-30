@@ -6,6 +6,7 @@ from pybedtools import BedTool
 from momics.multirangequery import MultiRangeQuery
 
 from .. import momics
+from ..logging import logger
 from . import cli
 
 
@@ -76,7 +77,7 @@ def tracks(ctx, path, coordinates, file, output: str, threads: int = 1):
     if output is None:
         print(res.to_csv(sep="\t", index=False))
     else:
-        print(f"Writing coverage data to {output} file...")
+        logger.info(f"Writing coverage data to {output} file...")
         res.to_csv(path_or_buf=output, sep="\t", index=False)
 
 
@@ -133,6 +134,6 @@ def seq(ctx, path, coordinates, file, output: str, threads: int = 1):
             print(f">{record.id}")
             print(record.seq)
     else:
-        print(f"Writing sequences to {output} file...")
+        logger.info(f"Writing sequences to {output} file...")
         with open(output, "w") as fasta_file:
             SeqIO.write(res, fasta_file, "fasta")

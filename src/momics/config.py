@@ -79,8 +79,8 @@ class MomicsConfig:
 
     By default, it will parse a config file located at `~/.momics_config.ini` and
     use the S3 configuration provided there. If the file does not exist or is
-    incomplete, it will fall back to a base configuration which will allow local
-    momics repositories to be accessed.
+    incomplete, it will fall back to a base configuration which will only 
+    allow local momics repositories to be accessed.
 
     To ensure that the config file is complete, the `[s3]` section should contain
     the following keys:
