@@ -72,7 +72,7 @@ class MultiRangeQuery:
             MultiRangeQuery: MultiRangeQuery: An updated MultiRangeQuery object
         """
 
-        def _query_tracks_per_chr(self, chrom, group):
+        def _query_tracks_per_chr(self, chrom, group, tracks):
 
             ranges = list(zip(group["start"], group["end"]))
 
@@ -99,8 +99,7 @@ class MultiRangeQuery:
                 subarray = A.multi_index[ranges_1, :]
 
             # Reformat to add track and range labels
-            tr = self.momics.tracks()
-            tr = tr[[x != "None" for x in tr["label"]]]
+            tr = tracks[[x != "None" for x in tracks["label"]]]
             subarray_df = pd.merge(tr, pd.DataFrame(subarray), on="idx").drop(
                 ["idx", "path"], axis=1
             )
@@ -128,20 +127,28 @@ class MultiRangeQuery:
                     f"task {completed_tasks[0]}/{ntasks} :: Queried tracks for chromosome {chrom}."
                 )
 
+        tracks = self.momics.tracks()
         tasks = [(chrom, group) for (chrom, group) in self.queries.items()]
         ntasks = len(tasks)
         completed_tasks = [0]
         threads = min(threads, ntasks)
 
         if threads == 1:
-            results = [
-                _query_tracks_per_chr(self, chrom, group) for chrom, group in tasks
-            ]
+            results = []
+            for chrom, group in tasks:
+                results.append(_query_tracks_per_chr(self, chrom, group, tracks))
+                completed_tasks[0] += 1
+                logger.info(
+                    f"task {completed_tasks[0]}/{ntasks} :: Queried tracks for chromosome {chrom}."
+                )
+
         else:
             with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
                 futures = []
                 for chrom, group in tasks:
-                    future = executor.submit(_query_tracks_per_chr, self, chrom, group)
+                    future = executor.submit(
+                        _query_tracks_per_chr, self, chrom, group, tracks
+                    )
                     future.add_done_callback(
                         lambda f, c=chrom: _log_task_completion(
                             f, c, ntasks, completed_tasks
@@ -155,8 +162,7 @@ class MultiRangeQuery:
                 results.append(future.result())
 
         res = {}
-        tr = self.momics.tracks()
-        tr = list(tr[[x != "None" for x in tr["label"]]]["label"])
+        tr = list(tracks[[x != "None" for x in tracks["label"]]]["label"])
         for track in tr:
             scores_from_all_chrs = [x[track] for x in results]
             d = {k: v for d in scores_from_all_chrs for k, v in d.items()}
@@ -202,7 +208,13 @@ class MultiRangeQuery:
         completed_tasks = [0]
         threads = min(threads, ntasks)
         if threads == 1:
-            seqs = [_query_seq_per_chr(self, chrom, group) for chrom, group in tasks]
+            seqs = []
+            for chrom, group in tasks:
+                seqs.append(_query_seq_per_chr(self, chrom, group))
+                completed_tasks[0] += 1
+                logger.info(
+                    f"task {completed_tasks[0]}/{ntasks} :: Queried sequences for chromosome {chrom}."
+                )
         else:
             with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
                 futures = []
@@ -290,7 +302,7 @@ class MultiRangeQuery:
         serialized_cov = pickle.dumps(self.coverage)
         serialized_seq = pickle.dumps(self.seq)
         logger.info(f"Saving results of multi-range query to {output}...")
-        with open(output, 'wb') as f:
+        with open(output, "wb") as f:
             np.savez_compressed(f, coverage=serialized_cov, seq=serialized_seq)
 
     def to_json(self, output: Path):

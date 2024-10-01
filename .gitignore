@@ -29,20 +29,6 @@ MANIFEST
 venv/
 .idea/
 
-# User resources
-paper/
-data
-momics-paper.md
-test.fa
-test.csv
-*bw
-*bins*bed
-*bins*tsv
-out.*
-*test.bed*
-ranges*
-momics-437* 
-
 # OS-generated files
 .DS_Store
 .Spotlight-V100
@@ -58,3 +44,19 @@ example.py
 benchmark.py
 /*py
 .secrets
+
+# User resources
+paper/
+data
+momics-paper.md
+test.fa
+test.csv
+*bw
+*bins*bed
+*bins*tsv
+out.*
+*test.bed*
+ranges*
+momics-437* 
+tests/test_cloud.py
+output*

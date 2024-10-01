@@ -1,6 +1,6 @@
 # momics
 
-`momics` is both a revolutionary file format for efficient storage of genomic data, and a Python package designed to query and manipulate these files. The file format is specifically designed to handle genomic coverage tracks and sequences. The package provides an intuitive command-line interface (CLI) and a Python library for bioinformatics workflows involving genomic data. 
+`momics` is both a revolutionary file format for efficient storage of ***multi-omics*** data, and a Python package designed to query and manipulate these files. The file format is specifically designed to handle genomic coverage tracks and sequences. The package provides an intuitive command-line interface (CLI) and a Python library for bioinformatics workflows involving genomic data. 
 
 ## Install 
 
