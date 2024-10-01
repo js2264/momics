@@ -41,6 +41,7 @@ test.csv
 out.*
 *test.bed*
 ranges*
+momics-437* 
 
 # OS-generated files
 .DS_Store

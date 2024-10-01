@@ -45,7 +45,7 @@ class LocalConfig:
         """Validate LocalConfig by checking if all required keys exist for each cloud provider."""
         required_keys = {
             "s3": ["region", "access_key_id", "secret_access_key"],
-            "gcs": ["project_id", "private_key_id", "private_key"],
+            "gcs": ["project_id", "credentials"],
             "azure": ["account_name", "account_key"],
         }
         for section in self.cfg.sections():
@@ -86,27 +86,19 @@ class GCSConfig:
     the following parameters:
 
     - `project_id`: The project ID for the GCS bucket
-    - `credentials`:
-    - `private_key_id`: The private key ID for the GCS bucket user
-    - `private_key`: The private key for the GCS bucket user
+    - `credentials`: Path to the credentials JSON file for the GCS bucket
     """
 
-    def __init__(
-        self, project_id=None, credentials=None, private_key_id=None, private_key=None
-    ):
+    def __init__(self, project_id=None, credentials=None):
         self.project_id = project_id
         self.credentials = credentials
-        self.private_key_id = private_key_id
-        self.private_key = private_key
         if not self._is_valid():
             raise ValueError(
-                "Invalid GCS configuration. Please provide all required values: `project_id`, `credentials`, `private_key_id`, `private_key`"
+                "Invalid GCS configuration. Please provide all required values: `project_id`, `credentials`"
             )
 
     def _is_valid(self):
-        return all(
-            [self.project_id, self.credentials, self.private_key_id, self.private_key]
-        )
+        return all([self.project_id, self.credentials])
 
 
 class AzureConfig:
@@ -224,8 +216,6 @@ class MomicsConfig:
                 {
                     "vfs.gcs.project_id": config.project_id,
                     "vfs.gcs.credentials": config.credentials,
-                    "vfs.gcs.private_key_id": config.private_key_id,
-                    "vfs.gcs.private_key": config.private_key,
                 }
             )
         elif isinstance(config, AzureConfig):
@@ -254,12 +244,6 @@ class MomicsConfig:
                 "vfs.gcs.project_id": local_cfg.get("gcs", "project_id", default=None),
                 "vfs.gcs.credentials": local_cfg.get(
                     "gcs", "credentials", default=None
-                ),
-                "vfs.gcs.private_key_id": local_cfg.get(
-                    "gcs", "private_key_id", default=None
-                ),
-                "vfs.gcs.private_key": local_cfg.get(
-                    "gcs", "private_key", default=None
                 ),
                 #
                 #
