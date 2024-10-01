@@ -1,4 +1,5 @@
 import concurrent.futures
+import multiprocessing
 from pathlib import Path
 
 import numpy as np
@@ -62,6 +63,51 @@ class MultiRangeQuery:
         self.coverage = None
         self.seq = None
 
+    @staticmethod
+    def _query_tracks_per_chr(chrom, group, tracks, tdb, cfg_dict):
+
+        ranges = list(zip(group["start"], group["end"]))
+
+        # Prepare empty long DataFrame without scores, to merge with results
+        ranges_str = []
+        for _, (start, end) in enumerate(ranges):
+            breadth = end - start + 1
+            label = f"{chrom}:{start}-{end}"
+            ranges_str.extend([label] * breadth)
+        ranges_df = pd.DataFrame(
+            {
+                "range": ranges_str,
+                "chrom": chrom,
+                "position": [
+                    item for X in ranges for item in np.arange(X[0], X[1] + 1)
+                ],
+            }
+        )
+
+        # Extract scores from tileDB and wrangle them into DataFrame
+        ranges_1 = list(zip(group["start"] - 1, group["end"] - 1))
+        cfg = tiledb.Config(cfg_dict)
+        with tiledb.open(tdb, "r", config=cfg) as A:
+            subarray = A.multi_index[ranges_1, :]
+
+        # Reformat to add track and range labels
+        tr = tracks[[x != "None" for x in tracks["label"]]]
+        subarray_df = pd.merge(tr, pd.DataFrame(subarray), on="idx").drop(
+            ["idx", "path"], axis=1
+        )
+        subarray_df["position"] += 1
+        df = pd.merge(ranges_df, subarray_df, on="position", how="left")
+        res = {}
+        for track in list(tr["label"]):
+            res[track] = (
+                df[df["label"] == track]
+                .groupby("range")["scores"]
+                .apply(list)
+                .to_dict()
+            )
+
+        return res
+
     def query_tracks(self, threads: int = 1) -> "MultiRangeQuery":
         """Query multiple coverage ranges from a Momics repo.
 
@@ -71,49 +117,6 @@ class MultiRangeQuery:
         Returns:
             MultiRangeQuery: MultiRangeQuery: An updated MultiRangeQuery object
         """
-
-        def _query_tracks_per_chr(self, chrom, group, tracks):
-
-            ranges = list(zip(group["start"], group["end"]))
-
-            # Prepare empty long DataFrame without scores, to merge with results
-            ranges_str = []
-            for _, (start, end) in enumerate(ranges):
-                breadth = end - start + 1
-                label = f"{chrom}:{start}-{end}"
-                ranges_str.extend([label] * breadth)
-            ranges_df = pd.DataFrame(
-                {
-                    "range": ranges_str,
-                    "chrom": chrom,
-                    "position": [
-                        item for X in ranges for item in np.arange(X[0], X[1] + 1)
-                    ],
-                }
-            )
-
-            # Extract scores from tileDB and wrangle them into DataFrame
-            ranges_1 = list(zip(group["start"] - 1, group["end"] - 1))
-            tdb = self.momics._build_uri("coverage", f"{chrom}.tdb")
-            with tiledb.open(tdb, "r", ctx=self.momics.cfg.ctx) as A:
-                subarray = A.multi_index[ranges_1, :]
-
-            # Reformat to add track and range labels
-            tr = tracks[[x != "None" for x in tracks["label"]]]
-            subarray_df = pd.merge(tr, pd.DataFrame(subarray), on="idx").drop(
-                ["idx", "path"], axis=1
-            )
-            subarray_df["position"] += 1
-            df = pd.merge(ranges_df, subarray_df, on="position", how="left")
-            res = {}
-            for track in list(tr["label"]):
-                res[track] = (
-                    df[df["label"] == track]
-                    .groupby("range")["scores"]
-                    .apply(list)
-                    .to_dict()
-                )
-            return res
 
         def _log_task_completion(future, chrom, ntasks, completed_tasks):
             if future.exception() is not None:
@@ -128,38 +131,34 @@ class MultiRangeQuery:
                 )
 
         tracks = self.momics.tracks()
-        tasks = [(chrom, group) for (chrom, group) in self.queries.items()]
+        tasks = [
+            (
+                chrom,
+                group,
+                tracks,
+                self.momics._build_uri("coverage", f"{chrom}.tdb"),
+                {k: v for k, v in self.momics.cfg.cfg.items()},
+            )
+            for (chrom, group) in self.queries.items()
+        ]
         ntasks = len(tasks)
         completed_tasks = [0]
         threads = min(threads, ntasks)
 
         if threads == 1:
             results = []
-            for chrom, group in tasks:
-                results.append(_query_tracks_per_chr(self, chrom, group, tracks))
+            for chrom, group, tracks, tdb, cfg_dict in tasks:
+                results.append(
+                    self._query_tracks_per_chr(chrom, group, tracks, tdb, cfg_dict)
+                )
                 completed_tasks[0] += 1
                 logger.info(
                     f"task {completed_tasks[0]}/{ntasks} :: Queried tracks for chromosome {chrom}."
                 )
 
         else:
-            with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
-                futures = []
-                for chrom, group in tasks:
-                    future = executor.submit(
-                        _query_tracks_per_chr, self, chrom, group, tracks
-                    )
-                    future.add_done_callback(
-                        lambda f, c=chrom: _log_task_completion(
-                            f, c, ntasks, completed_tasks
-                        )
-                    )
-                    futures.append(future)
-                concurrent.futures.wait(futures)
-
-            results = []
-            for future in concurrent.futures.as_completed(futures):
-                results.append(future.result())
+            with multiprocessing.Pool(processes=threads) as pool:
+                results = pool.starmap(self._query_tracks_per_chr, tasks)
 
         res = {}
         tr = list(tracks[[x != "None" for x in tracks["label"]]]["label"])
@@ -171,6 +170,17 @@ class MultiRangeQuery:
         self.coverage = res
         return self
 
+    @staticmethod
+    def _query_seq_per_chr(chrom, group, tdb, cfg_dict):
+        ranges = list(zip(group["start"], group["end"]))
+        seqs = {}
+        cfg = tiledb.Config(cfg_dict)
+        for _, (start, end) in enumerate(ranges):
+            with tiledb.open(tdb, "r", ctx=cfg) as A:
+                seq = A.df[(start - 1) : (end - 1)]["nucleotide"]
+            seqs[f"{chrom}:{start}-{end}"] = "".join(seq)
+        return seqs
+
     def query_sequence(self, threads: int = 1) -> "MultiRangeQuery":
         """Query multiple sequence ranges from a Momics repo.
 
@@ -181,54 +191,29 @@ class MultiRangeQuery:
             MultiRangeQuery: An updated MultiRangeQuery object
         """
 
-        def _query_seq_per_chr(self, chrom, group):
-            ranges = list(zip(group["start"], group["end"]))
-            seqs = {}
-            tdb = self.momics._build_uri("genome", "sequence", f"{chrom}.tdb")
-            for _, (start, end) in enumerate(ranges):
-                with tiledb.open(tdb, "r", ctx=self.momics.cfg.ctx) as A:
-                    seq = A.df[(start - 1) : (end - 1)]["nucleotide"]
-                seqs[f"{chrom}:{start}-{end}"] = "".join(seq)
-            return seqs
-
-        def _log_task_completion(future, chrom, ntasks, completed_tasks):
-            if future.exception() is not None:
-                logger.error(
-                    f"Querying sequences for chromosome {chrom} failed with exception: {future.exception()}"
-                )
-            else:
-                with lock:
-                    completed_tasks[0] += 1
-                logger.info(
-                    f"task {completed_tasks[0]}/{ntasks} :: Queried sequences for chromosome {chrom}."
-                )
-
-        tasks = [(chrom, group) for (chrom, group) in self.queries.items()]
+        tasks = [
+            (
+                chrom,
+                group,
+                self.momics._build_uri("genome", "sequence", f"{chrom}.tdb"),
+                {k: v for k, v in self.momics.cfg.cfg.items()},
+            )
+            for (chrom, group) in self.queries.items()
+        ]
         ntasks = len(tasks)
         completed_tasks = [0]
         threads = min(threads, ntasks)
         if threads == 1:
             seqs = []
-            for chrom, group in tasks:
-                seqs.append(_query_seq_per_chr(self, chrom, group))
+            for chrom, group, tdb, cfg_dict in tasks:
+                seqs.append(self._query_seq_per_chr(chrom, group, tdb, cfg_dict))
                 completed_tasks[0] += 1
                 logger.info(
                     f"task {completed_tasks[0]}/{ntasks} :: Queried sequences for chromosome {chrom}."
                 )
         else:
-            with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
-                futures = []
-                for chrom, group in tasks:
-                    future = executor.submit(_query_seq_per_chr, self, chrom, group)
-                    future.add_done_callback(
-                        lambda f, c=chrom: _log_task_completion(
-                            f, c, ntasks, completed_tasks
-                        )
-                    )
-                    futures.append(future)
-                seqs = []
-                for future in concurrent.futures.as_completed(futures):
-                    seqs.append(future.result())
+            with multiprocessing.Pool(processes=threads) as pool:
+                seqs = pool.starmap(self._query_seq_per_chr, tasks)
 
         mseqs = {}
         for d in seqs:
