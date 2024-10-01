@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import pytest
 import tiledb
@@ -78,6 +79,29 @@ def test_Momics_add_tracks(momics_path: str, bw1: str, bw2: str):
 
 
 @pytest.mark.order(1)
+def test_Momics_add_track(momics_path: str, bw1: str, bw2: str):
+    mom = momics.Momics(momics_path, create=False)
+    chroms = mom.chroms()
+    coverage = {
+        chrom: np.random.rand(length) for i, (idx, chrom, length) in chroms.iterrows()
+    }
+    with pytest.raises(ValueError, match=r".*already present in `tracks` table"):
+        mom.add_track(coverage, "bw1")
+
+    mom.add_track(coverage, "custom")
+    print(mom.tracks())
+    out = pd.DataFrame(
+        {
+            "idx": [0, 1, 2],
+            "label": ["bw1", "bw2", "custom"],
+            "path": [bw1, bw1, "custom"],
+        }
+    )
+    assert mom.tracks().__eq__(out).all().all()
+    print(mom.tracks())
+
+
+@pytest.mark.order(1)
 def test_Momics_add_seq(momics_path: str, fa1: str, fa2: str):
     mom = momics.Momics(momics_path, create=False)
 
@@ -98,19 +122,21 @@ def test_Momics_remove_tracks(momics_path: str, bw1: str, bw2: str, bed1: str):
     mom.add_tracks({"bw3": bw1})
     mom.add_tracks({"bw4": bw1})
     mom.remove_track("bw1")
+    print(mom.tracks())
     out = pd.DataFrame(
         {
-            "idx": [0, 1, 2, 3],
-            "label": ["None", "bw2", "bw3", "bw4"],
-            "path": ["None", bw1, bw1, bw1],
+            "idx": [0, 1, 2, 3, 4],
+            "label": ["None", "bw2", "custom", "bw3", "bw4"],
+            "path": ["None", bw1, "custom", bw1, bw1],
         }
     )
+    print(out)
     assert mom.tracks().__eq__(out).all().all()
     q = MultiRangeQuery(mom, "I:991-1010").query_tracks()
-    assert q.coverage.keys().__eq__(["bw2", "bw3", "bw4"])
+    assert q.coverage.keys().__eq__(["bw2", "custom", "bw3", "bw4"])
     bed = BedTool(bed1).to_dataframe()
     q = MultiRangeQuery(mom, bed).query_tracks()
-    assert q.coverage.keys().__eq__(["bw2", "bw3", "bw4"])
+    assert q.coverage.keys().__eq__(["bw2", "custom", "bw3", "bw4"])
 
 
 @pytest.mark.order(2)

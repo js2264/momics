@@ -3,7 +3,6 @@ from time import sleep
 from typing import Dict, Optional
 from pathlib import Path
 import concurrent.futures
-from .logging import logger
 import threading
 
 import numpy as np
@@ -14,6 +13,7 @@ import tiledb
 
 from . import utils
 from .config import MomicsConfig
+from .logging import logger
 
 
 lock = threading.Lock()
@@ -481,6 +481,100 @@ class Momics:
 
         # Populate `path/coverage/tracks.tdb`
         self._populate_track_table(bws)
+
+    def add_track(
+        self,
+        coverage: dict,
+        track: str,
+        threads: int = 1,
+    ) -> "Momics":
+        """
+        Ingest a coverage track provided as a dictionary to a `.momics` repository.
+        This method is useful when you have already computed the coverage track and
+        have it in memory.
+
+        Args:
+            coverage (dict): Dictionary of coverage tracks. The keys are chromosome names and the values are numpy arrays.
+            track (str): Label to store the track under.
+            threads (int, optional): Threads to parallelize I/O. Defaults to 1.
+
+        Returns:
+            Momics: The updated Momics object
+        """
+        # Abort if `chroms` have not been filled
+        chroms = self.chroms()
+        tracks = self.tracks()
+        n = tracks.shape[0]
+        if chroms.empty:
+            raise ValueError("Please fill out `chroms` table first.")
+        if tracks.empty:
+            raise ValueError("Please fill out `tracks` table first.")
+
+        # Abort if chr lengths in provided bw do not match those in `chroms`
+        reference_lengths = dict(zip(chroms["chrom"], chroms["length"]))
+        lengths = dict(zip(chroms["chrom"], [len(v) for k, v in coverage.items()]))
+        if lengths != reference_lengths:
+            raise Exception(
+                f"`{track}` coverage track does not chromomosome lengths matching those of the momics repository."
+            )
+
+        # Abort if bw labels already exist
+        if track in set(tracks["label"]):
+            raise ValueError(
+                f"Provided label '{track}' already present in `tracks` table"
+            )
+
+        # Populate each `path/coverage/{chrom}.tdb`
+        def _process_chrom_cov(self, chrom, chrom_length, arr, n):
+            sleep(1)
+            tdb = self._build_uri("coverage", f"{chrom}.tdb")
+            with tiledb.open(tdb, mode="w", ctx=self.cfg.ctx) as A:
+                coord1 = np.arange(0, chrom_length)
+                coord2 = np.repeat(n, len(coord1))
+                A[coord1, coord2] = {"scores": arr}
+
+        def _log_task_completion(future, chrom, ntasks, completed_tasks):
+            if future.exception() is not None:
+                logger.error(
+                    f"Manual ingestion over {chrom} failed with exception: {future.exception()}"
+                )
+            else:
+                with lock:
+                    completed_tasks[0] += 1
+                logger.info(
+                    f"task {completed_tasks[0]}/{ntasks} :: ingested coverage over {chrom}."
+                )
+
+        tasks = []
+        for chrom in chroms["chrom"]:
+            chrom_length = np.array(chroms[chroms["chrom"] == chrom]["length"])[0]
+            tasks.append((chrom, chrom_length))
+        ntasks = len(tasks)
+        completed_tasks = [0]
+        threads = min(threads, ntasks)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+            futures = []
+            for chrom, chrom_length in tasks:
+                arr = coverage[chrom]
+                future = executor.submit(
+                    _process_chrom_cov, self, chrom, chrom_length, arr, n
+                )
+                future.add_done_callback(
+                    lambda f, c=chrom: _log_task_completion(
+                        f, c, ntasks, completed_tasks
+                    )
+                )
+                futures.append(future)
+            concurrent.futures.wait(futures)
+
+        # Populate `path/coverage/tracks.tdb`
+        tdb = self._build_uri("coverage", "tracks.tdb")
+        with tiledb.DenseArray(tdb, mode="w", ctx=self.cfg.ctx) as array:
+            array[n : (n + 1)] = {
+                "label": track,
+                "path": track,
+            }
 
     def remove_track(self, track: str) -> "Momics":
         """Remove a track from a `.momics` repository.
