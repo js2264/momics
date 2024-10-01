@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import Optional
 import configparser
@@ -11,7 +12,7 @@ class LocalConfig:
     LocalConfig is a class to manage the configuration of local momics repositories.
     """
 
-    def __init__(self, path=Path.home() / ".momics_config.ini"):
+    def __init__(self, path=Path.home() / ".momics.ini"):
         """Initialize and read from a local config file."""
         self.config_path = path
         self.cfg = configparser.ConfigParser()
@@ -20,6 +21,8 @@ class LocalConfig:
             self.cfg.read(self.config_path)
         else:
             self.cfg.add_section("s3")
+            self.cfg.add_section("gcs")
+            self.cfg.add_section("azure")
             self._write_default_config()
 
     def _write_default_config(self):
@@ -39,11 +42,17 @@ class LocalConfig:
             self.cfg.write(configfile)
 
     def _validate_local_config(self):
-        """Validate LocalConfig by checking if all required keys exist."""
-        required_keys = ["region", "access_key_id", "secret_access_key"]
-        for key in required_keys:
-            if self.get("s3", key) is None:
-                return False
+        """Validate LocalConfig by checking if all required keys exist for each cloud provider."""
+        required_keys = {
+            "s3": ["region", "access_key_id", "secret_access_key"],
+            "gcs": ["project_id", "private_key_id", "private_key"],
+            "azure": ["account_name", "account_key"],
+        }
+        for section in self.cfg.sections():
+            if not all([self.cfg.get(section, key) for key in required_keys[section]]):
+                raise ValueError(
+                    f"Invalid S3 configuration. Please provide all required values: {required_keys[section]}"
+                )
         return True
 
 
@@ -71,23 +80,66 @@ class S3Config:
         return all([self.region, self.access_key_id, self.secret_access_key])
 
 
+class GCSConfig:
+    """
+    This class is used to provide manual configuration for GCS access. It requires
+    the following parameters:
+
+    - `project_id`: The project ID for the GCS bucket
+    - `credentials`:
+    - `private_key_id`: The private key ID for the GCS bucket user
+    - `private_key`: The private key for the GCS bucket user
+    """
+
+    def __init__(
+        self, project_id=None, credentials=None, private_key_id=None, private_key=None
+    ):
+        self.project_id = project_id
+        self.credentials = credentials
+        self.private_key_id = private_key_id
+        self.private_key = private_key
+        if not self._is_valid():
+            raise ValueError(
+                "Invalid GCS configuration. Please provide all required values: `project_id`, `credentials`, `private_key_id`, `private_key`"
+            )
+
+    def _is_valid(self):
+        return all(
+            [self.project_id, self.credentials, self.private_key_id, self.private_key]
+        )
+
+
+class AzureConfig:
+    """
+    This class is used to provide manual configuration for Azure access. It requires
+    the following parameters:
+
+    - `account_name`: An account name
+    - `account_key`: The associated account key
+    """
+
+    def __init__(self, account_name=None, account_key=None):
+        self.account_name = account_name
+        self.account_key = account_key
+        if not self._is_valid():
+            raise ValueError(
+                "Invalid Azure configuration. Please provide all required values: `account_name`, `account_key`"
+            )
+
+    def _is_valid(self):
+        return all([self.account_name, self.account_key])
+
+
 class MomicsConfig:
     """
     MomicsConfig is a class to automatically manage the configuration of the momics
     repository being accessed. It is used to set up the configuration for seamless
     cloud access.
 
-    By default, it will parse a config file located at `~/.momics_config.ini` and
-    use the S3 configuration provided there. If the file does not exist or is
-    incomplete, it will fall back to a base configuration which will only 
+    By default, it will parse a config file located at `~/.momics.ini` and
+    use the first cloud configuration provided there. If the file does not exist or is
+    incomplete, it will fall back to a base configuration which will only
     allow local momics repositories to be accessed.
-
-    To ensure that the config file is complete, the `[s3]` section should contain
-    the following keys:
-
-    - `region`
-    - `access_key_id`
-    - `secret_access_key`
 
     For example, a local config file might look like:
 
@@ -98,14 +150,30 @@ class MomicsConfig:
         access_key_id = key
         secret_access_key = secret
 
+        [gcs]
+        region = us-west-1
+        access_key_id = key
+        secret_access_key = secret
+
+        [azure]
+        account_name = account
+        account_key = key
+
     A manual configuration can also be used to access a specific cloud provider.
-    To access an S3 bucket, pass an `S3Config` object to the `s3` parameter.
+
+      - To access an S3 bucket, pass an `S3Config` object to the `s3` parameter.
+      - To access a GCS bucket, pass a `GCSConfig` object to the `gcs` parameter.
+      - To access an Azure bucket, pass an `AzureConfig` object to the `azure` parameter.
+
+    Cloud configuration is chosen in this order: `manual` (`S3Config` > `GCSConfig` > `AzureConfig`) > `local` > `blank`.
     """
 
     def __init__(
         self,
         s3: Optional[S3Config] = None,
-        local_cfg: Path = Path.home() / ".momics_config.ini",
+        gcs: Optional[GCSConfig] = None,
+        azure: Optional[AzureConfig] = None,
+        local_cfg: Path = Path.home() / ".momics.ini",
     ):
         """Initialize the momics configurator to enable cloud access."""
 
@@ -114,6 +182,14 @@ class MomicsConfig:
             self.type = "s3"
             self.cfg = self._create_manual_tiledb_config(s3)
             logger.info(f"Using S3 config.")
+        elif gcs is not None:
+            self.type = "gcs"
+            self.cfg = self._create_manual_tiledb_config(gcs)
+            logger.info(f"Using GCS config.")
+        elif azure is not None:
+            self.type = "azure"
+            self.cfg = self._create_manual_tiledb_config(azure)
+            logger.info(f"Using Azure config.")
         # Otherwise, parse local config.
         else:
             local_cfg = LocalConfig(local_cfg)
@@ -127,29 +203,71 @@ class MomicsConfig:
                 self.type = None
                 self.cfg = tiledb.Config()
                 logger.info(
-                    f"No cloud config found for momics. Consider populating a ~/.momics_config.ini file with configuration settings for cloud access."
+                    f"No cloud config found for momics. Consider populating `~/.momics.ini` file with configuration settings for cloud access."
                 )
 
         self.ctx = tiledb.cc.Context(self.cfg)
         self.vfs = tiledb.VFS(config=self.cfg, ctx=self.ctx)
 
-    def _create_manual_tiledb_config(self, config_dict):
-        return tiledb.Config(
-            {
-                "vfs.s3.region": config_dict.region,
-                "vfs.s3.aws_access_key_id": config_dict.access_key_id,
-                "vfs.s3.aws_secret_access_key": config_dict.secret_access_key,
-            }
-        )
+    def _create_manual_tiledb_config(self, config):
+        if isinstance(config, S3Config):
+            return tiledb.Config(
+                {
+                    "vfs.s3.region": config.region,
+                    "vfs.s3.aws_access_key_id": config.access_key_id,
+                    "vfs.s3.aws_secret_access_key": config.secret_access_key,
+                }
+            )
+        elif isinstance(config, GCSConfig):
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = config.credentials
+            return tiledb.Config(
+                {
+                    "vfs.gcs.project_id": config.project_id,
+                    "vfs.gcs.credentials": config.credentials,
+                    "vfs.gcs.private_key_id": config.private_key_id,
+                    "vfs.gcs.private_key": config.private_key,
+                }
+            )
+        elif isinstance(config, AzureConfig):
+            return tiledb.Config(
+                {
+                    "vfs.azure.storage_account_name": config.account_name,
+                    "vfs.azure.storage_account_key": config.account_key,
+                }
+            )
 
     def _create_tiledb_config_from_local(self, local_cfg):
-        region = local_cfg.get("s3", "region")
-        access_key_id = local_cfg.get("s3", "access_key_id")
-        secret_access_key = local_cfg.get("s3", "secret_access_key")
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = local_cfg.get(
+            "gcs", "credentials", default=None
+        )
         return tiledb.Config(
             {
-                "vfs.s3.region": region,
-                "vfs.s3.aws_access_key_id": access_key_id,
-                "vfs.s3.aws_secret_access_key": secret_access_key,
+                "vfs.s3.region": local_cfg.get("s3", "region", default=None),
+                "vfs.s3.aws_access_key_id": local_cfg.get(
+                    "s3", "access_key_id", default=None
+                ),
+                "vfs.s3.aws_secret_access_key": local_cfg.get(
+                    "s3", "secret_access_key", default=None
+                ),
+                #
+                #
+                "vfs.gcs.project_id": local_cfg.get("gcs", "project_id", default=None),
+                "vfs.gcs.credentials": local_cfg.get(
+                    "gcs", "credentials", default=None
+                ),
+                "vfs.gcs.private_key_id": local_cfg.get(
+                    "gcs", "private_key_id", default=None
+                ),
+                "vfs.gcs.private_key": local_cfg.get(
+                    "gcs", "private_key", default=None
+                ),
+                #
+                #
+                "vfs.azure.storage_account_name": local_cfg.get(
+                    "azure", "account_name", default=None
+                ),
+                "vfs.azure.storage_account_key": local_cfg.get(
+                    "azure", "account_key", default=None
+                ),
             }
         )

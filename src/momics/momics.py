@@ -60,7 +60,7 @@ class Momics:
                 raise OSError("Momics repository not found.")
 
     def _is_cloud_hosted(self):
-        if self.path.startswith("s3://"):
+        if self.path.startswith(("s3://", "gcs://", "azure://")):
             return True
 
     def _build_uri(self, *subdirs: str) -> str:
@@ -424,16 +424,17 @@ class Momics:
             Momics: The updated Momics object
         """
         # Abort if `chroms` have not been filled
-        if self.chroms().empty:
+        chroms = self.chroms()
+        if chroms.empty:
             raise ValueError("Please fill out `chroms` table first.")
 
         # Abort if sequence table already exists
-        tdb = self._build_uri("genome", "sequence", f"{self.chroms()['chrom'][0]}.tdb")
+        tdb = self._build_uri("genome", "sequence", f"{chroms['chrom'][0]}.tdb")
         if self.cfg.vfs.is_dir(tdb):
             raise tiledb.cc.TileDBError(f"Error: TileDB '{tdb}' already exists.")
 
         # Abort if chr lengths in provided fasta do not match those in `chroms`
-        utils._check_fasta_lengths(fasta, self.chroms())
+        utils._check_fasta_lengths(fasta, chroms)
 
         # Create sequence tables schema
         self._create_sequence_schema(tile, compression)
