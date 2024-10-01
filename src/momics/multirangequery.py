@@ -1,5 +1,5 @@
 import concurrent.futures
-import multiprocessing
+import time
 from pathlib import Path
 
 import numpy as np
@@ -66,47 +66,50 @@ class MultiRangeQuery:
     @staticmethod
     def _query_tracks_per_chr(chrom, group, tracks, tdb, cfg_dict):
 
-        ranges = list(zip(group["start"], group["end"]))
+        try:
+            ranges = list(zip(group["start"], group["end"]))
 
-        # Prepare empty long DataFrame without scores, to merge with results
-        ranges_str = []
-        for _, (start, end) in enumerate(ranges):
-            breadth = end - start + 1
-            label = f"{chrom}:{start}-{end}"
-            ranges_str.extend([label] * breadth)
-        ranges_df = pd.DataFrame(
-            {
-                "range": ranges_str,
-                "chrom": chrom,
-                "position": [
-                    item for X in ranges for item in np.arange(X[0], X[1] + 1)
-                ],
-            }
-        )
-
-        # Extract scores from tileDB and wrangle them into DataFrame
-        ranges_1 = list(zip(group["start"] - 1, group["end"] - 1))
-        cfg = tiledb.Config(cfg_dict)
-        with tiledb.open(tdb, "r", config=cfg) as A:
-            subarray = A.multi_index[ranges_1, :]
-
-        # Reformat to add track and range labels
-        tr = tracks[[x != "None" for x in tracks["label"]]]
-        subarray_df = pd.merge(tr, pd.DataFrame(subarray), on="idx").drop(
-            ["idx", "path"], axis=1
-        )
-        subarray_df["position"] += 1
-        df = pd.merge(ranges_df, subarray_df, on="position", how="left")
-        res = {}
-        for track in list(tr["label"]):
-            res[track] = (
-                df[df["label"] == track]
-                .groupby("range")["scores"]
-                .apply(list)
-                .to_dict()
+            # Prepare empty long DataFrame without scores, to merge with results
+            ranges_str = []
+            for _, (start, end) in enumerate(ranges):
+                breadth = end - start + 1
+                label = f"{chrom}:{start}-{end}"
+                ranges_str.extend([label] * breadth)
+            ranges_df = pd.DataFrame(
+                {
+                    "range": ranges_str,
+                    "chrom": chrom,
+                    "position": [
+                        item for X in ranges for item in np.arange(X[0], X[1] + 1)
+                    ],
+                }
             )
 
-        return res
+            # Extract scores from tileDB and wrangle them into DataFrame
+            ranges_1 = list(zip(group["start"] - 1, group["end"] - 1))
+            cfg = tiledb.Config(cfg_dict)
+            with tiledb.open(tdb, "r", config=cfg) as A:
+                subarray = A.multi_index[ranges_1, :]
+
+            # Reformat to add track and range labels
+            tr = tracks[[x != "None" for x in tracks["label"]]]
+            subarray_df = pd.merge(tr, pd.DataFrame(subarray), on="idx").drop(
+                ["idx", "path"], axis=1
+            )
+            subarray_df["position"] += 1
+            df = pd.merge(ranges_df, subarray_df, on="position", how="left")
+            res = {}
+            for track in list(tr["label"]):
+                res[track] = (
+                    df[df["label"] == track]
+                    .groupby("range")["scores"]
+                    .apply(list)
+                    .to_dict()
+                )
+            return res
+        except Exception as e:
+            logger.error(f"Error processing chromosome {chrom}: {e}")
+            raise
 
     def query_tracks(self, threads: int = 1) -> "MultiRangeQuery":
         """Query multiple coverage ranges from a Momics repo.
@@ -144,6 +147,7 @@ class MultiRangeQuery:
         ntasks = len(tasks)
         completed_tasks = [0]
         threads = min(threads, ntasks)
+        start0 = time.time()
 
         if threads == 1:
             results = []
@@ -157,8 +161,25 @@ class MultiRangeQuery:
                 )
 
         else:
-            with multiprocessing.Pool(processes=threads) as pool:
-                results = pool.starmap(self._query_tracks_per_chr, tasks)
+            with concurrent.futures.ProcessPoolExecutor(
+                max_workers=threads
+            ) as executor:
+                futures = []
+                for chrom, group, tracks, tdb, cfg_dict in tasks:
+                    future = executor.submit(
+                        self._query_tracks_per_chr, chrom, group, tracks, tdb, cfg_dict
+                    )
+                    future.add_done_callback(
+                        lambda f, c=chrom: _log_task_completion(
+                            f, c, ntasks, completed_tasks
+                        )
+                    )
+                    futures.append(future)
+                concurrent.futures.wait(futures)
+
+            results = []
+            for future in concurrent.futures.as_completed(futures):
+                results.append(future.result())
 
         res = {}
         tr = list(tracks[[x != "None" for x in tracks["label"]]]["label"])
@@ -168,17 +189,18 @@ class MultiRangeQuery:
             res[track] = {key: d[key] for key in self.query_labels if key in d}
 
         self.coverage = res
+        t = time.time() - start0
+        logger.info(f"Query completed in {round(t,4)}s.")
         return self
 
     @staticmethod
     def _query_seq_per_chr(chrom, group, tdb, cfg_dict):
         ranges = list(zip(group["start"], group["end"]))
         seqs = {}
-        cfg = tiledb.Config(cfg_dict)
-        for _, (start, end) in enumerate(ranges):
-            with tiledb.open(tdb, "r", ctx=cfg) as A:
+        with tiledb.open(tdb, "r", ctx=tiledb.Ctx(tiledb.Config(cfg_dict))) as A:
+            for _, (start, end) in enumerate(ranges):
                 seq = A.df[(start - 1) : (end - 1)]["nucleotide"]
-            seqs[f"{chrom}:{start}-{end}"] = "".join(seq)
+                seqs[f"{chrom}:{start}-{end}"] = "".join(seq)
         return seqs
 
     def query_sequence(self, threads: int = 1) -> "MultiRangeQuery":
@@ -190,6 +212,18 @@ class MultiRangeQuery:
         Returns:
             MultiRangeQuery: An updated MultiRangeQuery object
         """
+
+        def _log_task_completion(future, chrom, ntasks, completed_tasks):
+            if future.exception() is not None:
+                logger.error(
+                    f"Querying sequences for chromosome {chrom} failed with exception: {future.exception()}"
+                )
+            else:
+                with lock:
+                    completed_tasks[0] += 1
+                logger.info(
+                    f"task {completed_tasks[0]}/{ntasks} :: Queried sequences for chromosome {chrom}."
+                )
 
         tasks = [
             (
@@ -203,6 +237,8 @@ class MultiRangeQuery:
         ntasks = len(tasks)
         completed_tasks = [0]
         threads = min(threads, ntasks)
+        start0 = time.time()
+
         if threads == 1:
             seqs = []
             for chrom, group, tdb, cfg_dict in tasks:
@@ -212,13 +248,32 @@ class MultiRangeQuery:
                     f"task {completed_tasks[0]}/{ntasks} :: Queried sequences for chromosome {chrom}."
                 )
         else:
-            with multiprocessing.Pool(processes=threads) as pool:
-                seqs = pool.starmap(self._query_seq_per_chr, tasks)
+            with concurrent.futures.ProcessPoolExecutor(
+                max_workers=threads
+            ) as executor:
+                futures = []
+                for chrom, group, tdb, cfg_dict in tasks:
+                    future = executor.submit(
+                        self._query_seq_per_chr, chrom, group, tdb, cfg_dict
+                    )
+                    future.add_done_callback(
+                        lambda f, c=chrom: _log_task_completion(
+                            f, c, ntasks, completed_tasks
+                        )
+                    )
+                    futures.append(future)
+                concurrent.futures.wait(futures)
+
+            seqs = []
+            for future in concurrent.futures.as_completed(futures):
+                seqs.append(future.result())
 
         mseqs = {}
         for d in seqs:
             mseqs.update(d)
         self.seq = {"seq": mseqs}
+        t = time.time() - start0
+        logger.info(f"Query completed in {round(t,4)}s.")
         return self
 
     def to_df(self) -> pd.DataFrame:

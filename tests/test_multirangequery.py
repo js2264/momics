@@ -37,26 +37,46 @@ def test_multirangequery_tracks(momics_path: str, bed1: str):
 
 
 @pytest.mark.order(2)
-def test_multirangequery_seq(momics_path: str, bed1: str):
+def test_multirangequery_seq(momics_path: str):
     mom = momics.Momics(momics_path, create=False)
     q = MultiRangeQuery(mom, "I:1-10").query_sequence()
     assert len(q.seq) == 1
     assert q.seq["seq"]["I:1-10"] == "ATCGATCGAT"
 
+
+@pytest.mark.order(2)
+def test_multirangequery_seq2(momics_path: str, bed1: str):
+    mom = momics.Momics(momics_path, create=False)
+    q = MultiRangeQuery(mom, "I:1-10").query_sequence()
     bed = BedTool(bed1).to_dataframe()
     q = MultiRangeQuery(mom, bed).query_sequence()
     assert len(q.seq["seq"]) == 3
     assert q.seq["seq"]["I:1-10"] == "ATCGATCGAT"
-
     assert q.to_fa()[0].id == "I:1-10"
 
+
+@pytest.mark.order(2)
+def test_multirangequery_seq3(momics_path: str):
+    mom = momics.Momics(momics_path, create=False)
+    q = MultiRangeQuery(mom, "I:1-10").query_sequence()
     q = MultiRangeQuery(mom, "I").query_sequence()
     assert len(q.seq["seq"]["I:1-10000"]) == 10000
 
+
+@pytest.mark.order(2)
+def test_multirangequery_seq4(momics_path: str, bed1: str):
+    mom = momics.Momics(momics_path, create=False)
+    q = MultiRangeQuery(mom, "I:1-10").query_sequence()
     bed = BedTool(bed1).to_dataframe()
     q = MultiRangeQuery(mom, bed).query_sequence()
     assert q.seq["seq"]["I:1-10"] == "ATCGATCGAT"
 
+
+@pytest.mark.order(2)
+def test_multirangequery_seq5(momics_path: str, bed1: str):
+    mom = momics.Momics(momics_path, create=False)
+    bed = BedTool(bed1).to_dataframe()
+    q = MultiRangeQuery(mom, "I:1-10").query_sequence()
     q = MultiRangeQuery(mom, bed).query_sequence(threads=4)
     assert q.seq["seq"]["I:1-10"] == "ATCGATCGAT"
 

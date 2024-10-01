@@ -60,3 +60,5 @@ ranges*
 momics-437* 
 tests/test_cloud.py
 output*
+*0ranges*
+results*
