@@ -1,7 +1,8 @@
+import os
 import pytest
 import tempfile
 from pathlib import Path
-from momics.config import LocalConfig, S3Config, MomicsConfig
+from momics.config import LocalConfig, S3Config, GCSConfig, AzureConfig, MomicsConfig
 
 
 @pytest.fixture
@@ -43,19 +44,34 @@ def test_momicsconfig_with_s3():
         region="us-east-1", access_key_id="key", secret_access_key="secret"
     )
     momics_config = MomicsConfig(s3=s3_config)
+    assert momics_config.type == "s3"
+    assert momics_config.cfg["vfs.s3.region"] == "us-east-1"
 
-    assert momics_config.type == "s3", "MomicsConfig should use manual S3 config"
-    assert (
-        momics_config.cfg["vfs.s3.region"] == "us-east-1"
-    ), "Region mismatch in TileDB config"
+
+def test_momicsconfig_with_gcs():
+    """Test MomicsConfig with manual GCSConfig."""
+    gcs_config = GCSConfig(project_id="name", credentials="key")
+    momics_config = MomicsConfig(gcs=gcs_config)
+    assert momics_config.type == "gcs"
+    assert momics_config.cfg["vfs.gcs.project_id"] == "name"
+
+
+def test_momicsconfig_with_azure():
+    """Test MomicsConfig with manual AzureConfig."""
+    azure_config = AzureConfig(account_name="name", account_key="key")
+    momics_config = MomicsConfig(azure=azure_config)
+    assert momics_config.type == "azure"
+    assert momics_config.cfg["vfs.azure.storage_account_name"] == "name"
 
 
 def test_momicsconfig_with_local_config(local_config):
     """Test MomicsConfig with local config."""
     local_config.set("s3", "region", "eu-west-1")
     local_config.set("s3", "access_key_id", "local_key")
-    local_config.set("s3", "secret_access_key", "local_secret")
+    momics_config = MomicsConfig(local_cfg=local_config.config_path)
+    assert momics_config.type is None
 
+    local_config.set("s3", "secret_access_key", "local_secret")
     momics_config = MomicsConfig(local_cfg=local_config.config_path)
 
     assert momics_config.type == "local", "MomicsConfig should use local config"
@@ -67,7 +83,5 @@ def test_momicsconfig_with_local_config(local_config):
 def test_momicsconfig_without_valid_config():
     """Test MomicsConfig without valid configuration."""
     momics_config = MomicsConfig(local_cfg=Path("dasdcasdcasdcasdc"))
-
-    assert (
-        momics_config.type is None
-    ), "MomicsConfig should default to None if no valid config"
+    assert momics_config.type is None
+    os.unlink("dasdcasdcasdcasdc")

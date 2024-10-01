@@ -49,9 +49,14 @@ class LocalConfig:
             "azure": ["account_name", "account_key"],
         }
         for section in self.cfg.sections():
-            if not all([self.cfg.get(section, key) for key in required_keys[section]]):
+            if not all(
+                [
+                    self.cfg.get(section, key, fallback=False)
+                    for key in required_keys[section]
+                ]
+            ):
                 raise ValueError(
-                    f"Invalid S3 configuration. Please provide all required values: {required_keys[section]}"
+                    f"Invalid cloud configuration. Please provide all required values: {required_keys[section]}"
                 )
         return True
 
@@ -186,12 +191,13 @@ class MomicsConfig:
         else:
             local_cfg = LocalConfig(local_cfg)
             # If the file configuration is valid, use it.
-            if local_cfg._validate_local_config():
+            try:
+                local_cfg._validate_local_config()
                 self.type = "local"
                 self.cfg = self._create_tiledb_config_from_local(local_cfg)
                 logger.info(f"Using local config from {local_cfg.config_path} file.")
             # Otherwise, use blank configuration.
-            else:
+            except ValueError:
                 self.type = None
                 self.cfg = tiledb.Config()
                 logger.info(
@@ -227,9 +233,11 @@ class MomicsConfig:
             )
 
     def _create_tiledb_config_from_local(self, local_cfg):
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = local_cfg.get(
-            "gcs", "credentials", default=None
-        )
+        json = local_cfg.get("gcs", "credentials", default=None)
+        if json is not None:
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = local_cfg.get(
+                "gcs", "credentials", default=None
+            )
         return tiledb.Config(
             {
                 "vfs.s3.region": local_cfg.get("s3", "region", default=None),
