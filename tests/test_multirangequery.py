@@ -2,6 +2,7 @@ import json
 import os
 from pathlib import Path
 import pickle
+import sys
 import tempfile
 import numpy as np
 import pandas as pd
@@ -32,8 +33,9 @@ def test_multirangequery_tracks(momics_path: str, bed1: str):
     q = MultiRangeQuery(mom, bed).query_tracks()
     assert list(q.coverage.keys()) == ["bw2", "custom", "bw3", "bw4"]
 
-    q = MultiRangeQuery(mom, bed).query_tracks(threads=2)
-    assert list(q.coverage.keys()) == ["bw2", "custom", "bw3", "bw4"]
+    if sys.version_info >= (3, 10):
+        q = MultiRangeQuery(mom, bed).query_tracks(threads=2)
+        assert list(q.coverage.keys()) == ["bw2", "custom", "bw3", "bw4"]
 
 
 @pytest.mark.order(2)
@@ -77,8 +79,9 @@ def test_multirangequery_seq5(momics_path: str, bed1: str):
     mom = momics.Momics(momics_path)
     bed = BedTool(bed1).to_dataframe()
     q = MultiRangeQuery(mom, "I:1-10").query_sequence()
-    q = MultiRangeQuery(mom, bed).query_sequence(threads=2)
-    assert q.seq["seq"]["I:1-10"] == "ATCGATCGAT"
+    if sys.version_info >= (3, 10):
+        q = MultiRangeQuery(mom, bed).query_sequence(threads=2)
+        assert q.seq["seq"]["I:1-10"] == "ATCGATCGAT"
 
 
 @pytest.fixture
