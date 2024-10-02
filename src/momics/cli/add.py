@@ -29,7 +29,7 @@ def add(ctx):
 @click.pass_context
 def chroms(ctx, file, genome, path):
     """Register chromosomes sizes to Momics."""
-    m = momics.Momics(path, create=False)
+    m = momics.Momics(path)
     chrom_lengths = {}
     with open(file) as chroms:
         for line in chroms:
@@ -63,7 +63,7 @@ def tracks(ctx, file, path, threads):
     fs = {}
     for f in file:
         fs[f.split("=", 1)[0]] = f.split("=", 1)[1]
-    m = momics.Momics(path, create=False)
+    m = momics.Momics(path)
     m.add_tracks(fs, threads=threads)
     print(m.tracks().iloc[np.where(m.tracks()["label"] != "None")].iloc[:, 0:2])
 
@@ -86,6 +86,6 @@ def tracks(ctx, file, path, threads):
 @click.pass_context
 def seq(ctx, file, path, threads):
     """Add genomic sequence to Momics."""
-    m = momics.Momics(path, create=False)
+    m = momics.Momics(path)
     m.add_sequence(file, threads=threads)
     print(m.seq())

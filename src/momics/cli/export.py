@@ -23,5 +23,5 @@ from . import cli
 @click.pass_context
 def export(ctx, path, track, output):
     """Export a track from a momics repo as a bigwig file."""
-    m = momics.Momics(path, create=False)
+    m = momics.Momics(path)
     m.export_track(track, output)

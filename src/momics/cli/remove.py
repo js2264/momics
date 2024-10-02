@@ -18,7 +18,7 @@ from . import cli
 @click.pass_context
 def remove(ctx, path, track):
     """Remove tracks from a momics repo."""
-    m = momics.Momics(path, create=False)
+    m = momics.Momics(path)
     for tr in track:
         m.remove_track(tr)
     print(m.tracks().iloc[np.where(m.tracks()["label"] != "None")].iloc[:, 0:2])

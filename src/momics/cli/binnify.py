@@ -42,7 +42,7 @@ from . import cli
 @click.pass_context
 def binnify(ctx, path, width, step, cut_last_bin_out, output):
     """Binnify chromosomes from a Momics repository."""
-    m = momics.Momics(path, create=False)
+    m = momics.Momics(path)
     bins = m.bins(width, step, cut_last_bin_out)
     bins = bins.to_csv(sep="\t", index=False, header=False)
 

@@ -10,5 +10,5 @@ from . import cli
 def create(ctx, path):
     """Initiate a Momics repository."""
     path = click.format_filename(path)
-    m = momics.Momics(path, create=True)
+    m = momics.Momics(path)
     print(m.path)

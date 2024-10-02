@@ -63,7 +63,7 @@ def tracks(ctx, path, coordinates, file, output: str, threads: int = 1):
     # Validate that either `file` or `coordinates` is provided, but not both
     _validate_exclusive_options(file, coordinates)
 
-    mom = momics.Momics(path, create=False)
+    mom = momics.Momics(path)
 
     if coordinates is not None:
         chr, range_part = coordinates.split(":")
@@ -118,7 +118,7 @@ def seq(ctx, path, coordinates, file, output: str, threads: int = 1):
     # Validate that either `file` or `coordinates` is provided, but not both
     _validate_exclusive_options(file, coordinates)
 
-    mom = momics.Momics(path, create=False)
+    mom = momics.Momics(path)
 
     if coordinates is not None:
         chr, range_part = coordinates.split(":")
