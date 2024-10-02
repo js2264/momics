@@ -70,6 +70,7 @@ class MultiRangeQuery:
             ranges = list(zip(group["start"], group["end"]))
 
             # Prepare empty long DataFrame without scores, to merge with results
+            start0 = time.time()
             ranges_str = []
             for _, (start, end) in enumerate(ranges):
                 breadth = end - start + 1
@@ -84,14 +85,18 @@ class MultiRangeQuery:
                     ],
                 }
             )
+            logger.debug(f"Preparing long table :: {time.time() - start0}")
 
             # Extract scores from tileDB and wrangle them into DataFrame
+            start0 = time.time()
             ranges_1 = list(zip(group["start"] - 1, group["end"] - 1))
             cfg = tiledb.Config(cfg_dict)
             with tiledb.open(tdb, "r", config=cfg) as A:
                 subarray = A.multi_index[ranges_1, :]
+            logger.debug(f"Extracting scores :: {time.time() - start0}")
 
             # Reformat to add track and range labels
+            start0 = time.time()
             tr = tracks[[x != "None" for x in tracks["label"]]]
             subarray_df = pd.merge(tr, pd.DataFrame(subarray), on="idx").drop(
                 ["idx", "path"], axis=1
@@ -106,6 +111,7 @@ class MultiRangeQuery:
                     .apply(list)
                     .to_dict()
                 )
+            logger.debug(f"Reformating scores :: {time.time() - start0}")
             return res
         except Exception as e:
             logger.error(f"Error processing chromosome {chrom}: {e}")
@@ -195,12 +201,14 @@ class MultiRangeQuery:
 
     @staticmethod
     def _query_seq_per_chr(chrom, group, tdb, cfg_dict):
+        start0 = time.time()
         ranges = list(zip(group["start"], group["end"]))
         seqs = {}
         with tiledb.open(tdb, "r", ctx=tiledb.Ctx(tiledb.Config(cfg_dict))) as A:
             for _, (start, end) in enumerate(ranges):
                 seq = A.df[(start - 1) : (end - 1)]["nucleotide"]
                 seqs[f"{chrom}:{start}-{end}"] = "".join(seq)
+        logger.debug(f"Fetching sequence :: {time.time() - start0}")
         return seqs
 
     def query_sequence(self, threads: int = 1) -> "MultiRangeQuery":
