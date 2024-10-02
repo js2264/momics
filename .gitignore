@@ -57,9 +57,9 @@ test.csv
 out.*
 *test.bed*
 ranges*
-momics-437* 
-tests/test_cloud.py
+gcs_creds.json
 output*
 *0ranges*
 results*
 perfs_benchmark.log
+.env

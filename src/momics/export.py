@@ -5,7 +5,6 @@ import pyBigWig
 
 from .momics import Momics
 from .multirangequery import MultiRangeQuery
-from .utils import parse_ucsc_coordinates
 from .utils import _check_track_name
 
 

@@ -64,6 +64,7 @@ all = [
 test = [
     "coverage[toml]",
     "isort",
+    "python-dotenv",
     "pytest",
     "pytest-cov",
     "pytest-ordering",
