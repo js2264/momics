@@ -1,5 +1,6 @@
 from datetime import datetime
 from time import sleep
+import time
 from typing import Dict, Optional
 from pathlib import Path
 import concurrent.futures
@@ -32,36 +33,34 @@ class Momics:
     def __init__(
         self,
         path: str,
-        create=True,
         config: Optional[MomicsConfig] = None,
     ):
-        """Initialize the Momics class.
+        """
+        Initialize the Momics class.
+        By default, a `.momics` repository is created at the specified path if it does not already exist.
 
         Args:
             path (str): Path to a `.momics` repository.
-            create (bool, optional): If not found, should the repository be initiated? Defaults to True.
         """
+
         self.path = path
         if config is None:
             config = MomicsConfig()
         self.cfg = config
 
-        ## Check if folder exists:
-        if self.cfg.vfs.is_dir(self.path):
-            ## If it exists and `create` = True, raise Error
-            if create:
-                raise OSError(f"{path} repository already exists.")
-        ## If does not exist:
+        ## Check if folder exists. If not, create it.
+        if not self.cfg.vfs.is_dir(self.path):
+            self.cfg.vfs.create_dir(self.path)
+            self._create_repository()
+            logger.info(f"Created {self.path}")
         else:
-            ## Check if we want to create it
-            if create:
-                self._create_repository()
-            else:
-                raise OSError("Momics repository not found.")
+            logger.info(f"Found {self.path}")
 
     def _is_cloud_hosted(self):
         if self.path.startswith(("s3://", "gcs://", "azure://")):
-            return True
+            return self.path.split("://")[0]
+        else:
+            return False
 
     def _build_uri(self, *subdirs: str) -> str:
         if self._is_cloud_hosted():
@@ -600,3 +599,40 @@ class Momics:
         tdb = self._build_uri("coverage", "tracks.tdb")
         with tiledb.open(tdb, mode="w", ctx=self.cfg.ctx) as A:
             A[idx] = {"label": None, "path": None}
+
+    def remove(self) -> bool:
+        """Remove a `.momics` repository."""
+        host = self._is_cloud_hosted()
+        vfs = self.cfg.vfs
+
+        ## Remove local repo
+        if not host:
+            vfs.remove_dir(self.path)
+            logger.info(f"Purged {self.path}")
+
+        ## Remove S3 and GCS-hosted repo
+        if host in ["s3", "gcs"]:
+            vfs.remove_dir(self.path)
+            logger.info(f"Purged {self.path}")
+
+        if host == "azure":
+
+            def remove_directory_until_success(
+                vfs, dir_uri, max_retries=10, retry_delay=2
+            ):
+                attempts = 0
+                while attempts < max_retries:
+                    try:
+                        vfs.remove_dir(dir_uri)
+                        logger.info(f"Purged {dir_uri}")
+                        break
+                    except tiledb.TileDBError as e:
+                        attempts += 1
+                        if attempts < max_retries:
+                            time.sleep(retry_delay)
+                        else:
+                            raise e
+
+            remove_directory_until_success(vfs, self.path)
+
+        return True

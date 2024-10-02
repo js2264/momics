@@ -11,21 +11,14 @@ from momics.multirangequery import MultiRangeQuery
 
 @pytest.mark.order(1)
 def test_Momics_init(momics_path: str):
-    with pytest.raises(OSError, match=r"Momics repository not found."):
-        momics.Momics("asvasdvasdv", create=False)
 
-    momics.Momics(momics_path)
-    x = momics.Momics(momics_path, create=False)
-
+    x = momics.Momics(momics_path)
     assert x.path == momics_path
-
-    with pytest.raises(OSError, match=r".* repository already exists"):
-        momics.Momics(momics_path, create=True)
 
 
 @pytest.mark.order(1)
 def test_Momics_add_genome(momics_path: str, bw1: str):
-    mom = momics.Momics(momics_path, create=False)
+    mom = momics.Momics(momics_path)
 
     assert mom.chroms().empty
 
@@ -50,7 +43,7 @@ def test_Momics_add_genome(momics_path: str, bw1: str):
 
 @pytest.mark.order(1)
 def test_Momics_add_tracks(momics_path: str, bw1: str, bw2: str):
-    mom = momics.Momics(momics_path, create=False)
+    mom = momics.Momics(momics_path)
 
     assert mom.tracks().empty
     mom.add_tracks({"bw1": bw1})
@@ -80,7 +73,7 @@ def test_Momics_add_tracks(momics_path: str, bw1: str, bw2: str):
 
 @pytest.mark.order(1)
 def test_Momics_add_track(momics_path: str, bw1: str, bw2: str):
-    mom = momics.Momics(momics_path, create=False)
+    mom = momics.Momics(momics_path)
     chroms = mom.chroms()
     coverage = {
         chrom: np.random.rand(length) for i, (idx, chrom, length) in chroms.iterrows()
@@ -103,7 +96,7 @@ def test_Momics_add_track(momics_path: str, bw1: str, bw2: str):
 
 @pytest.mark.order(1)
 def test_Momics_add_seq(momics_path: str, fa1: str, fa2: str):
-    mom = momics.Momics(momics_path, create=False)
+    mom = momics.Momics(momics_path)
 
     with pytest.raises(Exception, match=r".*do not have identical chromomosome.*"):
         mom.add_sequence(fa2)
@@ -118,7 +111,7 @@ def test_Momics_add_seq(momics_path: str, fa1: str, fa2: str):
 
 @pytest.mark.order(1)
 def test_Momics_remove_tracks(momics_path: str, bw1: str, bw2: str, bed1: str):
-    mom = momics.Momics(momics_path, create=False)
+    mom = momics.Momics(momics_path)
     mom.add_tracks({"bw3": bw1})
     mom.add_tracks({"bw4": bw1})
     mom.remove_track("bw1")
@@ -133,14 +126,14 @@ def test_Momics_remove_tracks(momics_path: str, bw1: str, bw2: str, bed1: str):
     print(out)
     assert mom.tracks().__eq__(out).all().all()
     q = MultiRangeQuery(mom, "I:991-1010").query_tracks()
-    assert q.coverage.keys().__eq__(["bw2", "custom", "bw3", "bw4"])
+    assert list(q.coverage.keys()) == ["bw2", "custom", "bw3", "bw4"]
     bed = BedTool(bed1).to_dataframe()
     q = MultiRangeQuery(mom, bed).query_tracks()
-    assert q.coverage.keys().__eq__(["bw2", "custom", "bw3", "bw4"])
+    assert list(q.coverage.keys()) == ["bw2", "custom", "bw3", "bw4"]
 
 
 @pytest.mark.order(2)
 def test_Momics_binnify(momics_path: str):
-    mom = momics.Momics(momics_path, create=False)
+    mom = momics.Momics(momics_path)
     q = mom.bins(width=1000, step=1000)
     assert q.shape == (60, 3)
