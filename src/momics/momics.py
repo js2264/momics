@@ -1,4 +1,5 @@
 from datetime import datetime
+from re import S
 from time import sleep
 import time
 from typing import Dict, Optional
@@ -84,7 +85,10 @@ class Momics:
             raise FileExistsError(f"{uri} does not exist.")
 
         with tiledb.open(uri, "r", ctx=self.cfg.ctx) as A:
-            a = A.df[:]
+            if A.schema.sparse:
+                a = A.df[:]
+            else:
+                a = A.df[0 : len(A) - 1]
 
         return a
 
@@ -126,7 +130,7 @@ class Momics:
                     chunksize=1000,
                 ),
             )
-            tiledb.DenseArray.create(tdb, schema)
+            tiledb.Array.create(tdb, schema)
 
     def _create_track_schema(self, max_bws: int, tile: int, compression: int):
         # Create /coverage/tracks.tdb
@@ -152,25 +156,14 @@ class Momics:
                     domain=(0, chrom_length - 1),
                     dtype=np.int64,
                     tile=tile,
-                ),
-                tiledb.Dim(name="idx", domain=(0, max_bws), dtype=np.int64, tile=1),
+                )
             )
-            attr = tiledb.Attr(
-                name="scores",
-                dtype=np.float32,
-                filters=tiledb.FilterList(
-                    [
-                        tiledb.LZ4Filter(),
-                        tiledb.ZstdFilter(level=compression),
-                    ],
-                    chunksize=1000,
-                ),
-            )
+            attr = tiledb.Attr(name="placeholder", dtype="float32")
             schema = tiledb.ArraySchema(
                 ctx=self.cfg.ctx,
                 domain=dom,
                 attrs=[attr],
-                sparse=True,
+                sparse=False,
                 coords_filters=tiledb.FilterList(
                     [
                         tiledb.LZ4Filter(),
@@ -182,23 +175,17 @@ class Momics:
             tiledb.Array.create(tdb, schema)
 
     def _populate_track_table(self, bws: Dict[str, str]):
-        try:
-            n = self.tracks().shape[0]
-        except tiledb.cc.TileDBError:
-            n = 0
+        n = self.tracks().shape[0]
 
         tdb = self._build_uri("coverage", "tracks.tdb")
-        with tiledb.DenseArray(tdb, mode="w", ctx=self.cfg.ctx) as array:
+        with tiledb.open(tdb, mode="w", ctx=self.cfg.ctx) as array:
             array[n : (n + len(bws))] = {
                 "label": list(bws.keys()),
                 "path": list(bws.values()),
             }
 
-    def _populate_chroms_table(self, bws: Dict[str, str], threads: int):
-        try:
-            n = self.tracks().shape[0]
-        except tiledb.cc.TileDBError:
-            n = 0
+    def _populate_chroms_table2(self, bws: Dict[str, str], threads: int):
+        n = self.tracks().shape[0]
 
         def _process_chrom_bwf(self, chrom, chrom_length, idx, bwf, bws, n):
             sleep(1)
@@ -254,7 +241,7 @@ class Momics:
             chrom_length = np.array(chroms[chroms["chrom"] == chrom]["length"])[0]
             with pyfaidx.Fasta(fasta) as fa:
                 chrom_seq = fa.get_seq(chrom, 1, chrom_length)
-            with tiledb.DenseArray(tdb, mode="w", ctx=self.cfg.ctx) as A:
+            with tiledb.open(tdb, mode="w", ctx=self.cfg.ctx) as A:
                 A[:] = {"nucleotide": np.array(list(chrom_seq.seq), dtype="S1")}
 
         def _log_task_completion(future, chrom, ntasks, completed_tasks):
@@ -336,6 +323,7 @@ class Momics:
         """
         try:
             tracks = self._get_table(self._build_uri("coverage", "tracks.tdb"))
+            tracks = tracks[tracks["label"] != "\x00"]
         except FileExistsError:
             tracks = pd.DataFrame(columns=["idx", "label", "path"])
         return tracks
@@ -395,18 +383,17 @@ class Momics:
             ctx=self.cfg.ctx,
             domain=dom_genome,
             attrs=[attr_chr, attr_length],
-            sparse=True,
+            sparse=False,
         )
         tiledb.Array.create(tdb, schema)
 
         # Populate `chrom` array
         chr = list(chr_lengths.keys())
         length = list(chr_lengths.values())
-        with tiledb.open(tdb, "w", ctx=self.cfg.ctx) as array:
-            indices = np.arange(len(chr))
-            array[indices] = {"chrom": np.array(chr, dtype="S"), "length": length}
-            array.meta["genome_assembly_version"] = genome_version
-            array.meta["timestamp"] = datetime.now().isoformat()
+        with tiledb.open(tdb, "w", ctx=self.cfg.ctx) as A:
+            A[0 : len(chr)] = {"chrom": np.array(chr, dtype="S"), "length": length}
+            A.meta["genome_assembly_version"] = genome_version
+            A.meta["timestamp"] = datetime.now().isoformat()
 
     def add_sequence(
         self, fasta: Path, threads: int = 1, tile: int = 10000, compression: int = 3
@@ -461,6 +448,8 @@ class Momics:
         Returns:
             Momics: The updated Momics object
         """
+        start0 = time.time()
+
         # Abort if `chroms` have not been filled
         if self.chroms().empty:
             raise ValueError("Please fill out `chroms` table first.")
@@ -480,6 +469,8 @@ class Momics:
 
         # Populate `path/coverage/tracks.tdb`
         self._populate_track_table(bws)
+
+        logger.info(f"{len(bws)} tracks ingested in {round(time.time() - start0,4)}s.")
 
     def add_track(
         self,
@@ -569,7 +560,7 @@ class Momics:
 
         # Populate `path/coverage/tracks.tdb`
         tdb = self._build_uri("coverage", "tracks.tdb")
-        with tiledb.DenseArray(tdb, mode="w", ctx=self.cfg.ctx) as array:
+        with tiledb.open(tdb, mode="w", ctx=self.cfg.ctx) as array:
             array[n : (n + 1)] = {
                 "label": track,
                 "path": track,
@@ -636,3 +627,96 @@ class Momics:
             remove_directory_until_success(vfs, self.path)
 
         return True
+
+    def _populate_chroms_table(self, bws: Dict[str, str], threads: int):
+
+        def _add_attribute_to_array(uri, attribute_name):
+            # Check that attribute does not already exist
+            has_attr = False
+            with tiledb.open(uri, mode="r", ctx=self.cfg.ctx) as A:
+                if A.schema.has_attr(attribute_name):
+                    logger.warning(
+                        f"Label {attribute_name} already exists and will be erased."
+                    )
+                    has_attr = True
+
+            # Add attribute to array
+            if not has_attr:
+                new_attr = tiledb.Attr(attribute_name, dtype="float32")
+                se = tiledb.ArraySchemaEvolution(self.cfg.ctx)
+                se.add_attribute(new_attr)
+                se.array_evolve(uri)
+
+            # Check whether `placeholder` attribute still exists
+            erase_placeholder = False
+            with tiledb.open(uri, mode="r", ctx=self.cfg.ctx) as A:
+                if A.schema.has_attr("placeholder") and A.nattr > 1:
+                    erase_placeholder = True
+
+            # If so, drop it
+            if erase_placeholder:
+                se = tiledb.ArraySchemaEvolution(self.cfg.ctx)
+                se.drop_attribute("placeholder")
+                se.array_evolve(uri)
+                logger.debug(f"Attribute 'placeholder' found in {uri}. Dropping it.")
+
+        def _process_chrom(self, chrom, chrom_length, bws):
+
+            tdb = self._build_uri("coverage", f"{chrom}.tdb")
+
+            # If there are already scores in the array, read them
+            # THIS NEEDS TO BE UPDATED AS SOON AS
+            # TILEDB ALLOWS PARTIAL ATTRIBUTE WRITING!!
+            with tiledb.open(tdb, mode="r", ctx=self.cfg.ctx) as A:
+                sch = A.schema
+                attrs = [sch.attr(i).name for i in range(0, sch.nattr)]
+                if len(attrs) == 1 and attrs[0] == "placeholder":
+                    orig_scores = {}
+                else:
+                    orig_scores = A[0:chrom_length]
+
+            for bwf in bws.keys():
+                # Add bw label to array attributes
+                _add_attribute_to_array(tdb, bwf)
+
+                # Ingest bigwig scores for this bw and this chrom
+                with pyBigWig.open(bws[bwf]) as bw:
+                    arr = bw.values(chrom, 0, chrom_length, numpy=True)
+                    orig_scores[bwf] = arr
+
+            # Re-write appended scores to chrom array
+            with tiledb.open(tdb, mode="w", ctx=self.cfg.ctx) as A:
+                A[0:chrom_length] = orig_scores
+
+        def _log_task_completion(future, chrom, ntasks, completed_tasks):
+            if future.exception() is not None:
+                logger.error(
+                    f"Tracks ingestion over {chrom} failed with exception: {future.exception()}"
+                )
+            else:
+                with lock:
+                    completed_tasks[0] += 1
+                logger.info(
+                    f"task {completed_tasks[0]}/{ntasks} :: ingested tracks over {chrom}."
+                )
+
+        tasks = []
+        chroms = self.chroms()
+        for chrom in chroms["chrom"]:
+            chrom_length = np.array(chroms[chroms["chrom"] == chrom]["length"])[0]
+            tasks.append((chrom, chrom_length))
+        ntasks = len(chroms)
+        completed_tasks = [0]
+        threads = min(threads, ntasks)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+            futures = []
+            for chrom, chrom_length in tasks:
+                future = executor.submit(_process_chrom, self, chrom, chrom_length, bws)
+                future.add_done_callback(
+                    lambda f, c=chrom: _log_task_completion(
+                        f, c, ntasks, completed_tasks
+                    )
+                )
+                futures.append(future)
+            concurrent.futures.wait(futures)
