@@ -1,4 +1,6 @@
+import collections
 import concurrent.futures
+import os
 import time
 from pathlib import Path
 
@@ -25,7 +27,7 @@ class MultiRangeQuery:
     ----------
     momics (Momics): a local `.momics` repository.
     queries (dict): Dict. of pd.DataFrames with at least three columns `chrom`, `start` and `end`, one per chromosome.
-    query_labels (list): List of UCSC-style coordinates.
+    coordinates (list): List of UCSC-style coordinates.
     coverage (dict): Dictionary of coverage scores extracted from the `.momics` repository, populated after calling `q.query_tracks()`
     seq (dict): Dictionary of sequences extracted from the `.momics` repository, populated after calling `q.query_seq()`
     """
@@ -47,74 +49,69 @@ class MultiRangeQuery:
                 chrlength = chroms[chroms["chrom"] == chrom]["length"].iloc[0]
                 bed = parse_ucsc_coordinates(f"{chrom}:1-{chrlength}")
 
-        groups = bed.groupby("chrom")
-        chrs, indices = np.unique(bed["chrom"], return_index=True)
-        sorted_chrs = chrs[np.argsort(indices)]
-        queries = {key: group for key, group in groups}
-        queries = {key: queries[key] for key in list(sorted_chrs)}
-        self.queries = queries
-        query_labels = [
+        ranges = [
             f"{chr}:{start}-{end}"
             for _, (chr, start, end) in enumerate(
                 list(zip(bed["chrom"], bed["start"], bed["end"]))
             )
         ]
-        self.query_labels = query_labels
+        self.ranges = ranges
         self.coverage = None
         self.seq = None
 
     @staticmethod
-    def _query_tracks_per_chr(chrom, group, tracks, tdb, cfg_dict):
+    def _query_tracks_per_chr(base_uri, ranges, cfg_dict):
 
         try:
-            ranges = list(zip(group["start"], group["end"]))
 
-            # Prepare empty long DataFrame without scores, to merge with results
             start0 = time.time()
-            ranges_str = []
-            for _, (start, end) in enumerate(ranges):
-                breadth = end - start + 1
-                label = f"{chrom}:{start}-{end}"
-                ranges_str.extend([label] * breadth)
-            ranges_df = pd.DataFrame(
-                {
-                    "range": ranges_str,
-                    "chrom": chrom,
-                    "position": [
-                        item for X in ranges for item in np.arange(X[0], X[1] + 1)
-                    ],
-                }
-            )
-            logger.debug(f"Preparing long table :: {time.time() - start0}")
+            ranges_per_chr = collections.defaultdict(list)
+            for r in ranges:
+                chrom, value = r.split(":")
+                ranges_per_chr[chrom].append(value)
+            logger.info(f"Generating dict per chroms :: {time.time() - start0}")
 
-            # Extract scores from tileDB and wrangle them into DataFrame
             start0 = time.time()
-            ranges_1 = list(zip(group["start"] - 1, group["end"] - 1))
-            cfg = tiledb.Config(cfg_dict)
-            with tiledb.open(tdb, "r", config=cfg) as A:
-                subarray = A.multi_index[ranges_1, :]
-            logger.debug(f"Extracting scores :: {time.time() - start0}")
+            scores = collections.defaultdict(list)
+            for chrom, subranges in ranges_per_chr.items():
+                scores[chrom] = collections.defaultdict(list)
+                tdb = os.path.join(base_uri, "coverage", f"{chrom}.tdb")
 
-            # Reformat to add track and range labels
-            start0 = time.time()
-            tr = tracks[[x != "None" for x in tracks["label"]]]
-            subarray_df = pd.merge(tr, pd.DataFrame(subarray), on="idx").drop(
-                ["idx", "path"], axis=1
-            )
-            subarray_df["position"] += 1
-            df = pd.merge(ranges_df, subarray_df, on="position", how="left")
-            res = {}
-            for track in list(tr["label"]):
-                res[track] = (
-                    df[df["label"] == track]
-                    .groupby("range")["scores"]
-                    .apply(list)
-                    .to_dict()
-                )
-            logger.debug(f"Reformating scores :: {time.time() - start0}")
-            return res
+                # Extract scores from tileDB and wrangle them into DataFrame
+                query = [
+                    slice(int(start), int(end) - 1)
+                    for start, end in (r.split("-") for r in subranges)
+                ]
+                with tiledb.open(tdb, "r", config=tiledb.Config(cfg_dict)) as A:
+                    subarray = A.multi_index[query,]
+
+                # Extract scores from tileDB and wrangle them into DataFrame
+                attrs = list(subarray.keys())
+                for attr in attrs:
+                    cov = subarray[attr]
+                    coverage_per_slice = []
+                    start_idx = 0
+                    query_lengths = [s.stop - s.start for s in query]
+                    for length in query_lengths:
+                        coverage_per_slice.append(cov[start_idx : start_idx + length])
+                        start_idx += length
+                    scores[chrom][attr].append(coverage_per_slice)
+
+            logger.info(f"Extracting scores :: {time.time() - start0}")
+
+            # `scores` are dictionaries of keys: chroms, values: list of attributes
+            # Each subdirectory is a dict of keys: attributes, values: list of coverage scores
+            starto = time.time()
+            combined_scores = collections.defaultdict(list)
+            for chrom, attrs in scores.items():
+                for attr, scores_list in attrs.items():
+                    combined_scores[attr].extend(scores_list[0])
+            logger.info(f"Reformatting scores :: {time.time() - start0}")
+
+            return combined_scores
+
         except Exception as e:
-            logger.error(f"Error processing chromosome {chrom}: {e}")
+            logger.error(f"Error processing query chunk: {e}")
             raise
 
     def query_tracks(self, threads: int = 1) -> "MultiRangeQuery":
@@ -127,74 +124,54 @@ class MultiRangeQuery:
             MultiRangeQuery: MultiRangeQuery: An updated MultiRangeQuery object
         """
 
-        def _log_task_completion(future, chrom, ntasks, completed_tasks):
+        def _log_task_completion(future, ntasks, completed_tasks):
             if future.exception() is not None:
                 logger.error(
-                    f"Querying tracks for chromosome {chrom} failed with exception: {future.exception()}"
+                    f"Querying tracks [task {completed_tasks+1}] failed with exception: {future.exception()}"
                 )
             else:
                 with lock:
                     completed_tasks[0] += 1
-                logger.info(
-                    f"task {completed_tasks[0]}/{ntasks} :: Queried tracks for chromosome {chrom}."
-                )
+                logger.info(f"task {completed_tasks[0]}/{ntasks} finished.")
 
-        tracks = self.momics.tracks()
+        cfg_dict = {k: v for k, v in self.momics.cfg.cfg.items()}
         tasks = [
-            (
-                chrom,
-                group,
-                tracks,
-                self.momics._build_uri("coverage", f"{chrom}.tdb"),
-                {k: v for k, v in self.momics.cfg.cfg.items()},
-            )
-            for (chrom, group) in self.queries.items()
+            self.ranges[
+                i * len(self.ranges) // threads : (i + 1) * len(self.ranges) // threads
+            ]
+            for i in range(threads)
         ]
+        tasks = [t for t in tasks if len(t) > 0]
         ntasks = len(tasks)
         completed_tasks = [0]
         threads = min(threads, ntasks)
         start0 = time.time()
 
-        if threads == 1:
-            results = []
-            for chrom, group, tracks, tdb, cfg_dict in tasks:
-                results.append(
-                    self._query_tracks_per_chr(chrom, group, tracks, tdb, cfg_dict)
+        with concurrent.futures.ProcessPoolExecutor(max_workers=threads) as executor:
+            futures = []
+            for r in tasks:
+                future = executor.submit(
+                    self._query_tracks_per_chr, self.momics.path, r, cfg_dict
                 )
-                completed_tasks[0] += 1
-                logger.info(
-                    f"task {completed_tasks[0]}/{ntasks} :: Queried tracks for chromosome {chrom}."
+                future.add_done_callback(
+                    lambda f: _log_task_completion(f, ntasks, completed_tasks)
                 )
+                futures.append(future)
+            concurrent.futures.wait(futures)
 
-        else:
-            with concurrent.futures.ProcessPoolExecutor(
-                max_workers=threads
-            ) as executor:
-                futures = []
-                for chrom, group, tracks, tdb, cfg_dict in tasks:
-                    future = executor.submit(
-                        self._query_tracks_per_chr, chrom, group, tracks, tdb, cfg_dict
-                    )
-                    future.add_done_callback(
-                        lambda f, c=chrom: _log_task_completion(
-                            f, c, ntasks, completed_tasks
-                        )
-                    )
-                    futures.append(future)
-                concurrent.futures.wait(futures)
+        results = []
+        for future in concurrent.futures.as_completed(futures):
+            results.append(future.result())
 
-            results = []
-            for future in concurrent.futures.as_completed(futures):
-                results.append(future.result())
+        combined_results = collections.defaultdict(dict)
+        attrs = list(results[0].keys())
+        for attr in attrs:
+            combined_results[attr] = []
+        for i in range(len(results)):
+            for attr in attrs:
+                combined_results[attr].extend(results[i][attr])
 
-        res = {}
-        tr = list(tracks[[x != "None" for x in tracks["label"]]]["label"])
-        for track in tr:
-            scores_from_all_chrs = [x[track] for x in results]
-            d = {k: v for d in scores_from_all_chrs for k, v in d.items()}
-            res[track] = {key: d[key] for key in self.query_labels if key in d}
-
-        self.coverage = res
+        self.coverage = combined_results
         t = time.time() - start0
         logger.info(f"Query completed in {round(t,4)}s.")
         return self
@@ -298,7 +275,7 @@ class MultiRangeQuery:
             )
 
         ranges_str = []
-        for _, coords in enumerate(self.query_labels):
+        for _, coords in enumerate(self.coordinates):
             chrom, range_part = coords.split(":")
             start = int(range_part.split("-")[0])
             end = int(range_part.split("-")[1])
