@@ -39,7 +39,10 @@ class MultiRangeQuery:
             momics (Momics): a Momics object
             bed (pd.DataFrame): pd.DataFrame with at least three columns `chrom`, `start` and `end`.
         """
+        if not isinstance(momics, Momics):
+            raise ValueError("momics must be a `Momics` object.")
         self.momics = momics
+
         if isinstance(bed, str):
             if ":" in bed:
                 bed = parse_ucsc_coordinates(bed)
@@ -60,58 +63,60 @@ class MultiRangeQuery:
         self.seq = None
 
     @staticmethod
-    def _query_tracks_per_chr(base_uri, ranges, cfg_dict):
-
+    def _query_tracks_per_batch(base_uri, ranges, cfg_dict):
         try:
-
+            # Split ranges by chromosome
             start0 = time.time()
             ranges_per_chr = collections.defaultdict(list)
             for r in ranges:
                 chrom, value = r.split(":")
                 ranges_per_chr[chrom].append(value)
-            logger.info(f"Generating dict per chroms :: {time.time() - start0}")
+            logger.debug(f"Generating dict per chroms :: {time.time() - start0}")
 
+            # Get attributes
             start0 = time.time()
-            scores = collections.defaultdict(list)
+            _c = list(ranges_per_chr.keys())[0]
+            _sch = tiledb.open(
+                os.path.join(base_uri, "coverage", f"{_c}.tdb"),
+                "r",
+                config=tiledb.Config(cfg_dict),
+            ).schema
+            attrs = [_sch.attr(i).name for i in range(_sch.nattr)]
+
+            # Prepare empty dictionary {attr1: { ranges1: ..., ranges2: ... }, attr2: {}, ...}
+            results = {attr: collections.defaultdict(list) for attr in attrs}
+
             for chrom, subranges in ranges_per_chr.items():
-                scores[chrom] = collections.defaultdict(list)
+                keys = [f"{chrom}:{i}" for i in subranges]
                 tdb = os.path.join(base_uri, "coverage", f"{chrom}.tdb")
 
                 # Extract scores from tileDB and wrangle them into DataFrame
                 query = [
-                    slice(int(start), int(end) - 1)
+                    slice(int(start) - 1, int(end))
                     for start, end in (r.split("-") for r in subranges)
                 ]
                 with tiledb.open(tdb, "r", config=tiledb.Config(cfg_dict)) as A:
                     subarray = A.multi_index[query,]
 
                 # Extract scores from tileDB and wrangle them into DataFrame
-                attrs = list(subarray.keys())
+                # This is the tricky bit, because tileDB returns a dict of attributes
+                # and for each attribute, there is only a single list of scores
+                # all concatenated together. We need to split them back into the
+                # original slices.
                 for attr in attrs:
                     cov = subarray[attr]
-                    coverage_per_slice = []
                     start_idx = 0
                     query_lengths = [s.stop - s.start for s in query]
-                    for length in query_lengths:
-                        coverage_per_slice.append(cov[start_idx : start_idx + length])
+                    for i, length in enumerate(query_lengths):
+                        results[attr][keys[i]] = cov[start_idx : start_idx + length]
                         start_idx += length
-                    scores[chrom][attr].append(coverage_per_slice)
 
-            logger.info(f"Extracting scores :: {time.time() - start0}")
+            logger.debug(f"Extracting scores :: {time.time() - start0}")
 
-            # `scores` are dictionaries of keys: chroms, values: list of attributes
-            # Each subdirectory is a dict of keys: attributes, values: list of coverage scores
-            starto = time.time()
-            combined_scores = collections.defaultdict(list)
-            for chrom, attrs in scores.items():
-                for attr, scores_list in attrs.items():
-                    combined_scores[attr].extend(scores_list[0])
-            logger.info(f"Reformatting scores :: {time.time() - start0}")
-
-            return combined_scores
+            return results
 
         except Exception as e:
-            logger.error(f"Error processing query chunk: {e}")
+            logger.error(f"Error processing query batch: {e}")
             raise
 
     def query_tracks(self, threads: int = 1) -> "MultiRangeQuery":
@@ -127,7 +132,7 @@ class MultiRangeQuery:
         def _log_task_completion(future, ntasks, completed_tasks):
             if future.exception() is not None:
                 logger.error(
-                    f"Querying tracks [task {completed_tasks+1}] failed with exception: {future.exception()}"
+                    f"Querying tracks [task {completed_tasks[0]+1}] failed with exception: {future.exception()}"
                 )
             else:
                 with lock:
@@ -149,27 +154,25 @@ class MultiRangeQuery:
 
         with concurrent.futures.ProcessPoolExecutor(max_workers=threads) as executor:
             futures = []
-            for r in tasks:
+            for i, r in enumerate(tasks):
                 future = executor.submit(
-                    self._query_tracks_per_chr, self.momics.path, r, cfg_dict
+                    self._query_tracks_per_batch, self.momics.path, r, cfg_dict
                 )
                 future.add_done_callback(
                     lambda f: _log_task_completion(f, ntasks, completed_tasks)
                 )
-                futures.append(future)
-            concurrent.futures.wait(futures)
+                futures.append((i, future))
+            concurrent.futures.wait([f[1] for f in futures])
 
-        results = []
-        for future in concurrent.futures.as_completed(futures):
-            results.append(future.result())
+        results = [None] * len(tasks)
+        for i, future in futures:
+            results[i] = future.result()
 
-        combined_results = collections.defaultdict(dict)
-        attrs = list(results[0].keys())
-        for attr in attrs:
-            combined_results[attr] = []
-        for i in range(len(results)):
+        attrs = results[0].keys()
+        combined_results = {attr: {} for attr in attrs}
+        for d in results:
             for attr in attrs:
-                combined_results[attr].extend(results[i][attr])
+                combined_results[attr].update(d[attr])
 
         self.coverage = combined_results
         t = time.time() - start0
@@ -177,16 +180,52 @@ class MultiRangeQuery:
         return self
 
     @staticmethod
-    def _query_seq_per_chr(chrom, group, tdb, cfg_dict):
-        start0 = time.time()
-        ranges = list(zip(group["start"], group["end"]))
-        seqs = {}
-        with tiledb.open(tdb, "r", ctx=tiledb.Ctx(tiledb.Config(cfg_dict))) as A:
-            for _, (start, end) in enumerate(ranges):
-                seq = A.df[(start - 1) : (end - 1)]["nucleotide"]
-                seqs[f"{chrom}:{start}-{end}"] = "".join(seq)
-        logger.debug(f"Fetching sequence :: {time.time() - start0}")
-        return seqs
+    def _query_sequence_per_batch(base_uri, ranges, cfg_dict):
+        try:
+            start0 = time.time()
+            ranges_per_chr = collections.defaultdict(list)
+            for r in ranges:
+                chrom, value = r.split(":")
+                ranges_per_chr[chrom].append(value)
+            logger.debug(f"Generating dict per chroms :: {time.time() - start0}")
+
+            start0 = time.time()
+            seqs = collections.defaultdict(list)
+            for chrom, subranges in ranges_per_chr.items():
+                keys = [f"{chrom}:{i}" for i in subranges]
+                seqs[chrom] = collections.defaultdict(list)
+                tdb = os.path.join(base_uri, "genome", "sequence", f"{chrom}.tdb")
+
+                # Extract sequence from tileDB
+                query = [
+                    slice(int(start) - 1, int(end))
+                    for start, end in (r.split("-") for r in subranges)
+                ]
+                with tiledb.open(tdb, "r", config=tiledb.Config(cfg_dict)) as A:
+                    subarray = A.multi_index[query,]
+
+                # Extract seqs from tileDB and wrangle them into DataFrame
+                # This is the tricky bit, because tileDB returns a dict of attributes
+                # and for each attribute, there is only a single list of seqs
+                # all concatenated together. We need to split them back into the
+                # original slices.
+                seq = subarray["nucleotide"]
+                seq_per_slice = []
+                start_idx = 0
+                query_lengths = [s.stop - s.start for s in query]
+                for length in query_lengths:
+                    x = seq[start_idx : start_idx + length]
+                    seq_per_slice.append("".join([nt.decode("utf-8") for nt in x]))
+                    start_idx += length
+                seqs[chrom] = {keys[i]: seq_per_slice[i] for i in range(len(keys))}
+
+            logger.debug(f"Extracting sequences :: {time.time() - start0}")
+
+            return dict(seqs)
+
+        except Exception as e:
+            logger.error(f"Error processing query batch: {e}")
+            raise
 
     def query_sequence(self, threads: int = 1) -> "MultiRangeQuery":
         """Query multiple sequence ranges from a Momics repo.
@@ -198,65 +237,51 @@ class MultiRangeQuery:
             MultiRangeQuery: An updated MultiRangeQuery object
         """
 
-        def _log_task_completion(future, chrom, ntasks, completed_tasks):
+        def _log_task_completion(future, ntasks, completed_tasks):
             if future.exception() is not None:
                 logger.error(
-                    f"Querying sequences for chromosome {chrom} failed with exception: {future.exception()}"
+                    f"Querying sequence [task {completed_tasks[0]+1}] failed with exception: {future.exception()}"
                 )
             else:
                 with lock:
                     completed_tasks[0] += 1
-                logger.info(
-                    f"task {completed_tasks[0]}/{ntasks} :: Queried sequences for chromosome {chrom}."
-                )
+                logger.info(f"task {completed_tasks[0]}/{ntasks} finished.")
 
+        cfg_dict = {k: v for k, v in self.momics.cfg.cfg.items()}
         tasks = [
-            (
-                chrom,
-                group,
-                self.momics._build_uri("genome", "sequence", f"{chrom}.tdb"),
-                {k: v for k, v in self.momics.cfg.cfg.items()},
-            )
-            for (chrom, group) in self.queries.items()
+            self.ranges[
+                i * len(self.ranges) // threads : (i + 1) * len(self.ranges) // threads
+            ]
+            for i in range(threads)
         ]
+        tasks = [t for t in tasks if len(t) > 0]
         ntasks = len(tasks)
         completed_tasks = [0]
         threads = min(threads, ntasks)
         start0 = time.time()
 
-        if threads == 1:
-            seqs = []
-            for chrom, group, tdb, cfg_dict in tasks:
-                seqs.append(self._query_seq_per_chr(chrom, group, tdb, cfg_dict))
-                completed_tasks[0] += 1
-                logger.info(
-                    f"task {completed_tasks[0]}/{ntasks} :: Queried sequences for chromosome {chrom}."
+        with concurrent.futures.ProcessPoolExecutor(max_workers=threads) as executor:
+            futures = []
+            for i, r in enumerate(tasks):
+                future = executor.submit(
+                    self._query_sequence_per_batch, self.momics.path, r, cfg_dict
                 )
-        else:
-            with concurrent.futures.ProcessPoolExecutor(
-                max_workers=threads
-            ) as executor:
-                futures = []
-                for chrom, group, tdb, cfg_dict in tasks:
-                    future = executor.submit(
-                        self._query_seq_per_chr, chrom, group, tdb, cfg_dict
-                    )
-                    future.add_done_callback(
-                        lambda f, c=chrom: _log_task_completion(
-                            f, c, ntasks, completed_tasks
-                        )
-                    )
-                    futures.append(future)
-                concurrent.futures.wait(futures)
+                future.add_done_callback(
+                    lambda f: _log_task_completion(f, ntasks, completed_tasks)
+                )
+                futures.append((i, future))
+            concurrent.futures.wait([f[1] for f in futures])
 
-            seqs = []
-            for future in concurrent.futures.as_completed(futures):
-                seqs.append(future.result())
+        results = [None] * len(tasks)
+        for i, future in futures:
+            results[i] = future.result()
 
-        mseqs = {}
-        for d in seqs:
-            mseqs.update(d)
-        self.seq = {"seq": mseqs}
+        combined_results = {}
+        for d in results:
+            for chrom_dict in d.values():
+                combined_results.update(chrom_dict)
+
+        self.seq = {"nucleotide": combined_results}
         t = time.time() - start0
         logger.info(f"Query completed in {round(t,4)}s.")
         return self
@@ -275,7 +300,7 @@ class MultiRangeQuery:
             )
 
         ranges_str = []
-        for _, coords in enumerate(self.coordinates):
+        for _, coords in enumerate(self.ranges):
             chrom, range_part = coords.split(":")
             start = int(range_part.split("-")[0])
             end = int(range_part.split("-")[1])
@@ -304,7 +329,7 @@ class MultiRangeQuery:
             )
 
         seq_records = []
-        for header, sequence in seq["seq"].items():
+        for header, sequence in seq["nucleotide"].items():
             seq_record = SeqRecord(Seq(sequence), id=header, description="")
             seq_records.append(seq_record)
 
@@ -337,7 +362,7 @@ class MultiRangeQuery:
             output (Path): Path to the output JSON file.
         """
         data = self.coverage
-        data["seq"] = self.seq["seq"]
+        data["nucleotide"] = self.seq["nucleotide"]
         logger.info(f"Saving results of multi-range query to {output}...")
         with open(output, "w") as json_file:
             json.dump(data, json_file, indent=4)

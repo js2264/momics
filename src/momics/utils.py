@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pyBigWig
 import pyfaidx
@@ -18,6 +19,21 @@ def get_chr_lengths(bw: Path) -> dict:
         a = bw.chroms()
     bw.close()
     return a
+
+
+def _dict_to_bigwig(bw_dict: dict, output: Path):
+    """Write a dictionary of coverages to a bigwig file
+
+    Args:
+        bw_dict (dict): Dictionary of chromosome coverages
+        output (Path): Path to output bigwig file
+    """
+    bw = pyBigWig.open(output, "w")
+    header = [(chrom, len(coverage)) for chrom, coverage in bw_dict.items()]
+    bw.addHeader(header)
+    for chrom, coverage in bw_dict.items():
+        bw.addEntries(chrom, 1, span=1, step=1, values=coverage)
+    bw.close()
 
 
 def _check_fasta_lengths(fasta, chroms):

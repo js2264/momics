@@ -20,7 +20,9 @@ def fa1(tmp_path_factory):
     p = os.path.join(tmp_path_factory.getbasetemp(), "fa1")
     nucleotides = ["A", "T", "C", "G"]
     chrom_seqs = {
-        "I": "ATCGATCGAT" + "".join(random.choices(nucleotides, k=10000 - 10)),
+        "I": "ATCGATCGAT"
+        + "".join(random.choices(nucleotides, k=10000 - 20))
+        + "TTCCGGTTCC",
         "II": "TCGATCGATA" + "".join(random.choices(nucleotides, k=20000 - 10)),
         "III": "CGATCGATAT" + "".join(random.choices(nucleotides, k=30000 - 10)),
     }

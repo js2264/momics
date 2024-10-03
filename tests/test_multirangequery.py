@@ -46,7 +46,11 @@ def test_multirangequery_seq(momics_path: str):
     mom = momics.Momics(momics_path)
     q = MultiRangeQuery(mom, "I:1-10").query_sequence()
     assert len(q.seq) == 1
-    assert q.seq["seq"]["I:1-10"] == "ATCGATCGAT"
+    assert q.seq["nucleotide"]["I:1-10"] == "ATCGATCGAT"
+
+    q = MultiRangeQuery(mom, "I:9991-10000").query_sequence()
+    assert len(q.seq) == 1
+    assert q.seq["nucleotide"]["I:9991-10000"] == "TTCCGGTTCC"
 
 
 @pytest.mark.order(2)
@@ -55,8 +59,8 @@ def test_multirangequery_seq2(momics_path: str, bed1: str):
     q = MultiRangeQuery(mom, "I:1-10").query_sequence()
     bed = BedTool(bed1).to_dataframe()
     q = MultiRangeQuery(mom, bed).query_sequence()
-    assert len(q.seq["seq"]) == 3
-    assert q.seq["seq"]["I:1-10"] == "ATCGATCGAT"
+    assert len(q.seq["nucleotide"]) == 3
+    assert q.seq["nucleotide"]["I:1-10"] == "ATCGATCGAT"
     assert q.to_fa()[0].id == "I:1-10"
 
 
@@ -65,7 +69,7 @@ def test_multirangequery_seq3(momics_path: str):
     mom = momics.Momics(momics_path)
     q = MultiRangeQuery(mom, "I:1-10").query_sequence()
     q = MultiRangeQuery(mom, "I").query_sequence()
-    assert len(q.seq["seq"]["I:1-10000"]) == 10000
+    assert len(q.seq["nucleotide"]["I:1-10000"]) == 10000
 
 
 @pytest.mark.order(2)
@@ -74,16 +78,18 @@ def test_multirangequery_seq4(momics_path: str, bed1: str):
     q = MultiRangeQuery(mom, "I:1-10").query_sequence()
     bed = BedTool(bed1).to_dataframe()
     q = MultiRangeQuery(mom, bed).query_sequence()
-    assert q.seq["seq"]["I:1-10"] == "ATCGATCGAT"
+    assert q.seq["nucleotide"]["I:1-10"] == "ATCGATCGAT"
 
 
 @pytest.mark.order(2)
 def test_multirangequery_seq5(momics_path: str, bed1: str):
     mom = momics.Momics(momics_path)
     bed = BedTool(bed1).to_dataframe()
+    print(bed)
     q = MultiRangeQuery(mom, "I:1-10").query_sequence()
+    assert q.seq["nucleotide"]["I:1-10"] == "ATCGATCGAT"
     q = MultiRangeQuery(mom, bed).query_sequence(threads=2)
-    assert q.seq["seq"]["I:1-10"] == "ATCGATCGAT"
+    assert q.seq["nucleotide"]["I:1-10"] == "ATCGATCGAT"
 
 
 @pytest.fixture
@@ -113,13 +119,13 @@ def test_to_json_npz(momics_path: str, temp_json_file: Path, temp_npz_file: Path
 
     with open(temp_json_file, "r") as json_file:
         data = json.load(json_file)
-    assert list(data.keys()) == ["bw2", "custom", "bw3", "bw4", "seq"]
-    assert data["seq"]["I:1-10"] == "ATCGATCGAT"
+    assert list(data.keys()) == ["bw2", "custom", "bw3", "bw4", "nucleotide"]
+    assert data["nucleotide"]["I:1-10"] == "ATCGATCGAT"
 
     data = np.load(temp_npz_file, allow_pickle=True)
-    seq = pickle.loads(data["seq"])
+    seq = pickle.loads(data["nucleotide"])
     cov = pickle.loads(data["coverage"])
     print(cov.keys())
-    assert seq["seq"]["I:1-10"] == "ATCGATCGAT"
-    assert list(cov.keys()) == ["bw2", "custom", "bw3", "bw4", "seq"]
+    assert seq["nucleotide"]["I:1-10"] == "ATCGATCGAT"
+    assert list(cov.keys()) == ["bw2", "custom", "bw3", "bw4", "nucleotide"]
     assert list(cov["bw2"].keys()) == ["I:1-10"]
