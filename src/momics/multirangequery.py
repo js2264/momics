@@ -66,15 +66,12 @@ class MultiRangeQuery:
     def _query_tracks_per_batch(base_uri, ranges, cfg_dict):
         try:
             # Split ranges by chromosome
-            start0 = time.time()
             ranges_per_chr = collections.defaultdict(list)
             for r in ranges:
                 chrom, value = r.split(":")
                 ranges_per_chr[chrom].append(value)
-            logger.debug(f"Generating dict per chroms :: {time.time() - start0}")
 
             # Get attributes
-            start0 = time.time()
             _c = list(ranges_per_chr.keys())[0]
             _sch = tiledb.open(
                 os.path.join(base_uri, "coverage", f"{_c}.tdb"),
@@ -110,8 +107,6 @@ class MultiRangeQuery:
                     for i, length in enumerate(query_lengths):
                         results[attr][keys[i]] = cov[start_idx : start_idx + length]
                         start_idx += length
-
-            logger.debug(f"Extracting scores :: {time.time() - start0}")
 
             return results
 
@@ -152,7 +147,7 @@ class MultiRangeQuery:
         threads = min(threads, ntasks)
         start0 = time.time()
 
-        with concurrent.futures.ProcessPoolExecutor(max_workers=threads) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
             futures = []
             for i, r in enumerate(tasks):
                 future = executor.submit(
