@@ -123,7 +123,7 @@ def test_to_json_npz(momics_path: str, temp_json_file: Path, temp_npz_file: Path
     assert data["nucleotide"]["I:1-10"] == "ATCGATCGAT"
 
     data = np.load(temp_npz_file, allow_pickle=True)
-    seq = pickle.loads(data["nucleotide"])
+    seq = pickle.loads(data["seq"])
     cov = pickle.loads(data["coverage"])
     print(cov.keys())
     assert seq["nucleotide"]["I:1-10"] == "ATCGATCGAT"

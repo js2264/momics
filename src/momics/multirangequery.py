@@ -362,6 +362,9 @@ class MultiRangeQuery:
             output (Path): Path to the output JSON file.
         """
         data = self.coverage
+        for key, _ in data.items():
+            for key2, value2 in data[key].items():
+                data[key][key2] = value2.tolist()
         data["nucleotide"] = self.seq["nucleotide"]
         logger.info(f"Saving results of multi-range query to {output}...")
         with open(output, "w") as json_file:
