@@ -80,7 +80,7 @@ def test_s3_IO(fa1: str, bw1: str):
     # Query sequences
     q.query_sequence()
     assert len(q.seq) == 1
-    assert q.seq["seq"]["I:1-10"] == "ATCGATCGAT"
+    assert q.seq["nucleotide"]["I:1-10"] == "ATCGATCGAT"
 
     ## Purge existing repo
     res = mom.remove()
@@ -142,7 +142,7 @@ def test_gcs_IO(fa1: str, bw1: str):
     # Query sequences
     q.query_sequence()
     assert len(q.seq) == 1
-    assert q.seq["seq"]["I:1-10"] == "ATCGATCGAT"
+    assert q.seq["nucleotide"]["I:1-10"] == "ATCGATCGAT"
 
     ## Purge existing repo
     res = mom.remove()
@@ -227,7 +227,7 @@ def test_azure_IO(fa1: str, bw1: str):
     # Query sequences
     q.query_sequence()
     assert len(q.seq) == 1
-    assert q.seq["seq"]["I:1-10"] == "ATCGATCGAT"
+    assert q.seq["nucleotide"]["I:1-10"] == "ATCGATCGAT"
 
     ## Purge existing repo
     res = mom.remove()
