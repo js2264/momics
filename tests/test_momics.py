@@ -46,7 +46,7 @@ def test_Momics_add_tracks(momics_path: str, bw1: str, bw2: str):
     mom = momics.Momics(momics_path)
 
     assert mom.tracks().empty
-    mom.add_tracks({"bw1": bw1})
+    mom.add_tracks({"bw1": bw1}, tile=10000)
     out = pd.DataFrame(
         {
             "idx": [0],
@@ -101,7 +101,7 @@ def test_Momics_add_seq(momics_path: str, fa1: str, fa2: str):
     with pytest.raises(Exception, match=r".*do not have identical chromomosome.*"):
         mom.add_sequence(fa2)
 
-    mom.add_sequence(fa1)
+    mom.add_sequence(fa1, tile=10000)
 
     with pytest.raises(tiledb.cc.TileDBError, match=r"already exists"):
         mom.add_sequence(fa2)

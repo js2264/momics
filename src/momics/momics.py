@@ -107,17 +107,7 @@ class Momics:
                     tile=tile,
                 )
             )
-            attr = tiledb.Attr(
-                name="nucleotide",
-                dtype="ascii",
-                filters=tiledb.FilterList(
-                    [
-                        tiledb.LZ4Filter(),
-                        tiledb.ZstdFilter(level=compression),
-                    ],
-                    chunksize=1000,
-                ),
-            )
+            attr = tiledb.Attr(name="nucleotide", dtype="ascii")
             schema = tiledb.ArraySchema(
                 ctx=self.cfg.ctx,
                 domain=dom,
@@ -128,7 +118,7 @@ class Momics:
                         tiledb.LZ4Filter(),
                         tiledb.ZstdFilter(level=compression),
                     ],
-                    chunksize=1000,
+                    chunksize=4000000,
                 ),
             )
             tiledb.Array.create(tdb, schema)
@@ -170,7 +160,7 @@ class Momics:
                         tiledb.LZ4Filter(),
                         tiledb.ZstdFilter(level=compression),
                     ],
-                    chunksize=1000,
+                    chunksize=4000000,
                 ),
             )
             tiledb.Array.create(tdb, schema)
@@ -253,9 +243,9 @@ class Momics:
             else:
                 with lock:
                     completed_tasks[0] += 1
-                logger.info(
-                    f"task {completed_tasks[0]}/{ntasks} :: ingested tracks over {chrom}."
-                )
+                # logger.info(
+                #     f"task {completed_tasks[0]}/{ntasks} :: ingested tracks over {chrom}."
+                # )
 
         tasks = []
         chroms = self.chroms()
@@ -441,7 +431,7 @@ class Momics:
             A.meta["timestamp"] = datetime.now().isoformat()
 
     def add_sequence(
-        self, fasta: Path, threads: int = 1, tile: int = 10000, compression: int = 3
+        self, fasta: Path, threads: int = 1, tile: int = 50000, compression: int = 3
     ) -> "Momics":
         """Ingest a fasta file into a Momics repository
 
@@ -478,7 +468,7 @@ class Momics:
         bws: dict,
         threads: int = 1,
         max_bws: int = 9999,
-        tile: int = 10000,
+        tile: int = 50000,
         compression: int = 3,
     ) -> "Momics":
         """Ingest bigwig coverage tracks to the `.momics` repository.

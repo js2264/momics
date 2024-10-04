@@ -63,7 +63,7 @@ class MultiRangeQuery:
         self.seq = None
 
     @staticmethod
-    def _query_tracks_per_batch(base_uri, ranges, cfg_dict):
+    def _query_tracks_per_batch(base_uri, ranges, cfg_dict, tracks):
         try:
             # Split ranges by chromosome
             ranges_per_chr = collections.defaultdict(list)
@@ -79,6 +79,8 @@ class MultiRangeQuery:
                 config=tiledb.Config(cfg_dict),
             ).schema
             attrs = [_sch.attr(i).name for i in range(_sch.nattr)]
+            if tracks is not None:
+                attrs = [attr for attr in attrs if attr in tracks]
 
             # Prepare empty dictionary {attr1: { ranges1: ..., ranges2: ... }, attr2: {}, ...}
             results = {attr: collections.defaultdict(list) for attr in attrs}
@@ -92,8 +94,12 @@ class MultiRangeQuery:
                     slice(int(start) - 1, int(end))
                     for start, end in (r.split("-") for r in subranges)
                 ]
-                with tiledb.open(tdb, "r", config=tiledb.Config(cfg_dict)) as A:
-                    subarray = A.multi_index[query,]
+                cfg = tiledb.Config(cfg_dict)
+                cfg.update({"sm.compute_concurrency_level": 1})
+                cfg.update({"sm.io_concurrency_level": 1})
+                with tiledb.open(tdb, "r", config=cfg) as A:
+                    # subarray = A.multi_index[query,]
+                    subarray = A.query(attrs=attrs).multi_index[query,]
 
                 # Extract scores from tileDB and wrangle them into DataFrame
                 # This is the tricky bit, because tileDB returns a dict of attributes
@@ -114,11 +120,12 @@ class MultiRangeQuery:
             logger.error(f"Error processing query batch: {e}")
             raise
 
-    def query_tracks(self, threads: int = 1) -> "MultiRangeQuery":
+    def query_tracks(self, threads: int = 1, tracks: list = None) -> "MultiRangeQuery":
         """Query multiple coverage ranges from a Momics repo.
 
         Args:
             threads (int, optional): Number of threads for parallel query. Defaults to 1.
+            tracks (list, optional): List of tracks to query. Defaults to None, which queries all tracks.
 
         Returns:
             MultiRangeQuery: MultiRangeQuery: An updated MultiRangeQuery object
@@ -151,7 +158,7 @@ class MultiRangeQuery:
             futures = []
             for i, r in enumerate(tasks):
                 future = executor.submit(
-                    self._query_tracks_per_batch, self.momics.path, r, cfg_dict
+                    self._query_tracks_per_batch, self.momics.path, r, cfg_dict, tracks
                 )
                 future.add_done_callback(
                     lambda f: _log_task_completion(f, ntasks, completed_tasks)
@@ -351,6 +358,21 @@ class MultiRangeQuery:
             np.savez_compressed(f, coverage=serialized_cov, seq=serialized_seq)
 
     def to_json(self, output: Path):
+        """Write the results of a multi-range query to a JSON file.
+
+        Args:
+            output (Path): Path to the output JSON file.
+        """
+        data = self.coverage
+        for key, _ in data.items():
+            for key2, value2 in data[key].items():
+                data[key][key2] = value2.tolist()
+        data["nucleotide"] = self.seq["nucleotide"]
+        logger.info(f"Saving results of multi-range query to {output}...")
+        with open(output, "w") as json_file:
+            json.dump(data, json_file, indent=4)
+
+    def dump(self, output: Path):
         """Write the results of a multi-range query to a JSON file.
 
         Args:

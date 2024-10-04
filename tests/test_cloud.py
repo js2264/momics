@@ -58,10 +58,10 @@ def test_s3_IO(fa1: str, bw1: str):
     assert mom.chroms().__eq__(out).all().all()
 
     # Add seq
-    mom.add_sequence(fa1)
+    mom.add_sequence(fa1, tile=10000)
 
     # Add tracks
-    mom.add_tracks({"bw1": bw1})
+    mom.add_tracks({"bw1": bw1}, tile=10000)
     out = pd.DataFrame(
         {
             "idx": [0],
@@ -120,10 +120,10 @@ def test_gcs_IO(fa1: str, bw1: str):
     assert mom.chroms().__eq__(out).all().all()
 
     # Add seq
-    mom.add_sequence(fa1)
+    mom.add_sequence(fa1, tile=10000)
 
     # Add tracks
-    mom.add_tracks({"bw1": bw1})
+    mom.add_tracks({"bw1": bw1}, tile=10000)
     out = pd.DataFrame(
         {
             "idx": [0],
@@ -205,10 +205,10 @@ def test_azure_IO(fa1: str, bw1: str):
     assert mom.chroms().__eq__(out).all().all()
 
     # Add seq
-    mom.add_sequence(fa1, threads=2)
+    mom.add_sequence(fa1, threads=2, tile=10000)
 
     # Add tracks
-    mom.add_tracks({"bw1": bw1}, threads=2)
+    mom.add_tracks({"bw1": bw1}, threads=2, tile=10000)
     out = pd.DataFrame(
         {
             "idx": [0],

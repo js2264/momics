@@ -40,6 +40,9 @@ def test_multirangequery_tracks(momics_path: str, bed1: str):
     q = MultiRangeQuery(mom, bed).query_tracks(threads=2)
     assert list(q.coverage.keys()) == ["bw2", "custom", "bw3", "bw4"]
 
+    q = MultiRangeQuery(mom, bed).query_tracks(threads=2, tracks=["bw2", "bw3"])
+    assert list(q.coverage.keys()) == ["bw2", "bw3"]
+
 
 @pytest.mark.order(2)
 def test_multirangequery_seq(momics_path: str):
