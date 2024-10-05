@@ -107,7 +107,7 @@ class Momics:
                     tile=tile,
                 )
             )
-            attr = tiledb.Attr(name="nucleotide", dtype="ascii")
+            attr = tiledb.Attr(name="nucleotide", dtype="ascii", var=True)
             schema = tiledb.ArraySchema(
                 ctx=self.cfg.ctx,
                 domain=dom,
@@ -214,7 +214,10 @@ class Momics:
             # If there are already scores in the array, read them
             # THIS NEEDS TO BE UPDATED AS SOON AS
             # TILEDB ALLOWS PARTIAL ATTRIBUTE WRITING!!
-            with tiledb.open(tdb, mode="r", ctx=self.cfg.ctx) as A:
+            cfg = self.cfg.cfg
+            cfg.update({"sm.compute_concurrency_level": 1})
+            cfg.update({"sm.io_concurrency_level": 1})
+            with tiledb.open(tdb, mode="r", config=cfg) as A:
                 sch = A.schema
                 attrs = [sch.attr(i).name for i in range(0, sch.nattr)]
                 if len(attrs) == 1 and attrs[0] == "placeholder":
@@ -232,7 +235,7 @@ class Momics:
                     orig_scores[bwf] = arr
 
             # Re-write appended scores to chrom array
-            with tiledb.open(tdb, mode="w", ctx=self.cfg.ctx) as A:
+            with tiledb.open(tdb, mode="w", conifig=cfg) as A:
                 A[0:chrom_length] = orig_scores
 
         def _log_task_completion(future, chrom, ntasks, completed_tasks):
@@ -275,8 +278,11 @@ class Momics:
             chrom_length = np.array(chroms[chroms["chrom"] == chrom]["length"])[0]
             with pyfaidx.Fasta(fasta) as fa:
                 chrom_seq = fa.get_seq(chrom, 1, chrom_length + 1)
-                chrom_seq = np.array(list(chrom_seq.seq), dtype="S1")
-            with tiledb.open(tdb, mode="w", ctx=self.cfg.ctx) as A:
+                chrom_seq = np.array(list(chrom_seq.seq), dtype="U1")
+            cfg = self.cfg.cfg
+            cfg.update({"sm.compute_concurrency_level": 1})
+            cfg.update({"sm.io_concurrency_level": 1})
+            with tiledb.open(tdb, mode="w", config=cfg) as A:
                 A[0:chrom_length] = {"nucleotide": chrom_seq}
 
         def _log_task_completion(future, chrom, ntasks, completed_tasks):
