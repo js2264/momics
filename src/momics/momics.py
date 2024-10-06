@@ -107,7 +107,7 @@ class Momics:
                     tile=tile,
                 )
             )
-            attr = tiledb.Attr(name="nucleotide", dtype="ascii", var=True)
+            attr = tiledb.Attr(name="nucleotide", dtype=np.str_)
             schema = tiledb.ArraySchema(
                 ctx=self.cfg.ctx,
                 domain=dom,
@@ -205,7 +205,6 @@ class Momics:
                 se = tiledb.ArraySchemaEvolution(self.cfg.ctx)
                 se.drop_attribute("placeholder")
                 se.array_evolve(uri)
-                logger.debug(f"Attribute 'placeholder' found in {uri}. Dropping it.")
 
         def _process_chrom(self, chrom, chrom_length, bws):
 
@@ -235,7 +234,7 @@ class Momics:
                     orig_scores[bwf] = arr
 
             # Re-write appended scores to chrom array
-            with tiledb.open(tdb, mode="w", conifig=cfg) as A:
+            with tiledb.open(tdb, mode="w", config=cfg) as A:
                 A[0:chrom_length] = orig_scores
 
         def _log_task_completion(future, chrom, ntasks, completed_tasks):
@@ -246,9 +245,9 @@ class Momics:
             else:
                 with lock:
                     completed_tasks[0] += 1
-                # logger.info(
-                #     f"task {completed_tasks[0]}/{ntasks} :: ingested tracks over {chrom}."
-                # )
+                logger.debug(
+                    f"task {completed_tasks[0]}/{ntasks} :: ingested tracks over {chrom}."
+                )
 
         tasks = []
         chroms = self.chroms()
@@ -278,7 +277,7 @@ class Momics:
             chrom_length = np.array(chroms[chroms["chrom"] == chrom]["length"])[0]
             with pyfaidx.Fasta(fasta) as fa:
                 chrom_seq = fa.get_seq(chrom, 1, chrom_length + 1)
-                chrom_seq = np.array(list(chrom_seq.seq), dtype="U1")
+                chrom_seq = np.array(list(chrom_seq.seq), dtype=np.str_)
             cfg = self.cfg.cfg
             cfg.update({"sm.compute_concurrency_level": 1})
             cfg.update({"sm.io_concurrency_level": 1})
@@ -293,7 +292,7 @@ class Momics:
             else:
                 with lock:
                     completed_tasks[0] += 1
-                logger.info(
+                logger.debug(
                     f"task {completed_tasks[0]}/{ntasks} :: ingested fasta over {chrom}."
                 )
 
@@ -450,6 +449,8 @@ class Momics:
         Returns:
             Momics: The updated Momics object
         """
+        start0 = time.time()
+
         # Abort if `chroms` have not been filled
         chroms = self.chroms()
         if chroms.empty:
@@ -468,6 +469,8 @@ class Momics:
 
         # Populate each `/genome/sequence/{chrom}.tdb`
         self._populate_sequence_table(fasta, threads)
+
+        logger.info(f"Genome sequence ingested in {round(time.time() - start0,4)}s.")
 
     def add_tracks(
         self,

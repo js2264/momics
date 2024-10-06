@@ -61,21 +61,26 @@ class MultiRangeQuery:
         try:
 
             # Prepare queries: list of slices [(start, stop), (start, stop), ...]
+            start0 = time.time()
             query = [
                 slice(int(start) - 1, int(end))
                 for start, end in (r.split("-") for r in ranges)
             ]
+            logger.debug(f"define query in {round(time.time() - start0,4)}s")
 
             # Query tiledb
+            start0 = time.time()
             tdb = self.momics._build_uri("coverage", f"{chrom}.tdb")
             with tiledb.open(tdb, "r", config=cfg) as A:
                 subarray = A.query(attrs=attrs).multi_index[query,]
+            logger.debug(f"query tiledb in {round(time.time() - start0,4)}s")
 
             # Extract scores from tileDB and wrangle them into DataFrame
             # This is the tricky bit, because tileDB returns a dict of attributes
             # and for each attribute, there is only a single list of scores
             # all concatenated together. We need to split them back into the
             # original slices.
+            start0 = time.time()
             results = {attr: collections.defaultdict(list) for attr in attrs}
             keys = [f"{chrom}:{i}" for i in ranges]
             for attr in attrs:
@@ -85,6 +90,7 @@ class MultiRangeQuery:
                 for i, length in enumerate(query_lengths):
                     results[attr][keys[i]] = cov[start_idx : start_idx + length]
                     start_idx += length
+            logger.debug(f"wrangle data in {round(time.time() - start0,4)}s")
 
             return results
 
@@ -157,21 +163,26 @@ class MultiRangeQuery:
         try:
 
             # Prepare queries: list of slices [(start, stop), (start, stop), ...]
+            start0 = time.time()
             query = [
                 slice(int(start) - 1, int(end))
                 for start, end in (r.split("-") for r in ranges)
             ]
+            logger.debug(f"define query in {round(time.time() - start0,4)}s")
 
             # Query tiledb
+            start0 = time.time()
             tdb = self.momics._build_uri("genome", "sequence", f"{chrom}.tdb")
             with tiledb.open(tdb, "r", config=cfg) as A:
-                subarray = A.df[query,]
+                subarray = A.multi_index[query,]
+            logger.debug(f"query tiledb in {round(time.time() - start0,4)}s")
 
             # Extract scores from tileDB and wrangle them into DataFrame
             # This is the tricky bit, because tileDB returns a dict of attributes
             # and for each attribute, there is only a single list of scores
             # all concatenated together. We need to split them back into the
             # original slices.
+            start0 = time.time()
             results = {attr: collections.defaultdict(list) for attr in attrs}
             keys = [f"{chrom}:{i}" for i in ranges]
             for attr in attrs:
@@ -179,10 +190,11 @@ class MultiRangeQuery:
                 start_idx = 0
                 query_lengths = [s.stop - s.start for s in query]
                 for i, length in enumerate(query_lengths):
-                    x = seq[start_idx : start_idx + length]
-                    results[attr][keys[i]] = "".join(x)
-                    # results[attr][keys[i]] = "".join(x.astype(str))
+                    results[attr][keys[i]] = "".join(
+                        seq[start_idx : start_idx + length].tolist()
+                    )
                     start_idx += length
+            logger.debug(f"wrangle data in {round(time.time() - start0,4)}s")
 
             return dict(results)
 
@@ -267,7 +279,7 @@ class MultiRangeQuery:
             df[track] = [value for sublist in cov[track].values() for value in sublist]
         return df
 
-    def to_fa(self) -> SeqRecord:
+    def to_SeqRecord(self) -> SeqRecord:
         """Parse self.seq attribute to a SeqRecord
 
         Returns:

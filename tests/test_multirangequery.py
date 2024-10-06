@@ -64,7 +64,7 @@ def test_multirangequery_seq2(momics_path: str, bed1: str):
     q = MultiRangeQuery(mom, bed).query_sequence()
     assert len(q.seq["nucleotide"]) == 3
     assert q.seq["nucleotide"]["I:1-10"] == "ATCGATCGAT"
-    assert q.to_fa()[0].id == "I:1-10"
+    assert q.to_SeqRecord()[0].id == "I:1-10"
 
 
 @pytest.mark.order(2)
