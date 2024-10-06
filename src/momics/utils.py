@@ -3,6 +3,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pyBigWig
+import pybedtools
 import pyfaidx
 
 
@@ -73,31 +74,26 @@ def _check_track_name(track, tracks):
 
 
 def parse_ucsc_coordinates(coords: str) -> pd.DataFrame:
-    """Parse UCSC-style coordinates as a DataFrame
+    """Parse UCSC-style coordinates as a pybedtools.BedTool object.
 
     Args:
         coords (str): A UCSC-style set of coordinates (e.g., "I:11-100"). Note
         that the coordinates are 1-based.
 
     Returns:
-        pd.DataFrame: A pd.DataFrame with at least three columns (`chrom`, `start`, `end`),
-        and any other columns stored in the local bed file.
+        pd.DataFrame: A pybedtools.BedTool object.
     """
     if isinstance(coords, str):
         coords = [coords]
 
-    chromosomes = []
-    starts = []
-    ends = []
+    coord_strings = []
     for coord in coords:
         try:
             chr_part, range_part = coord.split(":")
             start, end = range_part.split("-")
             start = int(start)
             end = int(end)
-            chromosomes.append(chr_part)
-            starts.append(start)
-            ends.append(end)
+            coord_strings.append(f"{chr_part} {start} {end}")
 
         except ValueError:
             raise ValueError(
@@ -110,6 +106,4 @@ def parse_ucsc_coordinates(coords: str) -> pd.DataFrame:
                 + "Expected format: 'chrom:start-end'."
             )
 
-    df = pd.DataFrame({"chrom": chromosomes, "start": starts, "end": ends})
-
-    return df
+    return pybedtools.BedTool("\n".join(coord_strings), from_string=True)

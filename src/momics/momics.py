@@ -369,7 +369,7 @@ class Momics:
         return tracks
 
     def bins(self, width, step, cut_last_bin_out=False):
-        """Generate a DataFrame of tiled genomic bins
+        """Generate a BedTool of tiled genomic bins
 
         Args:
             width (_type_): The width of each bin.

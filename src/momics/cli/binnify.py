@@ -26,10 +26,9 @@ from . import cli
     "-c",
     help="Remove the last bin in each chromosome, which likely does not have "
     + "the same width.",
-    type=bool,
-    default=True,
+    is_flag=True,
+    default=False,
     show_default=True,
-    required=False,
 )
 @click.option(
     "--output",

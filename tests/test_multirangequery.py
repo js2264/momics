@@ -33,7 +33,7 @@ def test_multirangequery_tracks(momics_path: str, bed1: str):
     assert len(q.coverage) == 4
     assert len(q.coverage["bw2"]["I:1-10000"]) == 10000
 
-    bed = BedTool(bed1).to_dataframe()
+    bed = BedTool(bed1)
     q = MultiRangeQuery(mom, bed).query_tracks()
     assert list(q.coverage.keys()) == ["bw2", "custom", "bw3", "bw4"]
 
@@ -60,7 +60,7 @@ def test_multirangequery_seq(momics_path: str):
 def test_multirangequery_seq2(momics_path: str, bed1: str):
     mom = momics.Momics(momics_path)
     q = MultiRangeQuery(mom, "I:1-10").query_sequence()
-    bed = BedTool(bed1).to_dataframe()
+    bed = BedTool(bed1)
     q = MultiRangeQuery(mom, bed).query_sequence()
     assert len(q.seq["nucleotide"]) == 3
     assert q.seq["nucleotide"]["I:1-10"] == "ATCGATCGAT"
@@ -79,7 +79,7 @@ def test_multirangequery_seq3(momics_path: str):
 def test_multirangequery_seq4(momics_path: str, bed1: str):
     mom = momics.Momics(momics_path)
     q = MultiRangeQuery(mom, "I:1-10").query_sequence()
-    bed = BedTool(bed1).to_dataframe()
+    bed = BedTool(bed1)
     q = MultiRangeQuery(mom, bed).query_sequence()
     assert q.seq["nucleotide"]["I:1-10"] == "ATCGATCGAT"
 
@@ -87,7 +87,7 @@ def test_multirangequery_seq4(momics_path: str, bed1: str):
 @pytest.mark.order(2)
 def test_multirangequery_seq5(momics_path: str, bed1: str):
     mom = momics.Momics(momics_path)
-    bed = BedTool(bed1).to_dataframe()
+    bed = BedTool(bed1)
     print(bed)
     q = MultiRangeQuery(mom, "I:1-10").query_sequence()
     assert q.seq["nucleotide"]["I:1-10"] == "ATCGATCGAT"

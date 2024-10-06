@@ -127,7 +127,7 @@ def test_Momics_remove_tracks(momics_path: str, bw1: str, bw2: str, bed1: str):
     assert mom.tracks().iloc[:, 0:2].__eq__(out).all().all()
     q = MultiRangeQuery(mom, "I:991-1010").query_tracks()
     assert list(q.coverage.keys()) == ["bw2", "custom", "bw3", "bw4"]
-    bed = BedTool(bed1).to_dataframe()
+    bed = BedTool(bed1)
     q = MultiRangeQuery(mom, bed).query_tracks()
     assert list(q.coverage.keys()) == ["bw2", "custom", "bw3", "bw4"]
 

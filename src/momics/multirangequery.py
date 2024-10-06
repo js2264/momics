@@ -2,6 +2,7 @@ import collections
 import time
 from pathlib import Path
 
+import pybedtools
 import numpy as np
 import pandas as pd
 import json
@@ -27,12 +28,12 @@ class MultiRangeQuery:
     seq (dict): Dictionary of sequences extracted from the `.momics` repository, populated after calling `q.query_seq()`
     """
 
-    def __init__(self, momics: Momics, bed: pd.DataFrame):
+    def __init__(self, momics: Momics, bed: pybedtools.BedTool):
         """Initialize the MultiRangeQuery object.
 
         Args:
             momics (Momics): a Momics object
-            bed (pd.DataFrame): pd.DataFrame with at least three columns `chrom`, `start` and `end`.
+            bed (pd.DataFrame): pybedtools.BedTool object
         """
         if not isinstance(momics, Momics):
             raise ValueError("momics must be a `Momics` object.")
@@ -47,13 +48,8 @@ class MultiRangeQuery:
                 chrlength = chroms[chroms["chrom"] == chrom]["length"].iloc[0]
                 bed = parse_ucsc_coordinates(f"{chrom}:1-{chrlength}")
 
-        ranges = [
-            f"{chr}:{start}-{end}"
-            for _, (chr, start, end) in enumerate(
-                list(zip(bed["chrom"], bed["start"], bed["end"]))
-            )
-        ]
-        self.ranges = ranges
+        # ranges = [f"{inter.chrom}:{inter.start}-{inter.end}" for inter in bed]
+        self.ranges = bed
         self.coverage = None
         self.seq = None
 
@@ -120,7 +116,7 @@ class MultiRangeQuery:
             cfg.update({"sm.io_concurrency_level": threads})
 
         # Extract attributes from schema
-        chroms = list(dict.fromkeys([x.split(":")[0] for x in self.ranges]))
+        chroms = list(dict.fromkeys([x.chrom for x in self.ranges]))
         _sch = tiledb.open(
             self.momics._build_uri("coverage", f"{chroms[0]}.tdb"),
             "r",
@@ -133,13 +129,13 @@ class MultiRangeQuery:
         # Split ranges by chromosome
         ranges_per_chrom = collections.defaultdict(list)
         for r in self.ranges:
-            chrom, value = r.split(":")
-            ranges_per_chrom[chrom].append(value)
+            chrom = r.chrom
+            ranges_per_chrom[chrom].append(f"{r.start}-{r.end}")
 
         # Prepare empty dictionary of results {attr1: { ranges1: ..., ranges2: ... }, attr2: {}, ...}
         results = []
         for chrom in chroms:
-            logger.info(chrom)
+            logger.debug(chrom)
             results.append(
                 self._query_tracks_per_batch(
                     chrom=chrom,
@@ -224,13 +220,13 @@ class MultiRangeQuery:
         attrs = ["nucleotide"]
         ranges_per_chrom = collections.defaultdict(list)
         for r in self.ranges:
-            chrom, value = r.split(":")
-            ranges_per_chrom[chrom].append(value)
+            chrom = r.chrom
+            ranges_per_chrom[chrom].append(f"{r.start}-{r.end}")
 
         # Prepare empty dictionary of results {attr1: { ranges1: ..., ranges2: ... }, attr2: {}, ...}
         results = []
         for chrom in ranges_per_chrom.keys():
-            logger.info(chrom)
+            logger.debug(chrom)
             results.append(
                 self._query_seq_per_batch(
                     chrom=chrom,
@@ -264,12 +260,12 @@ class MultiRangeQuery:
             )
 
         ranges_str = []
-        for _, coords in enumerate(self.ranges):
-            chrom, range_part = coords.split(":")
-            start = int(range_part.split("-")[0])
-            end = int(range_part.split("-")[1])
+        for inter in self.ranges:
+            chrom = inter.chrom
+            start = inter.start
+            end = inter.end
             label = [
-                {"range": coords, "chrom": chrom, "position": x}
+                {"range": inter, "chrom": chrom, "position": x}
                 for x in range(start, end + 1)
             ]
             ranges_str.extend(label)
