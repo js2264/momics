@@ -65,6 +65,15 @@ def _check_track_names(bw_files, tracks):
             )
 
 
+def _check_feature_names(features, sets):
+    labels = set(sets["label"])
+    for element in list(features.keys()):
+        if element in labels:
+            raise ValueError(
+                f"Provided label '{element}' already present in `features` table"
+            )
+
+
 def _check_track_name(track, tracks):
     labels = set(tracks["label"])
     if track not in labels:

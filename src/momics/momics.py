@@ -166,6 +166,70 @@ class Momics:
             )
             tiledb.Array.create(tdb, schema)
 
+    def _create_features_schema(self, max_features: int, tile: int, compression: int):
+        # Create /features/tracks.tdb
+        tdb = self._build_uri("features", "features.tdb")
+        dom = tiledb.Domain(
+            tiledb.Dim(
+                name="featureSet", domain=(0, max_features), dtype=np.int64, tile=1
+            ),
+        )
+        schema = tiledb.ArraySchema(
+            ctx=self.cfg.ctx,
+            domain=dom,
+            attrs=[
+                tiledb.Attr(name="label", dtype="ascii"),
+                tiledb.Attr(name="n", dtype=np.int64),
+            ],
+            sparse=False,
+        )
+        tiledb.Array.create(tdb, schema)
+
+        # Create every /features/{chrom}.tdb
+        chroms = self.chroms()
+        for chrom in chroms["chrom"]:
+            chrom_length = np.array(chroms[chroms["chrom"] == chrom]["length"])[0]
+            tdb = self._build_uri("features", f"{chrom}.tdb")
+            dom = tiledb.Domain(
+                tiledb.Dim(
+                    name="featureSet",
+                    domain=(0, max_features),
+                    dtype=np.int64,
+                    tile=1,
+                ),
+                tiledb.Dim(
+                    name="start",
+                    domain=(0, chrom_length),
+                    dtype=np.int64,
+                    tile=tile,
+                ),
+                tiledb.Dim(
+                    name="stop",
+                    domain=(0, chrom_length),
+                    dtype=np.int64,
+                    tile=tile,
+                ),
+            )
+            attrs = [
+                tiledb.Attr(name="score", dtype="float32"),
+                tiledb.Attr(name="strand", dtype="ascii"),
+                tiledb.Attr(name="metadata", dtype="ascii"),
+            ]
+            schema = tiledb.ArraySchema(
+                ctx=self.cfg.ctx,
+                domain=dom,
+                attrs=attrs,
+                sparse=True,
+                coords_filters=tiledb.FilterList(
+                    [
+                        tiledb.LZ4Filter(),
+                        tiledb.ZstdFilter(level=compression),
+                    ],
+                    chunksize=4000000,
+                ),
+            )
+            tiledb.Array.create(tdb, schema)
+
     def _populate_track_table(self, bws: Dict[str, str]):
         n = self.tracks().shape[0]
 
@@ -263,6 +327,81 @@ class Momics:
             futures = []
             for chrom, chrom_length in tasks:
                 future = executor.submit(_process_chrom, self, chrom, chrom_length, bws)
+                future.add_done_callback(
+                    lambda f, c=chrom: _log_task_completion(
+                        f, c, ntasks, completed_tasks
+                    )
+                )
+                futures.append(future)
+            concurrent.futures.wait(futures)
+
+    def _populate_features_chroms_table(
+        self, features: Dict[str, pybedtools.BedTool], threads: int
+    ):
+
+        def _process_chrom(self, chrom, feats, registered_features):
+            tdb = self._build_uri("features", f"{chrom}.tdb")
+            cfg = self.cfg.cfg
+            cfg.update({"sm.compute_concurrency_level": 1})
+            cfg.update({"sm.io_concurrency_level": 1})
+            for lab, inter in feats.items():
+                dim1 = list(
+                    registered_features[registered_features["label"].isin([lab])][
+                        "featureSet"
+                    ]
+                )[0]
+                d = {
+                    "score": np.array([0.0] * len(inter), dtype=np.float32),
+                    "strand": np.array(["*"] * len(inter), dtype=np.str_),
+                    "metadata": np.array(["."] * len(inter), dtype=np.str_),
+                }
+                with tiledb.open(tdb, mode="w", config=cfg) as A:
+                    A[[dim1] * len(inter), inter["start"], inter["end"]] = d
+
+        def _log_task_completion(future, chrom, ntasks, completed_tasks):
+            if future.exception() is not None:
+                logger.error(
+                    f"Feature set ingestion over {chrom} failed with exception: {future.exception()}"
+                )
+            else:
+                with lock:
+                    completed_tasks[0] += 1
+                logger.debug(
+                    f"task {completed_tasks[0]}/{ntasks} :: ingested features over {chrom}."
+                )
+
+        n = self.features().shape[0]
+        tdb = self._build_uri("features", "features.tdb")
+        with tiledb.open(tdb, mode="w", ctx=self.cfg.ctx) as array:
+            array[n : (n + len(features))] = {
+                "label": list(features.keys()),
+                "n": [len(x) for x in features.values()],
+            }
+        features = {label: inter.to_dataframe() for label, inter in features.items()}
+        tasks = []
+        chroms = self.chroms()
+        for chrom in chroms["chrom"]:
+            chrom_length = np.array(chroms[chroms["chrom"] == chrom]["length"])[0]
+            tasks.append((chrom, chrom_length))
+        ntasks = len(chroms)
+        completed_tasks = [0]
+        threads = min(threads, ntasks)
+        registered_features = self.features()
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+            futures = []
+            for chrom, chrom_length in tasks:
+                feats = {
+                    label: inter[inter["chrom"] == chrom].drop("chrom", axis=1)
+                    for label, inter in features.items()
+                }
+                future = executor.submit(
+                    _process_chrom,
+                    self,
+                    chrom,
+                    feats,
+                    registered_features,
+                )
                 future.add_done_callback(
                     lambda f, c=chrom: _log_task_completion(
                         f, c, ntasks, completed_tasks
@@ -369,6 +508,35 @@ class Momics:
             tracks = pd.DataFrame(columns=["idx", "label", "path"])
         return tracks
 
+    def features(self, label: str = None) -> pd.DataFrame:
+        """Extract table of ingested features sets.
+
+        Returns:
+            pd.DataFrame: A data frame listing one ingested features set per row
+        """
+        if label is not None:
+            ft = self.features()
+            if label not in ft["label"].values:
+                raise ValueError(f"Feature set '{label}' not found.")
+            chroms = self.chroms()
+            ranges = []
+            for chrom in chroms["chrom"]:
+                tdb = self._build_uri("features", f"{chrom}.tdb")
+                idx = ft[ft["label"] == label]["featureSet"].iloc[0]
+                with tiledb.open(tdb, "r", ctx=self.cfg.ctx) as A:
+                    x = A.query(cond=f"featureSet=={idx}").df[:]
+                    ranges.append(x)
+            res = pybedtools.BedTool.from_dataframe(pd.concat(ranges))
+            return res
+            
+        else:
+            try:
+                features = self._get_table(self._build_uri("features", "features.tdb"))
+                features = features[features["label"] != "\x00"]
+            except FileExistsError:
+                features = pd.DataFrame(columns=["idx", "label", "n"])
+            return features
+
     def bins(self, width, step, cut_last_bin_out=False):
         """Generate a BedTool of tiled genomic bins
 
@@ -446,7 +614,7 @@ class Momics:
         Args:
             fasta (str): Path to a Fasta file containing the genome reference sequence.
             threads (int, optional): Threads to parallelize I/O. Defaults to 1.
-            tile (int, optional): Tile size for TileDB. Defaults to 10000.
+            tile (int, optional): Tile size for TileDB. Defaults to 50000.
             compression (int, optional): Compression level for TileDB. Defaults to 3.
 
         Returns:
@@ -475,6 +643,46 @@ class Momics:
 
         logger.info(f"Genome sequence ingested in {round(time.time() - start0,4)}s.")
 
+    def add_features(
+        self,
+        features: dict,
+        threads: int = 1,
+        max_features: int = 9999,
+        tile: int = 50000,
+        compression: int = 3,
+    ) -> "Momics":
+        """Ingest feature sets to the `.momics` repository.
+
+        Args:
+            features (dict): Dictionary of feature sets already imported with pyBedTools.
+            threads (int, optional): Threads to parallelize I/O. Defaults to 1.
+            max_features (int, optional): Maximum number of feature sets. Defaults to 9999.
+            tile (int, optional): Tile size. Defaults to 50000.
+            compression (int, optional): Compression level. Defaults to 3.
+
+        Returns:
+            Momics: The updated Momics object
+        """
+        start0 = time.time()
+
+        # Abort if `chroms` have not been filled
+        if self.chroms().empty:
+            raise ValueError("Please fill out `chroms` table first.")
+
+        # Abort if features labels already exist
+        utils._check_feature_names(features, self.features())
+
+        # If `path/features/features.tdb` (and `{chroms.tdb}`) do not exist, create it
+        if self.features().empty:
+            self._create_features_schema(max_features, tile, compression)
+
+        # Populate each `path/features/{chrom}.tdb`
+        self._populate_features_chroms_table(features, threads)
+
+        logger.info(
+            f"{len(features)} feature sets ingested in {round(time.time() - start0,4)}s."
+        )
+
     def add_tracks(
         self,
         bws: dict,
@@ -489,7 +697,7 @@ class Momics:
             bws (dict): Dictionary of bigwig files
             threads (int, optional): Threads to parallelize I/O. Defaults to 1.
             max_bws (int, optional): Maximum number of bigwig files. Defaults to 9999.
-            tile (int, optional): Tile size. Defaults to 10000.
+            tile (int, optional): Tile size. Defaults to 50000.
             compression (int, optional): Compression level. Defaults to 3.
 
         Returns:

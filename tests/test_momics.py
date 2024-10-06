@@ -137,3 +137,38 @@ def test_Momics_binnify(momics_path: str):
     mom = momics.Momics(momics_path)
     q = mom.bins(width=1000, step=1000)
     assert q.to_dataframe().shape == (60, 3)
+
+
+@pytest.mark.order(2)
+def test_Momics_features(momics_path: str):
+    mom = momics.Momics(momics_path)
+    assert mom.features().empty
+
+    sets = {
+        "ft1": mom.bins(1000, 2000, cut_last_bin_out=True),
+        "ft2": mom.bins(2, 24, cut_last_bin_out=True),
+    }
+    mom.add_features(sets, tile=10000)
+    out = pd.DataFrame(
+        {
+            "featureSet": [0, 1],
+            "label": ["ft1", "ft2"],
+            "n": [30, 2501],
+        }
+    )
+    assert mom.features().__eq__(out).all().all()
+
+    with pytest.raises(ValueError, match=r".*already present in `features` table"):
+        mom.add_features(
+            {"ft1": mom.bins(1000, 2000, cut_last_bin_out=True)}, tile=10000
+        )
+
+    sets = {
+        "ft3": mom.bins(1000, 2000, cut_last_bin_out=True),
+        "ft4": mom.bins(2, 24, cut_last_bin_out=True),
+    }
+    mom.add_features(sets)
+    assert mom.features().shape == (4, 3)
+
+    ft1 = mom.bins(1000, 2000, cut_last_bin_out=True).to_dataframe()
+    mom.features("ft1").to_dataframe()[["chrom", "start", "end"]].__eq__(ft1)
