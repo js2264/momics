@@ -1,4 +1,5 @@
 import collections
+import psutil
 import time
 from pathlib import Path
 
@@ -53,6 +54,16 @@ class MultiRangeQuery:
         self.coverage = None
         self.seq = None
 
+    def _check_memory_available(self, n):
+        estimated_required_memory = (
+            4 * n * sum([s.stop - s.start + 1 for s in self.ranges])
+        ) * 1.4
+        avail_mem = psutil.virtual_memory().available
+        if estimated_required_memory > avail_mem:
+            logger.warning(
+                f"Estimated required memory ({round(estimated_required_memory/1e9,2)}GB) exceeds available memory ({round(avail_mem/1e9,2)}GB)."
+            )
+
     def _query_tracks_per_batch(self, chrom, ranges, attrs, cfg):
         try:
 
@@ -100,7 +111,7 @@ class MultiRangeQuery:
         """Query multiple coverage ranges from a Momics repo.
 
         Args:
-            threads (int, optional): Number of threads for parallel query. Defaults to 1.
+            threads (int, optional): Number of threads for parallel query. Defaults to all.
             tracks (list, optional): List of tracks to query. Defaults to None, which queries all tracks.
 
         Returns:
@@ -125,6 +136,9 @@ class MultiRangeQuery:
         attrs = [_sch.attr(i).name for i in range(_sch.nattr)]
         if tracks is not None:
             attrs = [attr for attr in attrs if attr in tracks]
+
+        # Check memory available and warn if it's not enough
+        self._check_memory_available(len(attrs))
 
         # Split ranges by chromosome
         ranges_per_chrom = collections.defaultdict(list)
@@ -202,7 +216,7 @@ class MultiRangeQuery:
         """Query multiple sequence ranges from a Momics repo.
 
         Args:
-            threads (int, optional): Number of threads for parallel query. Defaults to 1.
+            threads (int, optional): Number of threads for parallel query. Defaults to all.
 
         Returns:
             MultiRangeQuery: An updated MultiRangeQuery object
@@ -265,7 +279,7 @@ class MultiRangeQuery:
             start = inter.start
             end = inter.end
             label = [
-                {"range": inter, "chrom": chrom, "position": x}
+                {"range": f"{chrom}:{start}-{end}", "chrom": chrom, "position": x}
                 for x in range(start, end + 1)
             ]
             ranges_str.extend(label)
@@ -332,17 +346,3 @@ class MultiRangeQuery:
         with open(output, "w") as json_file:
             json.dump(data, json_file, indent=4)
 
-    def dump(self, output: Path):
-        """Write the results of a multi-range query to a JSON file.
-
-        Args:
-            output (Path): Path to the output JSON file.
-        """
-        data = self.coverage
-        for key, _ in data.items():
-            for key2, value2 in data[key].items():
-                data[key][key2] = value2.tolist()
-        data["nucleotide"] = self.seq["nucleotide"]
-        logger.info(f"Saving results of multi-range query to {output}...")
-        with open(output, "w") as json_file:
-            json.dump(data, json_file, indent=4)

@@ -37,6 +37,7 @@ dependencies = [
     "pyarrow>=1.0",
     "click>=7",
     "packaging",
+    "psutil",
 ]
 
 [project.urls]
