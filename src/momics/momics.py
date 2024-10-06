@@ -10,6 +10,7 @@ import threading
 
 import numpy as np
 import pandas as pd
+import pybedtools
 import pyBigWig
 import pyfaidx
 import tiledb
@@ -393,7 +394,9 @@ class Momics:
         if cut_last_bin_out:
             df = df[(df["end"] - df["start"]) == width - 1]
 
-        return df
+        bt = pybedtools.BedTool.from_dataframe(df)
+
+        return bt
 
     def add_chroms(self, chr_lengths: dict, genome_version: str = "") -> "Momics":
         """Add chromosomes (and genome) information the `.momics` repository.
