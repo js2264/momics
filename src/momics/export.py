@@ -1,3 +1,5 @@
+import logging
+import shutil
 from pathlib import Path
 
 import numpy as np
@@ -5,7 +7,7 @@ import pyBigWig
 
 from .momics import Momics
 from .multirangequery import MultiRangeQuery
-from .utils import _check_track_name
+from .utils import _check_feature_name, _check_track_name
 
 
 def export_track(momics: Momics, track: str, output: Path) -> Momics:
@@ -21,15 +23,37 @@ def export_track(momics: Momics, track: str, output: Path) -> Momics:
     # Abort if `track` is not listed
     _check_track_name(track, momics.tracks())
 
+    # Silence logger
+    logging.disable(logging.CRITICAL)
+
     # Init output file
     bw = pyBigWig.open(output, "w")
     chrom_sizes = momics.chroms()[["chrom", "length"]].apply(tuple, axis=1).tolist()
     bw.addHeader(chrom_sizes)
     for chrom, _ in chrom_sizes:
         q = MultiRangeQuery(momics, chrom).query_tracks().to_df()
-        starts = q["position"].to_numpy(dtype=np.int64)
+        starts = q["position"].to_numpy(dtype=np.int64) - 1
         ends = starts + 1
         values0 = q[track].to_numpy(dtype=np.float32)
         chroms = np.array([chrom] * len(values0))
         bw.addEntries(chroms, starts=starts, ends=ends, values=values0)
     bw.close()
+
+
+def export_features(momics: Momics, features: str, output: Path) -> Momics:
+    """Export a features set from a `.momics` repository as a `.bed `file.
+
+    Args:
+        features (str): Which features to remove
+        output (Path): Prefix of the output BED file
+
+    Returns:
+        Momics: An updated Momics object
+    """
+    # Abort if `features` is not listed
+    _check_feature_name(features, momics.features())
+
+    # Init output file
+    bed = momics.features(features)
+    shutil.copy(bed.TEMPFILES[0], output)
+    return True

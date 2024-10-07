@@ -93,7 +93,7 @@ class Momics:
 
         return a
 
-    def _create_sequence_schema(self, tile: int, compression: int):
+    def _create_sequence_schema(self, tile: int, chunksize: int, compression: int):
         # Create every /sequence/{chrom}.tdb
         chroms = self.chroms()
         for chrom in chroms["chrom"]:
@@ -104,13 +104,13 @@ class Momics:
                     name="position",
                     domain=(0, chrom_length),
                     dtype=np.int64,
-                    tile=tile,
+                    tile=min(chrom_length, tile),
                     filters=tiledb.FilterList(
                         [
                             tiledb.LZ4Filter(),
                             tiledb.ZstdFilter(level=compression),
                         ],
-                        chunksize=4000000,
+                        chunksize=chunksize,
                     ),
                 )
             )
@@ -123,7 +123,7 @@ class Momics:
             )
             tiledb.Array.create(tdb, schema)
 
-    def _create_track_schema(self, max_bws: int, tile: int, compression: int):
+    def _create_track_schema(self, max_bws: int, tile: int, chunksize: int, compression: int):
         # Create /coverage/tracks.tdb
         tdb = self._build_uri("coverage", "tracks.tdb")
         dom = tiledb.Domain(
@@ -131,9 +131,7 @@ class Momics:
         )
         attr1 = tiledb.Attr(name="label", dtype="ascii")
         attr2 = tiledb.Attr(name="path", dtype="ascii")
-        schema = tiledb.ArraySchema(
-            ctx=self.cfg.ctx, domain=dom, attrs=[attr1, attr2], sparse=False
-        )
+        schema = tiledb.ArraySchema(ctx=self.cfg.ctx, domain=dom, attrs=[attr1, attr2], sparse=False)
         tiledb.Array.create(tdb, schema)
 
         # Create every /coverage/{chrom}.tdb
@@ -146,13 +144,13 @@ class Momics:
                     name="position",
                     domain=(0, chrom_length),
                     dtype=np.int64,
-                    tile=tile,
+                    tile=min(chrom_length, tile),
                     filters=tiledb.FilterList(
                         [
                             tiledb.LZ4Filter(),
                             tiledb.ZstdFilter(level=compression),
                         ],
-                        chunksize=4000000,
+                        chunksize=chunksize,
                     ),
                 )
             )
@@ -165,7 +163,7 @@ class Momics:
             )
             tiledb.Array.create(tdb, schema)
 
-    def _create_features_schema(self, max_features: int, tile: int, compression: int):
+    def _create_features_schema(self, max_features: int, tile: int, chunksize: int, compression: int):
         # Create /features/tracks.tdb
         tdb = self._build_uri("features", "features.tdb")
         dom = tiledb.Domain(
@@ -198,26 +196,26 @@ class Momics:
                     name="start",
                     domain=(0, chrom_length),
                     dtype=np.int64,
-                    tile=tile,
+                    tile=min(chrom_length, tile),
                     filters=tiledb.FilterList(
                         [
                             tiledb.LZ4Filter(),
                             tiledb.ZstdFilter(level=compression),
                         ],
-                        chunksize=4000000,
+                        chunksize=chunksize,
                     ),
                 ),
                 tiledb.Dim(
                     name="stop",
                     domain=(0, chrom_length),
                     dtype=np.int64,
-                    tile=tile,
+                    tile=min(chrom_length, tile),
                     filters=tiledb.FilterList(
                         [
                             tiledb.LZ4Filter(),
                             tiledb.ZstdFilter(level=compression),
                         ],
-                        chunksize=4000000,
+                        chunksize=chunksize,
                     ),
                 ),
             )
@@ -305,15 +303,11 @@ class Momics:
 
         def _log_task_completion(future, chrom, ntasks, completed_tasks):
             if future.exception() is not None:
-                logger.error(
-                    f"Tracks ingestion over {chrom} failed with exception: " f"{future.exception()}"
-                )
+                logger.error(f"Tracks ingestion over {chrom} failed with exception: " f"{future.exception()}")
             else:
                 with lock:
                     completed_tasks[0] += 1
-                logger.debug(
-                    f"task {completed_tasks[0]}/{ntasks} :: " f"ingested tracks over {chrom}."
-                )
+                logger.debug(f"task {completed_tasks[0]}/{ntasks} :: " f"ingested tracks over {chrom}.")
 
         tasks = []
         chroms = self.chroms()
@@ -328,24 +322,18 @@ class Momics:
             futures = []
             for chrom, chrom_length in tasks:
                 future = executor.submit(_process_chrom, self, chrom, chrom_length, bws)
-                future.add_done_callback(
-                    lambda f, c=chrom: _log_task_completion(f, c, ntasks, completed_tasks)
-                )
+                future.add_done_callback(lambda f, c=chrom: _log_task_completion(f, c, ntasks, completed_tasks))
                 futures.append(future)
             concurrent.futures.wait(futures)
 
-    def _populate_features_chroms_table(
-        self, features: Dict[str, pybedtools.BedTool], threads: int
-    ):
+    def _populate_features_chroms_table(self, features: Dict[str, pybedtools.BedTool], threads: int):
         def _process_chrom(self, chrom, feats, registered_features):
             tdb = self._build_uri("features", f"{chrom}.tdb")
             cfg = self.cfg.cfg
             cfg.update({"sm.compute_concurrency_level": 1})
             cfg.update({"sm.io_concurrency_level": 1})
             for lab, inter in feats.items():
-                dim1 = registered_features[registered_features["label"].isin([lab])][
-                    "featureSet"
-                ].iloc[0]
+                dim1 = registered_features[registered_features["label"].isin([lab])]["featureSet"].iloc[0]
                 d = {
                     "score": np.array([0.0] * len(inter), dtype=np.float32),
                     "strand": np.array(["*"] * len(inter), dtype=np.str_),
@@ -356,16 +344,11 @@ class Momics:
 
         def _log_task_completion(future, chrom, ntasks, completed_tasks):
             if future.exception() is not None:
-                logger.error(
-                    f"Feature set ingestion over {chrom} failed with exception: "
-                    f"{future.exception()}"
-                )
+                logger.error(f"Feature set ingestion over {chrom} failed with exception: " f"{future.exception()}")
             else:
                 with lock:
                     completed_tasks[0] += 1
-                logger.debug(
-                    f"task {completed_tasks[0]}/{ntasks} :: " f"ingested features over {chrom}."
-                )
+                logger.debug(f"task {completed_tasks[0]}/{ntasks} :: " f"ingested features over {chrom}.")
 
         n = self.features().shape[0]
         tdb = self._build_uri("features", "features.tdb")
@@ -388,10 +371,7 @@ class Momics:
         with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
             futures = []
             for chrom, _ in tasks:
-                feats = {
-                    label: inter[inter["chrom"] == chrom].drop("chrom", axis=1)
-                    for label, inter in features.items()
-                }
+                feats = {label: inter[inter["chrom"] == chrom].drop("chrom", axis=1) for label, inter in features.items()}
                 future = executor.submit(
                     _process_chrom,
                     self,
@@ -399,9 +379,7 @@ class Momics:
                     feats,
                     registered_features,
                 )
-                future.add_done_callback(
-                    lambda f, c=chrom: _log_task_completion(f, c, ntasks, completed_tasks)
-                )
+                future.add_done_callback(lambda f, c=chrom: _log_task_completion(f, c, ntasks, completed_tasks))
                 futures.append(future)
             concurrent.futures.wait(futures)
 
@@ -420,15 +398,11 @@ class Momics:
 
         def _log_task_completion(future, chrom, ntasks, completed_tasks):
             if future.exception() is not None:
-                logger.error(
-                    f"Fasta ingestion over {chrom} failed with exception: " f"{future.exception()}"
-                )
+                logger.error(f"Fasta ingestion over {chrom} failed with exception: " f"{future.exception()}")
             else:
                 with lock:
                     completed_tasks[0] += 1
-                logger.debug(
-                    f"task {completed_tasks[0]}/{ntasks} :: " f"ingested fasta over {chrom}."
-                )
+                logger.debug(f"task {completed_tasks[0]}/{ntasks} :: " f"ingested fasta over {chrom}.")
 
         chroms = self.chroms()
         tasks = chroms["chrom"]
@@ -439,9 +413,7 @@ class Momics:
             futures = []
             for chrom in tasks:
                 future = executor.submit(_process_chrom, self, chrom, chroms, fasta)
-                future.add_done_callback(
-                    lambda f, c=chrom: _log_task_completion(f, c, ntasks, completed_tasks)
-                )
+                future.add_done_callback(lambda f, c=chrom: _log_task_completion(f, c, ntasks, completed_tasks))
                 futures.append(future)
             concurrent.futures.wait(futures)
 
@@ -516,6 +488,8 @@ class Momics:
                 idx = ft[ft["label"] == label]["featureSet"].iloc[0]
                 with tiledb.open(tdb, "r", ctx=self.cfg.ctx) as A:
                     x = A.query(cond=f"featureSet=={idx}").df[:]
+                    x.iloc[:, 0] = chrom
+                    x.iloc[:, 1] = x.iloc[:, 1] - 1
                     ranges.append(x)
             res = pybedtools.BedTool.from_dataframe(pd.concat(ranges))
             return res
@@ -600,7 +574,12 @@ class Momics:
             A.meta["timestamp"] = datetime.now().isoformat()
 
     def add_sequence(
-        self, fasta: Path, threads: int = 1, tile: int = 50000, compression: int = 3
+        self,
+        fasta: Path,
+        threads: int = 1,
+        tile: int = 50000,
+        chunksize: int = 4000000,
+        compression: int = 3,
     ) -> "Momics":
         """Ingest a fasta file into a Momics repository
 
@@ -629,7 +608,7 @@ class Momics:
         utils._check_fasta_lengths(fasta, chroms)
 
         # Create sequence tables schema
-        self._create_sequence_schema(tile, compression)
+        self._create_sequence_schema(tile, chunksize, compression)
 
         # Populate each `/genome/sequence/{chrom}.tdb`
         self._populate_sequence_table(fasta, threads)
@@ -642,6 +621,7 @@ class Momics:
         threads: int = 1,
         max_features: int = 9999,
         tile: int = 50000,
+        chunksize: int = 4000000,
         compression: int = 3,
     ) -> "Momics":
         """Ingest feature sets to the `.momics` repository.
@@ -669,14 +649,12 @@ class Momics:
 
         # If `path/features/features.tdb` (and `{chroms.tdb}`) do not exist, create it
         if self.features().empty:
-            self._create_features_schema(max_features, tile, compression)
+            self._create_features_schema(max_features, tile, chunksize, compression)
 
         # Populate each `path/features/{chrom}.tdb`
         self._populate_features_chroms_table(features, threads)
 
-        logger.info(
-            f"{len(features)} feature sets ingested in " f"{round(time.time() - start0,4)}s."
-        )
+        logger.info(f"{len(features)} feature sets ingested in " f"{round(time.time() - start0,4)}s.")
 
     def add_tracks(
         self,
@@ -684,6 +662,7 @@ class Momics:
         threads: int = 1,
         max_bws: int = 9999,
         tile: int = 50000,
+        chunksize: int = 4000000,
         compression: int = 3,
     ) -> "Momics":
         """Ingest bigwig coverage tracks to the `.momics` repository.
@@ -712,7 +691,7 @@ class Momics:
 
         # If `path/coverage/tracks.tdb` (and `{chroms.tdb}`) do not exist, create it
         if self.tracks().empty:
-            self._create_track_schema(max_bws, tile, compression)
+            self._create_track_schema(max_bws, tile, chunksize, compression)
 
         # Populate each `path/coverage/{chrom}.tdb`
         self._populate_chroms_table(bws, threads)
@@ -756,8 +735,7 @@ class Momics:
         lengths = dict(zip(chroms["chrom"], [len(v) for k, v in coverage.items()]))
         if lengths != reference_lengths:
             raise Exception(
-                f"`{track}` coverage track does not chromomosome lengths matching "
-                f"those of the momics repository."
+                f"`{track}` coverage track does not chromomosome lengths matching " f"those of the momics repository."
             )
 
         # Abort if bw labels already exist

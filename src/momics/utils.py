@@ -50,35 +50,33 @@ def _check_chr_lengths(bw_files, chroms):
         with pyBigWig.open(file) as bw:
             lengths = bw.chroms()
             if lengths != reference_lengths:
-                raise Exception(
-                    f"{file} files do not have identical chromomosome lengths."
-                )
+                raise Exception(f"{file} files do not have identical chromomosome lengths.")
 
 
 def _check_track_names(bw_files, tracks):
     labels = set(tracks["label"])
     for element in list(bw_files.keys()):
         if element in labels:
-            raise ValueError(
-                f"Provided label '{element}' already present in `tracks` table"
-            )
+            raise ValueError(f"Provided label '{element}' already present in `tracks` table")
 
 
 def _check_feature_names(features, sets):
     labels = set(sets["label"])
     for element in list(features.keys()):
         if element in labels:
-            raise ValueError(
-                f"Provided label '{element}' already present in `features` table"
-            )
+            raise ValueError(f"Provided label '{element}' already present in `features` table")
+
+
+def _check_feature_name(feature, features):
+    labels = set(features["label"])
+    if feature not in labels:
+        raise ValueError(f"Provided feature name '{feature}' does not exist in `features` table")
 
 
 def _check_track_name(track, tracks):
     labels = set(tracks["label"])
     if track not in labels:
-        raise ValueError(
-            f"Provided track name '{track}' does not exist in `tracks` table"
-        )
+        raise ValueError(f"Provided track name '{track}' does not exist in `tracks` table")
 
 
 def parse_ucsc_coordinates(coords: str) -> pd.DataFrame:
@@ -104,14 +102,10 @@ def parse_ucsc_coordinates(coords: str) -> pd.DataFrame:
             coord_strings.append(f"{chr_part} {start} {end}")
 
         except ValueError as e:
-            raise ValueError(
-                f"Invalid start/end values in coordinate '{coord}'. "
-                + "Start and end must be integers."
-            ) from e
+            raise ValueError(f"Invalid start/end values in coordinate '{coord}'. " + "Start and end must be integers.") from e
         except Exception as e:
             raise ValueError(
-                f"Invalid format for UCSC-style coordinate '{coord}'. "
-                + "Expected format: 'chrom:start-end'."
+                f"Invalid format for UCSC-style coordinate '{coord}'. " + "Expected format: 'chrom:start-end'."
             ) from e
 
     return pybedtools.BedTool("\n".join(coord_strings), from_string=True)

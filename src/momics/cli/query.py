@@ -12,9 +12,7 @@ from . import cli
 
 def _validate_exclusive_options(file, coordinates):
     if file and coordinates:
-        raise click.BadParameter(
-            "You must provide either --file or --coordinates, not both."
-        )
+        raise click.BadParameter("You must provide either --file or --coordinates, not both.")
     if not file and not coordinates:
         raise click.BadParameter("You must provide one of --file or --coordinates.")
 
@@ -36,8 +34,7 @@ def query(ctx):
 @click.option(
     "--file",
     "-f",
-    help="BED file listing coordinates to query. If provided, `coordinates` "
-    + "is ignored.",
+    help="BED file listing coordinates to query. If provided, `coordinates` " + "is ignored.",
     type=click.Path(exists=True),
 )
 @click.option(
@@ -70,8 +67,9 @@ def tracks(ctx, path, coordinates, file, output: str, threads: int = 1):
         start = int(range_part.split("-")[0])
         end = int(range_part.split("-")[1])
         bed = pd.DataFrame([{"chrom": chr, "start": start, "end": end}])
+        bed = BedTool.from_dataframe(bed)
     else:
-        bed = BedTool(file).to_dataframe()
+        bed = BedTool(file)
 
     res = MultiRangeQuery(mom, bed).query_tracks(threads=threads).to_df()
     if output is None:
@@ -91,8 +89,7 @@ def tracks(ctx, path, coordinates, file, output: str, threads: int = 1):
 @click.option(
     "--file",
     "-f",
-    help="BED file listing coordinates to query. If provided, `coordinates` "
-    + "is ignored.",
+    help="BED file listing coordinates to query. If provided, `coordinates` " + "is ignored.",
     type=click.Path(exists=True),
 )
 @click.option(
@@ -125,8 +122,9 @@ def seq(ctx, path, coordinates, file, output: str, threads: int = 1):
         start = int(range_part.split("-")[0])
         end = int(range_part.split("-")[1])
         bed = pd.DataFrame([{"chrom": chr, "start": start, "end": end}])
+        bed = BedTool.from_dataframe(bed)
     else:
-        bed = BedTool(file).to_dataframe()
+        bed = BedTool(file)
 
     res = MultiRangeQuery(mom, bed).query_sequence(threads=threads).to_SeqRecord()
     if output is None:

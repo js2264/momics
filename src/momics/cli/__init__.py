@@ -32,20 +32,24 @@ from . import (
     add,
     binnify,
     cloudconfig,
+    cp,
     create,
-    export,
+    delete,
     ls,
     query,
     remove,
+    tree,
 )
 
 __all__ = [
     "create",
     "add",
     "ls",
+    "tree",
     "query",
     "remove",
-    "export",
+    "delete",
+    "cp",
     "binnify",
     "cloudconfig",
 ]

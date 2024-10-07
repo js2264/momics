@@ -1,5 +1,6 @@
 import click
 import numpy as np
+import pybedtools
 
 from .. import momics
 from . import cli
@@ -89,3 +90,36 @@ def seq(ctx, file, path, threads):
     m = momics.Momics(path)
     m.add_sequence(file, threads=threads)
     print(m.seq())
+
+
+@add.command()
+@click.option(
+    "--file",
+    "-f",
+    help="Named BED file, provided as `--file key=value` \
+        (e.g. `--file bw1=my_file.bw`). The `--file` option can be provided \
+        several times. \
+        The first three columns of the BED file must describe the genomic \
+        coordinates of the features (chromosome, start, end).",
+    type=str,
+    multiple=True,
+    required=True,
+)
+@click.argument("path", metavar="MOMICS_REPO", required=True)
+@click.option(
+    "-@",
+    "--threads",
+    default=1,
+    help="Number of threads to use in parallel operations (default: 1)",
+)
+@click.pass_context
+def features(ctx, file, path, threads):
+    """Add genomic features to Momics."""
+    fs = {}
+    for f in file:
+        bed = f.split("=", 1)[1]
+        bed = pybedtools.BedTool(bed)
+        fs[f.split("=", 1)[0]] = bed
+    m = momics.Momics(path)
+    m.add_features(fs, threads=threads)
+    print(m.features().iloc[np.where(m.features()["label"] != "None")].iloc[:, 0:2])
