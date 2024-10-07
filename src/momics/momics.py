@@ -167,7 +167,7 @@ class Momics:
         # Create /features/tracks.tdb
         tdb = self._build_uri("features", "features.tdb")
         dom = tiledb.Domain(
-            tiledb.Dim(name="featureSet", domain=(0, max_features), dtype=np.int64, tile=1),
+            tiledb.Dim(name="idx", domain=(0, max_features), dtype=np.int64, tile=1),
         )
         schema = tiledb.ArraySchema(
             ctx=self.cfg.ctx,
@@ -187,7 +187,7 @@ class Momics:
             tdb = self._build_uri("features", f"{chrom}.tdb")
             dom = tiledb.Domain(
                 tiledb.Dim(
-                    name="featureSet",
+                    name="idx",
                     domain=(0, max_features),
                     dtype=np.int64,
                     tile=1,
@@ -333,7 +333,7 @@ class Momics:
             cfg.update({"sm.compute_concurrency_level": 1})
             cfg.update({"sm.io_concurrency_level": 1})
             for lab, inter in feats.items():
-                dim1 = registered_features[registered_features["label"].isin([lab])]["featureSet"].iloc[0]
+                dim1 = registered_features[registered_features["label"].isin([lab])]["idx"].iloc[0]
                 d = {
                     "score": np.array([0.0] * len(inter), dtype=np.float32),
                     "strand": np.array(["*"] * len(inter), dtype=np.str_),
@@ -485,9 +485,9 @@ class Momics:
             ranges = []
             for chrom in chroms["chrom"]:
                 tdb = self._build_uri("features", f"{chrom}.tdb")
-                idx = ft[ft["label"] == label]["featureSet"].iloc[0]
+                idx = ft[ft["label"] == label]["idx"].iloc[0]
                 with tiledb.open(tdb, "r", ctx=self.cfg.ctx) as A:
-                    x = A.query(cond=f"featureSet=={idx}").df[:]
+                    x = A.query(cond=f"idx=={idx}").df[:]
                     x.iloc[:, 0] = chrom
                     x.iloc[:, 1] = x.iloc[:, 1] - 1
                     ranges.append(x)

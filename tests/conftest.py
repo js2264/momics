@@ -20,9 +20,7 @@ def fa1(tmp_path_factory):
     p = os.path.join(tmp_path_factory.getbasetemp(), "fa1")
     nucleotides = ["A", "T", "C", "G"]
     chrom_seqs = {
-        "I": "ATCGATCGAT"
-        + "".join(random.choices(nucleotides, k=10000 - 20))
-        + "TTCCGGTTCC",
+        "I": "ATCGATCGAT" + "".join(random.choices(nucleotides, k=10000 - 20)) + "TTCCGGTTCC",
         "II": "TCGATCGATA" + "".join(random.choices(nucleotides, k=20000 - 10)),
         "III": "CGATCGATAT" + "".join(random.choices(nucleotides, k=30000 - 10)),
     }
@@ -90,6 +88,45 @@ def bw2(tmp_path_factory):
             values=[x[2] for x in intervals],
         )
     bw.close()
+    return p
+
+
+@pytest.fixture(scope="session")
+def bw3(tmp_path_factory):
+    p = os.path.join(tmp_path_factory.getbasetemp(), "bw3")
+    bw = pyBigWig.open(p, "w")
+    chrom_sizes = {"I": 10005, "II": 50001, "III": 30002, "IV": 40011}
+    bw.addHeader(list(chrom_sizes.items()))
+    for chrom, size in chrom_sizes.items():
+        intervals = [(i, i + 1000, np.random.rand()) for i in range(0, size, 1000)]
+        bw.addEntries(
+            [chrom] * len(intervals),
+            starts=[x[0] for x in intervals],
+            ends=[x[1] for x in intervals],
+            values=[x[2] for x in intervals],
+        )
+    bw.close()
+    return p
+
+
+@pytest.fixture(scope="session")
+def fa3(tmp_path_factory):
+    p = os.path.join(tmp_path_factory.getbasetemp(), "fa3")
+    nucleotides = ["A", "T", "C", "G"]
+    chrom_seqs = {
+        "I": "".join(random.choices(nucleotides, k=10005)),
+        "II": "".join(random.choices(nucleotides, k=50001)),
+        "III": "".join(random.choices(nucleotides, k=30002)),
+        "IV": "".join(random.choices(nucleotides, k=40011)),
+    }
+    records = []
+    for chrom, sequence in chrom_seqs.items():
+        record = SeqRecord(Seq(sequence), id=chrom, description="")
+        records.append(record)
+
+    with open(p, "w") as output_handle:
+        SeqIO.write(records, output_handle, "fasta")
+
     return p
 
 

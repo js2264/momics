@@ -35,9 +35,7 @@ def test_Momics_add_genome(momics_path: str, bw1: str):
         }
     )
     assert mom.chroms().__eq__(out).all().all()
-    with pytest.raises(
-        ValueError, match=r"`chroms` table has already been filled out."
-    ):
+    with pytest.raises(ValueError, match=r"`chroms` table has already been filled out."):
         mom.add_chroms(chroms)
 
 
@@ -75,9 +73,7 @@ def test_Momics_add_tracks(momics_path: str, bw1: str, bw2: str):
 def test_Momics_add_track(momics_path: str, bw1: str, bw2: str):
     mom = momics.Momics(momics_path)
     chroms = mom.chroms()
-    coverage = {
-        chrom: np.random.rand(length) for i, (idx, chrom, length) in chroms.iterrows()
-    }
+    coverage = {chrom: np.random.rand(length) for i, (idx, chrom, length) in chroms.iterrows()}
     with pytest.raises(ValueError, match=r".*already present in `tracks` table"):
         mom.add_track(coverage, "bw1")
 
@@ -151,7 +147,7 @@ def test_Momics_features(momics_path: str):
     mom.add_features(sets, tile=10000)
     out = pd.DataFrame(
         {
-            "featureSet": [0, 1],
+            "idx": [0, 1],
             "label": ["ft1", "ft2"],
             "n": [30, 2501],
         }
@@ -159,9 +155,7 @@ def test_Momics_features(momics_path: str):
     assert mom.features().__eq__(out).all().all()
 
     with pytest.raises(ValueError, match=r".*already present in `features` table"):
-        mom.add_features(
-            {"ft1": mom.bins(1000, 2000, cut_last_bin_out=True)}, tile=10000
-        )
+        mom.add_features({"ft1": mom.bins(1000, 2000, cut_last_bin_out=True)}, tile=10000)
 
     sets = {
         "ft3": mom.bins(1000, 2000, cut_last_bin_out=True),

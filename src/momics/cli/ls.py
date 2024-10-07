@@ -17,13 +17,13 @@ from . import cli
 )
 @click.pass_context
 def ls(ctx, path, table):
-    """List tracks/chromosomes registered in a Momics."""
+    """List tracks/chromosomes/features registered in a Momics."""
     if table == "tracks":
         tr = momics.Momics(path).tracks()
         print(tr.iloc[np.where(tr["label"] != "None")].iloc[:, 0:2].to_csv(sep="\t", index=False))
     if table == "features":
         tr = momics.Momics(path).features()
-        print(tr.iloc[np.where(tr["label"] != "None")].iloc[:, 0:2].to_csv(sep="\t", index=False))
+        print(tr.iloc[np.where(tr["label"] != "None")].iloc[:, 0:3].to_csv(sep="\t", index=False))
     if table == "chroms":
         res = momics.Momics(path).chroms()
         print(res.iloc[:, 1:].to_csv(sep="\t", index=False, header=False))
