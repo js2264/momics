@@ -30,10 +30,10 @@ dependencies = [
     "tiledb",
     "pyBigWig",
     "pybedtools",
-    "pyfaidx", 
-    "Biopython", 
-    "numpy", 
-    "pandas", 
+    "pyfaidx",
+    "Biopython",
+    "numpy",
+    "pandas",
     "pyarrow>=1.0",
     "click>=7",
     "packaging",
@@ -80,7 +80,7 @@ docs = [
     'autodoc',
     'sphinx-autoapi',
     "autodocsumm",
-    "sphinxcontrib-napoleon", 
+    "sphinxcontrib-napoleon",
     "m2r",
     "recommonmark",
     "Sphinx>=1.6",
@@ -91,29 +91,29 @@ docs = [
     "myst-parser",
 ]
 
+[tool.black]
+line-length = 100
+target-version = ['py39']
+
 [tool.ruff]
+line-length = 100
 src = ["src"]
 exclude = [
+    "bench/*",
     ".venv",
     "__main__.py",
 ]
-
-[tool.ruff.lint]
+ignore = ["E402"]
 extend-select = [
     "B",  # bugbear
     "E",  # style errors
     "F",  # pyflakes
     "I",  # isort
     "RUF", # ruff-specific rules
-    "UP", # pyupgrade
+    # "UP", # pyupgrade
     "W",  # style  warnings
 ]
-
-[tool.ruff.lint.isort]
-known-first-party = ["momics"]
-
-[tool.ruff.lint.pydocstyle]
-convention = "numpy"
+isort.known-first-party = ["momics"]
 
 [tool.pytest.ini_options]
 markers = ["order: mark test to run in a specific order"]
@@ -160,14 +160,14 @@ python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = 
+envlist =
     py38
-    
+
 [testenv]
 install_command = pip install -U {opts} {packages}
-deps = 
+deps =
     .[dev,docs]
-commands = 
+commands =
     pytest                           ### Run unit tests
     make -C docs html                ### Compile docs
     ruff check src tests --fix       ### Compile docs

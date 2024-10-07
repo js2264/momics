@@ -105,6 +105,13 @@ class Momics:
                     domain=(0, chrom_length),
                     dtype=np.int64,
                     tile=tile,
+                    filters=tiledb.FilterList(
+                        [
+                            tiledb.LZ4Filter(),
+                            tiledb.ZstdFilter(level=compression),
+                        ],
+                        chunksize=4000000,
+                    ),
                 )
             )
             attr = tiledb.Attr(name="nucleotide", dtype=np.str_)
@@ -113,13 +120,6 @@ class Momics:
                 domain=dom,
                 attrs=[attr],
                 sparse=False,
-                coords_filters=tiledb.FilterList(
-                    [
-                        tiledb.LZ4Filter(),
-                        tiledb.ZstdFilter(level=compression),
-                    ],
-                    chunksize=4000000,
-                ),
             )
             tiledb.Array.create(tdb, schema)
 
@@ -147,6 +147,13 @@ class Momics:
                     domain=(0, chrom_length),
                     dtype=np.int64,
                     tile=tile,
+                    filters=tiledb.FilterList(
+                        [
+                            tiledb.LZ4Filter(),
+                            tiledb.ZstdFilter(level=compression),
+                        ],
+                        chunksize=4000000,
+                    ),
                 )
             )
             attr = tiledb.Attr(name="placeholder", dtype="float32")
@@ -155,13 +162,6 @@ class Momics:
                 domain=dom,
                 attrs=[attr],
                 sparse=False,
-                coords_filters=tiledb.FilterList(
-                    [
-                        tiledb.LZ4Filter(),
-                        tiledb.ZstdFilter(level=compression),
-                    ],
-                    chunksize=4000000,
-                ),
             )
             tiledb.Array.create(tdb, schema)
 
@@ -169,9 +169,7 @@ class Momics:
         # Create /features/tracks.tdb
         tdb = self._build_uri("features", "features.tdb")
         dom = tiledb.Domain(
-            tiledb.Dim(
-                name="featureSet", domain=(0, max_features), dtype=np.int64, tile=1
-            ),
+            tiledb.Dim(name="featureSet", domain=(0, max_features), dtype=np.int64, tile=1),
         )
         schema = tiledb.ArraySchema(
             ctx=self.cfg.ctx,
@@ -201,12 +199,26 @@ class Momics:
                     domain=(0, chrom_length),
                     dtype=np.int64,
                     tile=tile,
+                    filters=tiledb.FilterList(
+                        [
+                            tiledb.LZ4Filter(),
+                            tiledb.ZstdFilter(level=compression),
+                        ],
+                        chunksize=4000000,
+                    ),
                 ),
                 tiledb.Dim(
                     name="stop",
                     domain=(0, chrom_length),
                     dtype=np.int64,
                     tile=tile,
+                    filters=tiledb.FilterList(
+                        [
+                            tiledb.LZ4Filter(),
+                            tiledb.ZstdFilter(level=compression),
+                        ],
+                        chunksize=4000000,
+                    ),
                 ),
             )
             attrs = [
@@ -219,13 +231,6 @@ class Momics:
                 domain=dom,
                 attrs=attrs,
                 sparse=True,
-                coords_filters=tiledb.FilterList(
-                    [
-                        tiledb.LZ4Filter(),
-                        tiledb.ZstdFilter(level=compression),
-                    ],
-                    chunksize=4000000,
-                ),
             )
             tiledb.Array.create(tdb, schema)
 
@@ -240,15 +245,12 @@ class Momics:
             }
 
     def _populate_chroms_table(self, bws: Dict[str, str], threads: int):
-
         def _add_attribute_to_array(uri, attribute_name):
             # Check that attribute does not already exist
             has_attr = False
             with tiledb.open(uri, mode="r", ctx=self.cfg.ctx) as A:
                 if A.schema.has_attr(attribute_name):
-                    logger.warning(
-                        f"Label {attribute_name} already exists and will be erased."
-                    )
+                    logger.warning(f"Label {attribute_name} already exists and will be erased.")
                     has_attr = True
 
             # Add attribute to array
@@ -304,15 +306,13 @@ class Momics:
         def _log_task_completion(future, chrom, ntasks, completed_tasks):
             if future.exception() is not None:
                 logger.error(
-                    f"Tracks ingestion over {chrom} failed with exception: "
-                    f"{future.exception()}"
+                    f"Tracks ingestion over {chrom} failed with exception: " f"{future.exception()}"
                 )
             else:
                 with lock:
                     completed_tasks[0] += 1
                 logger.debug(
-                    f"task {completed_tasks[0]}/{ntasks} :: "
-                    f"ingested tracks over {chrom}."
+                    f"task {completed_tasks[0]}/{ntasks} :: " f"ingested tracks over {chrom}."
                 )
 
         tasks = []
@@ -329,9 +329,7 @@ class Momics:
             for chrom, chrom_length in tasks:
                 future = executor.submit(_process_chrom, self, chrom, chrom_length, bws)
                 future.add_done_callback(
-                    lambda f, c=chrom: _log_task_completion(
-                        f, c, ntasks, completed_tasks
-                    )
+                    lambda f, c=chrom: _log_task_completion(f, c, ntasks, completed_tasks)
                 )
                 futures.append(future)
             concurrent.futures.wait(futures)
@@ -339,7 +337,6 @@ class Momics:
     def _populate_features_chroms_table(
         self, features: Dict[str, pybedtools.BedTool], threads: int
     ):
-
         def _process_chrom(self, chrom, feats, registered_features):
             tdb = self._build_uri("features", f"{chrom}.tdb")
             cfg = self.cfg.cfg
@@ -367,8 +364,7 @@ class Momics:
                 with lock:
                     completed_tasks[0] += 1
                 logger.debug(
-                    f"task {completed_tasks[0]}/{ntasks} :: "
-                    f"ingested features over {chrom}."
+                    f"task {completed_tasks[0]}/{ntasks} :: " f"ingested features over {chrom}."
                 )
 
         n = self.features().shape[0]
@@ -404,15 +400,12 @@ class Momics:
                     registered_features,
                 )
                 future.add_done_callback(
-                    lambda f, c=chrom: _log_task_completion(
-                        f, c, ntasks, completed_tasks
-                    )
+                    lambda f, c=chrom: _log_task_completion(f, c, ntasks, completed_tasks)
                 )
                 futures.append(future)
             concurrent.futures.wait(futures)
 
     def _populate_sequence_table(self, fasta: str, threads: int):
-
         def _process_chrom(self, chrom, chroms, fasta):
             tdb = self._build_uri("genome", "sequence", f"{chrom}.tdb")
             chrom_length = np.array(chroms[chroms["chrom"] == chrom]["length"])[0]
@@ -428,15 +421,13 @@ class Momics:
         def _log_task_completion(future, chrom, ntasks, completed_tasks):
             if future.exception() is not None:
                 logger.error(
-                    f"Fasta ingestion over {chrom} failed with exception: "
-                    f"{future.exception()}"
+                    f"Fasta ingestion over {chrom} failed with exception: " f"{future.exception()}"
                 )
             else:
                 with lock:
                     completed_tasks[0] += 1
                 logger.debug(
-                    f"task {completed_tasks[0]}/{ntasks} :: "
-                    f"ingested fasta over {chrom}."
+                    f"task {completed_tasks[0]}/{ntasks} :: " f"ingested fasta over {chrom}."
                 )
 
         chroms = self.chroms()
@@ -449,9 +440,7 @@ class Momics:
             for chrom in tasks:
                 future = executor.submit(_process_chrom, self, chrom, chroms, fasta)
                 future.add_done_callback(
-                    lambda f, c=chrom: _log_task_completion(
-                        f, c, ntasks, completed_tasks
-                    )
+                    lambda f, c=chrom: _log_task_completion(f, c, ntasks, completed_tasks)
                 )
                 futures.append(future)
             concurrent.futures.wait(futures)
@@ -479,9 +468,7 @@ class Momics:
             raise OSError("`chroms` table has not been filled out yet.")
 
         try:
-            tdb = self._build_uri(
-                "genome", "sequence", f"{self.chroms()['chrom'][0]}.tdb"
-            )
+            tdb = self._build_uri("genome", "sequence", f"{self.chroms()['chrom'][0]}.tdb")
             _ = self._get_table(tdb)
             pass
         except FileExistsError as e:
@@ -688,8 +675,7 @@ class Momics:
         self._populate_features_chroms_table(features, threads)
 
         logger.info(
-            f"{len(features)} feature sets ingested in "
-            f"{round(time.time() - start0,4)}s."
+            f"{len(features)} feature sets ingested in " f"{round(time.time() - start0,4)}s."
         )
 
     def add_tracks(
@@ -776,9 +762,7 @@ class Momics:
 
         # Abort if bw labels already exist
         if track in set(tracks["label"]):
-            raise ValueError(
-                f"Provided label '{track}' already present in `tracks` table"
-            )
+            raise ValueError(f"Provided label '{track}' already present in `tracks` table")
 
         # Save the coverage dict as a temporary bigwig file
         # and ingest it using `add_tracks`
@@ -832,9 +816,7 @@ class Momics:
 
         if host == "azure":
 
-            def remove_directory_until_success(
-                vfs, dir_uri, max_retries=10, retry_delay=2
-            ):
+            def remove_directory_until_success(vfs, dir_uri, max_retries=10, retry_delay=2):
                 attempts = 0
                 while attempts < max_retries:
                     try:
