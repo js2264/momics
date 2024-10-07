@@ -66,7 +66,7 @@ class Momics:
 
     def _build_uri(self, *subdirs: str) -> str:
         if self._is_cloud_hosted():
-            return "/".join([self.path.rstrip("/")], *list(subdirs))
+            return "/".join([self.path.rstrip("/"), *list(subdirs)])
         else:
             return str(Path(self.path).joinpath(*subdirs))
 
