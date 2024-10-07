@@ -1,16 +1,15 @@
+import os
 import platform
 import time
+
+import dotenv
 import pandas as pd
 import pytest
-import os
 import tiledb
 
 import momics
-from momics import logging
-from momics import utils
-from momics import config
+from momics import config, logging, utils
 from momics.multirangequery import MultiRangeQuery
-import dotenv
 
 dotenv.load_dotenv()
 
@@ -175,14 +174,16 @@ def test_azure_IO(fa1: str, bw1: str):
             except tiledb.TileDBError as e:
                 attempts += 1
                 print(
-                    f"Attempt {attempts}: Failed to remove directory '{dir_uri}'. Error: {e}"
+                    f"Attempt {attempts}: Failed to remove directory '{dir_uri}'. \
+                        Error: {e}"
                 )
                 if attempts < max_retries:
                     print(f"Retrying in {retry_delay} seconds...")
                     time.sleep(retry_delay)
                 else:
                     print(
-                        f"Max retries reached. Directory '{dir_uri}' could not be removed."
+                        f"Max retries reached. Directory '{dir_uri}' could \
+                            not be removed."
                     )
                     raise e
 

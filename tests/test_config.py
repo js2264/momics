@@ -1,8 +1,10 @@
 import os
-import pytest
 import tempfile
 from pathlib import Path
-from momics.config import LocalConfig, S3Config, GCSConfig, AzureConfig, MomicsConfig
+
+import pytest
+
+from momics.config import AzureConfig, GCSConfig, LocalConfig, MomicsConfig, S3Config
 
 
 @pytest.fixture

@@ -1,20 +1,21 @@
 import collections
-import psutil
-import time
-from pathlib import Path
-
-import pybedtools
-import numpy as np
-import pandas as pd
 import json
 import pickle
+import time
+from pathlib import Path
+from typing import Optional
+
+import numpy as np
+import pandas as pd
+import psutil
+import pybedtools
 import tiledb
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
+from .logging import logger
 from .momics import Momics
 from .utils import parse_ucsc_coordinates
-from .logging import logger
 
 
 class MultiRangeQuery:
@@ -23,10 +24,13 @@ class MultiRangeQuery:
     Attributes
     ----------
     momics (Momics): a local `.momics` repository.
-    queries (dict): Dict. of pd.DataFrames with at least three columns `chrom`, `start` and `end`, one per chromosome.
+    queries (dict): Dict. of pd.DataFrames with at least three columns \
+        `chrom`, `start` and `end`, one per chromosome.
     coordinates (list): List of UCSC-style coordinates.
-    coverage (dict): Dictionary of coverage scores extracted from the `.momics` repository, populated after calling `q.query_tracks()`
-    seq (dict): Dictionary of sequences extracted from the `.momics` repository, populated after calling `q.query_seq()`
+    coverage (dict): Dictionary of coverage scores extracted from the \
+        `.momics` repository, populated after calling `q.query_tracks()`
+    seq (dict): Dictionary of sequences extracted from the `.momics` \
+        repository, populated after calling `q.query_seq()`
     """
 
     def __init__(self, momics: Momics, bed: pybedtools.BedTool):
@@ -58,10 +62,13 @@ class MultiRangeQuery:
         estimated_required_memory = (
             4 * n * sum([s.stop - s.start + 1 for s in self.ranges])
         ) * 1.4
+        emem = {round(estimated_required_memory / 1e9, 2)}
         avail_mem = psutil.virtual_memory().available
+        amem = {round(avail_mem / 1e9, 2)}
         if estimated_required_memory > avail_mem:
             logger.warning(
-                f"Estimated required memory ({round(estimated_required_memory/1e9,2)}GB) exceeds available memory ({round(avail_mem/1e9,2)}GB)."
+                f"Estimated required memory ({emem}GB) exceeds available memory "
+                f"({amem}GB)."
             )
 
     def _query_tracks_per_batch(self, chrom, ranges, attrs, cfg):
@@ -106,13 +113,15 @@ class MultiRangeQuery:
             raise
 
     def query_tracks(
-        self, threads: int = None, tracks: list = None
+        self, threads: Optional[int] = None, tracks: Optional[list] = None
     ) -> "MultiRangeQuery":
         """Query multiple coverage ranges from a Momics repo.
 
         Args:
-            threads (int, optional): Number of threads for parallel query. Defaults to all.
-            tracks (list, optional): List of tracks to query. Defaults to None, which queries all tracks.
+            threads (int, optional): Number of threads for parallel query. \
+                Defaults to all.
+            tracks (list, optional): List of tracks to query. Defaults to None, \
+                which queries all tracks.
 
         Returns:
             MultiRangeQuery: MultiRangeQuery: An updated MultiRangeQuery object
@@ -146,7 +155,7 @@ class MultiRangeQuery:
             chrom = r.chrom
             ranges_per_chrom[chrom].append(f"{r.start}-{r.end}")
 
-        # Prepare empty dictionary of results {attr1: { ranges1: ..., ranges2: ... }, attr2: {}, ...}
+        # Prepare empty dictionary of results {attr1: { ranges1: ., ranges2: .}, ...}
         results = []
         for chrom in chroms:
             logger.debug(chrom)
@@ -212,11 +221,12 @@ class MultiRangeQuery:
             logger.error(f"Error processing query batch: {e}")
             raise
 
-    def query_sequence(self, threads: int = None) -> "MultiRangeQuery":
+    def query_sequence(self, threads: Optional[int] = None) -> "MultiRangeQuery":
         """Query multiple sequence ranges from a Momics repo.
 
         Args:
-            threads (int, optional): Number of threads for parallel query. Defaults to all.
+            threads (int, optional): Number of threads for parallel query. \
+                Defaults to all.
 
         Returns:
             MultiRangeQuery: An updated MultiRangeQuery object
@@ -237,7 +247,7 @@ class MultiRangeQuery:
             chrom = r.chrom
             ranges_per_chrom[chrom].append(f"{r.start}-{r.end}")
 
-        # Prepare empty dictionary of results {attr1: { ranges1: ..., ranges2: ... }, attr2: {}, ...}
+        # Prepare empty dictionary of results {attr1: { ranges1: ., ranges2: . }, .}
         results = []
         for chrom in ranges_per_chrom.keys():
             logger.debug(chrom)
@@ -345,4 +355,3 @@ class MultiRangeQuery:
         logger.info(f"Saving results of multi-range query to {output}...")
         with open(output, "w") as json_file:
             json.dump(data, json_file, indent=4)
-

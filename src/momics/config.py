@@ -1,10 +1,13 @@
+import configparser
 import os
 from pathlib import Path
 from typing import Optional
-import configparser
+
 import tiledb
 
 from .logging import logger
+
+DEFAULT_CONFIG_PATH = Path.home() / ".momics.ini"
 
 
 class LocalConfig:
@@ -12,8 +15,9 @@ class LocalConfig:
     LocalConfig is a class to manage the configuration of local momics repositories.
     """
 
-    def __init__(self, path=Path.home() / ".momics.ini"):
+    def __init__(self, path=DEFAULT_CONFIG_PATH):
         """Initialize and read from a local config file."""
+
         self.config_path = path
         self.cfg = configparser.ConfigParser()
 
@@ -42,7 +46,10 @@ class LocalConfig:
             self.cfg.write(configfile)
 
     def _validate_local_config(self):
-        """Validate LocalConfig by checking if all required keys exist for each cloud provider."""
+        """
+        Validate LocalConfig by checking if all required keys exist for
+        each cloud provider.
+        """
         required_keys = {
             "s3": ["region", "access_key_id", "secret_access_key"],
             "gcs": ["project_id", "credentials"],
@@ -56,7 +63,8 @@ class LocalConfig:
                 ]
             ):
                 raise ValueError(
-                    f"Invalid cloud configuration. Please provide all required values: {required_keys[section]}"
+                    f"Invalid cloud configuration. "
+                    f"Please provide all required values: {required_keys[section]}"
                 )
         return True
 
@@ -78,7 +86,8 @@ class S3Config:
         self.secret_access_key = secret_access_key
         if not self._is_valid():
             raise ValueError(
-                "Invalid S3 configuration. Please provide all required values: `region`, `access_key_id`, `secret_access_key`"
+                "Invalid S3 configuration. Please provide all required "
+                "values: `region`, `access_key_id`, `secret_access_key`"
             )
 
     def _is_valid(self):
@@ -99,7 +108,8 @@ class GCSConfig:
         self.credentials = credentials
         if not self._is_valid():
             raise ValueError(
-                "Invalid GCS configuration. Please provide all required values: `project_id`, `credentials`"
+                "Invalid GCS configuration. Please provide all "
+                "required values: `project_id`, `credentials`"
             )
 
     def _is_valid(self):
@@ -120,7 +130,8 @@ class AzureConfig:
         self.account_key = account_key
         if not self._is_valid():
             raise ValueError(
-                "Invalid Azure configuration. Please provide all required values: `account_name`, `account_key`"
+                "Invalid Azure configuration. "
+                "Please provide all required values: `account_name`, `account_key`"
             )
 
     def _is_valid(self):
@@ -160,9 +171,11 @@ class MomicsConfig:
 
       - To access an S3 bucket, pass an `S3Config` object to the `s3` parameter.
       - To access a GCS bucket, pass a `GCSConfig` object to the `gcs` parameter.
-      - To access an Azure bucket, pass an `AzureConfig` object to the `azure` parameter.
+      - To access an Azure bucket, pass an `AzureConfig` object to the `azure` \
+          parameter.
 
-    Cloud configuration is chosen in this order: `manual` (`S3Config` > `GCSConfig` > `AzureConfig`) > `local` > `blank`.
+    Cloud configuration is chosen in this order:
+    `manual` (`S3Config` > `GCSConfig` > `AzureConfig`) > `local` > `blank`.
     """
 
     def __init__(
@@ -170,7 +183,7 @@ class MomicsConfig:
         s3: Optional[S3Config] = None,
         gcs: Optional[GCSConfig] = None,
         azure: Optional[AzureConfig] = None,
-        local_cfg: Path = Path.home() / ".momics.ini",
+        local_cfg: Path = DEFAULT_CONFIG_PATH,
     ):
         """Initialize the momics configurator to enable cloud access."""
 
@@ -178,15 +191,15 @@ class MomicsConfig:
         if s3 is not None:
             self.type = "s3"
             self.cfg = self._create_manual_tiledb_config(s3)
-            logger.info(f"Using S3 config.")
+            logger.info("Using S3 config.")
         elif gcs is not None:
             self.type = "gcs"
             self.cfg = self._create_manual_tiledb_config(gcs)
-            logger.info(f"Using GCS config.")
+            logger.info("Using GCS config.")
         elif azure is not None:
             self.type = "azure"
             self.cfg = self._create_manual_tiledb_config(azure)
-            logger.info(f"Using Azure config.")
+            logger.info("Using Azure config.")
         # Otherwise, parse local config.
         else:
             local_cfg = LocalConfig(local_cfg)
@@ -201,7 +214,9 @@ class MomicsConfig:
                 self.type = None
                 self.cfg = tiledb.Config()
                 logger.info(
-                    f"No cloud config found for momics. Consider populating `~/.momics.ini` file with configuration settings for cloud access."
+                    "No cloud config found for momics. "
+                    "Consider populating `~/.momics.ini` file with "
+                    "configuration settings for cloud access."
                 )
 
         self.ctx = tiledb.cc.Context(self.cfg)

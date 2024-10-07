@@ -29,14 +29,14 @@ def cli(ctx):
 
 # Load and register cli subcommands
 from . import (
-    create,
     add,
+    binnify,
+    cloudconfig,
+    create,
+    export,
     ls,
     query,
     remove,
-    export,
-    binnify,
-    cloudconfig,
 )
 
 __all__ = [

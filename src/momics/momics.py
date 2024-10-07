@@ -1,12 +1,11 @@
-from datetime import datetime
+import concurrent.futures
 import os
 import tempfile
-from time import sleep
-import time
-from typing import Dict, Optional
-from pathlib import Path
-import concurrent.futures
 import threading
+import time
+from datetime import datetime
+from pathlib import Path
+from typing import Dict, Optional
 
 import numpy as np
 import pandas as pd
@@ -18,7 +17,6 @@ import tiledb
 from . import utils
 from .config import MomicsConfig
 from .logging import logger
-
 
 lock = threading.Lock()
 
@@ -40,7 +38,8 @@ class Momics:
     ):
         """
         Initialize the Momics class.
-        By default, a `.momics` repository is created at the specified path if it does not already exist.
+        By default, a `.momics` repository is created at the specified path if
+        it does not already exist.
 
         Args:
             path (str): Path to a `.momics` repository.
@@ -67,7 +66,7 @@ class Momics:
 
     def _build_uri(self, *subdirs: str) -> str:
         if self._is_cloud_hosted():
-            return "/".join([self.path.rstrip("/")] + list(subdirs))
+            return "/".join([self.path.rstrip("/")], *list(subdirs))
         else:
             return str(Path(self.path).joinpath(*subdirs))
 
@@ -305,13 +304,15 @@ class Momics:
         def _log_task_completion(future, chrom, ntasks, completed_tasks):
             if future.exception() is not None:
                 logger.error(
-                    f"Tracks ingestion over {chrom} failed with exception: {future.exception()}"
+                    f"Tracks ingestion over {chrom} failed with exception: "
+                    f"{future.exception()}"
                 )
             else:
                 with lock:
                     completed_tasks[0] += 1
                 logger.debug(
-                    f"task {completed_tasks[0]}/{ntasks} :: ingested tracks over {chrom}."
+                    f"task {completed_tasks[0]}/{ntasks} :: "
+                    f"ingested tracks over {chrom}."
                 )
 
         tasks = []
@@ -345,11 +346,9 @@ class Momics:
             cfg.update({"sm.compute_concurrency_level": 1})
             cfg.update({"sm.io_concurrency_level": 1})
             for lab, inter in feats.items():
-                dim1 = list(
-                    registered_features[registered_features["label"].isin([lab])][
-                        "featureSet"
-                    ]
-                )[0]
+                dim1 = registered_features[registered_features["label"].isin([lab])][
+                    "featureSet"
+                ].iloc[0]
                 d = {
                     "score": np.array([0.0] * len(inter), dtype=np.float32),
                     "strand": np.array(["*"] * len(inter), dtype=np.str_),
@@ -361,13 +360,15 @@ class Momics:
         def _log_task_completion(future, chrom, ntasks, completed_tasks):
             if future.exception() is not None:
                 logger.error(
-                    f"Feature set ingestion over {chrom} failed with exception: {future.exception()}"
+                    f"Feature set ingestion over {chrom} failed with exception: "
+                    f"{future.exception()}"
                 )
             else:
                 with lock:
                     completed_tasks[0] += 1
                 logger.debug(
-                    f"task {completed_tasks[0]}/{ntasks} :: ingested features over {chrom}."
+                    f"task {completed_tasks[0]}/{ntasks} :: "
+                    f"ingested features over {chrom}."
                 )
 
         n = self.features().shape[0]
@@ -390,7 +391,7 @@ class Momics:
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
             futures = []
-            for chrom, chrom_length in tasks:
+            for chrom, _ in tasks:
                 feats = {
                     label: inter[inter["chrom"] == chrom].drop("chrom", axis=1)
                     for label, inter in features.items()
@@ -427,13 +428,15 @@ class Momics:
         def _log_task_completion(future, chrom, ntasks, completed_tasks):
             if future.exception() is not None:
                 logger.error(
-                    f"Fasta ingestion over {chrom} failed with exception: {future.exception()}"
+                    f"Fasta ingestion over {chrom} failed with exception: "
+                    f"{future.exception()}"
                 )
             else:
                 with lock:
                     completed_tasks[0] += 1
                 logger.debug(
-                    f"task {completed_tasks[0]}/{ntasks} :: ingested fasta over {chrom}."
+                    f"task {completed_tasks[0]}/{ntasks} :: "
+                    f"ingested fasta over {chrom}."
                 )
 
         chroms = self.chroms()
@@ -469,7 +472,8 @@ class Momics:
         """Extract sequence table from a `.momics` repository.
 
         Returns:
-            pd.DataFrame: A data frame listing one chromosome per row, with first/last 10 nts.
+            pd.DataFrame: A data frame listing one chromosome per row,
+            with first/last 10 nts.
         """
         if self.chroms().empty:
             raise OSError("`chroms` table has not been filled out yet.")
@@ -480,8 +484,8 @@ class Momics:
             )
             _ = self._get_table(tdb)
             pass
-        except FileExistsError:
-            raise OSError("`seq` table has not been filled out yet.")
+        except FileExistsError as e:
+            raise OSError("`seq` table has not been filled out yet.") from e
 
         chroms = self.chroms()
         chroms["seq"] = pd.Series()
@@ -508,7 +512,7 @@ class Momics:
             tracks = pd.DataFrame(columns=["idx", "label", "path"])
         return tracks
 
-    def features(self, label: str = None) -> pd.DataFrame:
+    def features(self, label: Optional[str] = None) -> pd.DataFrame:
         """Extract table of ingested features sets.
 
         Returns:
@@ -528,7 +532,7 @@ class Momics:
                     ranges.append(x)
             res = pybedtools.BedTool.from_dataframe(pd.concat(ranges))
             return res
-            
+
         else:
             try:
                 features = self._get_table(self._build_uri("features", "features.tdb"))
@@ -543,7 +547,8 @@ class Momics:
         Args:
             width (_type_): The width of each bin.
             step (_type_): The step size for tiling.
-            cut_last_bin_out (bool, optional): Remove the last bin of each chromosome. Defaults to False.
+            cut_last_bin_out (bool, optional): Remove the last bin of each \
+                chromosome. Defaults to False.
 
         Returns:
             _type_: pd.DataFrame: DataFrame with columns "chrom", 'start', 'end'.
@@ -571,7 +576,8 @@ class Momics:
 
         Args:
             chr_lengths (dict): Chromosome lengths
-            genome_version (str, optional): Genome version (default: ""). Defaults to "".
+            genome_version (str, optional): Genome version (default: ""). \
+                Defaults to "".
 
         Returns:
             Momics: An updated Momics object
@@ -654,9 +660,11 @@ class Momics:
         """Ingest feature sets to the `.momics` repository.
 
         Args:
-            features (dict): Dictionary of feature sets already imported with pyBedTools.
+            features (dict): Dictionary of feature sets already imported with \
+                pyBedTools.
             threads (int, optional): Threads to parallelize I/O. Defaults to 1.
-            max_features (int, optional): Maximum number of feature sets. Defaults to 9999.
+            max_features (int, optional): Maximum number of feature sets. \
+                Defaults to 9999.
             tile (int, optional): Tile size. Defaults to 50000.
             compression (int, optional): Compression level. Defaults to 3.
 
@@ -680,7 +688,8 @@ class Momics:
         self._populate_features_chroms_table(features, threads)
 
         logger.info(
-            f"{len(features)} feature sets ingested in {round(time.time() - start0,4)}s."
+            f"{len(features)} feature sets ingested in "
+            f"{round(time.time() - start0,4)}s."
         )
 
     def add_tracks(
@@ -739,7 +748,8 @@ class Momics:
         have it in memory.
 
         Args:
-            coverage (dict): Dictionary of coverage tracks. The keys are chromosome names and the values are numpy arrays.
+            coverage (dict): Dictionary of coverage tracks. The keys are \
+                chromosome names and the values are numpy arrays.
             track (str): Label to store the track under.
             threads (int, optional): Threads to parallelize I/O. Defaults to 1.
 
@@ -760,7 +770,8 @@ class Momics:
         lengths = dict(zip(chroms["chrom"], [len(v) for k, v in coverage.items()]))
         if lengths != reference_lengths:
             raise Exception(
-                f"`{track}` coverage track does not chromomosome lengths matching those of the momics repository."
+                f"`{track}` coverage track does not chromomosome lengths matching "
+                f"those of the momics repository."
             )
 
         # Abort if bw labels already exist

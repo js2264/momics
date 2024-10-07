@@ -1,9 +1,8 @@
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
-import pyBigWig
 import pybedtools
+import pyBigWig
 import pyfaidx
 
 
@@ -104,15 +103,15 @@ def parse_ucsc_coordinates(coords: str) -> pd.DataFrame:
             end = int(end)
             coord_strings.append(f"{chr_part} {start} {end}")
 
-        except ValueError:
+        except ValueError as e:
             raise ValueError(
                 f"Invalid start/end values in coordinate '{coord}'. "
                 + "Start and end must be integers."
-            )
-        except Exception:
+            ) from e
+        except Exception as e:
             raise ValueError(
                 f"Invalid format for UCSC-style coordinate '{coord}'. "
                 + "Expected format: 'chrom:start-end'."
-            )
+            ) from e
 
     return pybedtools.BedTool("\n".join(coord_strings), from_string=True)

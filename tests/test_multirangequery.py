@@ -1,20 +1,18 @@
-import multiprocessing
-
-multiprocessing.set_start_method("spawn", force=True)
-
 import json
-import os
-from pathlib import Path
+import multiprocessing
 import pickle
-import sys
 import tempfile
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
-from pybedtools import BedTool
 import pytest
+from pybedtools import BedTool
 
 import momics
 from momics.multirangequery import MultiRangeQuery
+
+multiprocessing.set_start_method("spawn", force=True)
 
 
 @pytest.mark.order(2)
@@ -120,7 +118,7 @@ def test_to_json_npz(momics_path: str, temp_json_file: Path, temp_npz_file: Path
     q.to_json(temp_json_file)
     q.to_npz(temp_npz_file)
 
-    with open(temp_json_file, "r") as json_file:
+    with open(temp_json_file) as json_file:
         data = json.load(json_file)
     assert list(data.keys()) == ["bw2", "custom", "bw3", "bw4", "nucleotide"]
     assert data["nucleotide"]["I:1-10"] == "ATCGATCGAT"

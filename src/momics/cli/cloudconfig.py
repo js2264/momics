@@ -1,6 +1,7 @@
-import click
-import os
 import configparser
+import os
+
+import click
 
 from . import cli
 

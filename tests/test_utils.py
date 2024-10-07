@@ -1,6 +1,5 @@
-import pytest
 import pybedtools
-
+import pytest
 
 from momics import utils
 
