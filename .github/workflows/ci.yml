@@ -43,7 +43,7 @@ jobs:
           gpg --batch --yes --quiet --passphrase "${{ env.GCS_CREDS_PASSPHRASE }}" --decrypt --output gcs_creds.json .gcs_creds.json.gpg
 
       - name: Run tests on ${{ matrix.os }}
-        env: 
+        env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AZURE_STORAGE_ACCOUNT_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
@@ -52,24 +52,27 @@ jobs:
           pytest
 
       - name: Cleanup gcs_creds.json
-        if: always() 
+        if: always()
         run: |
           rm -f gcs_creds.json
-          
+
+      - name: "Upload coverage to Codecov"
+        uses: codecov/codecov-action@v1
+
   Doc:
     runs-on: ubuntu-latest
-    needs: Test 
+    needs: Test
     steps:
 
       - uses: actions/checkout@v4
 
-      - name: Set up Python 
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: 3.12
 
-      - name: Buid Sphinx doc 
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/devel' }} 
+      - name: Buid Sphinx doc
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/devel' }}
         run: |
           python -m pip install --upgrade pip
           pip install -e .[dev,docs]
@@ -77,7 +80,7 @@ jobs:
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/devel' }} 
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/devel' }}
         with:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
