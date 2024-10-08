@@ -1,8 +1,14 @@
+![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Fjs2264%2Fmomics%2Frefs%2Fheads%2Fdevel%2Fpyproject.toml)
+[![PyPI - Version](https://img.shields.io/pypi/v/momics)](https://pypi.org/project/momics/)
+[![Test & Doc](https://github.com/js2264/momics/actions/workflows/ci.yml/badge.svg)](https://github.com/js2264/momics/actions/workflows/ci.yml)
+[![Codecov](https://img.shields.io/codecov/c/gh/js2264/momics)](https://app.codecov.io/gh/js2264/momics)
+[![Black](https://img.shields.io/badge/style-black-black)](https://github.com/psf/black)
+
 # momics
 
-`momics` is both a revolutionary file format for efficient storage of ***multi-omics*** data, and a Python package designed to query and manipulate these files. The file format is specifically designed to handle genomic coverage tracks and sequences. The package provides an intuitive command-line interface (CLI) and a Python library for bioinformatics workflows involving genomic data. 
+`momics` is both a revolutionary file format for efficient storage of ***multi-omics*** data, and a Python package designed to query and manipulate these files. The file format is specifically designed to handle genomic coverage tracks and sequences. The package provides an intuitive command-line interface (CLI) and a Python library for bioinformatics workflows involving genomic data.
 
-## Install 
+## Install
 
 You can install `momics` using `pip`:
 
@@ -37,7 +43,7 @@ To ingest a `.bw` genomic coverage data into a momics repository, you can use th
 momics add tracks -f bw1=path/to/file.bw path/to/momics_repo
 ```
 
-- Query genomic coverage: 
+- Query genomic coverage:
 
 You can query tracks using either UCSC-style coordinates or a BED file:
 
@@ -46,7 +52,7 @@ momics query tracks --coordinates "chr1:1-1000" path/to/momics_repo
 momics query tracks --file path/to/file.bed path/to/momics_repo
 ```
 
-### Python API 
+### Python API
 
 In Python, you can load and query a momics repository like this:
 
@@ -67,6 +73,12 @@ df = repo.query_tracks("chr1:1-1000")
 ## Contributing
 
 Contributions are welcome! Please submit pull requests or issues on the GitHub repository.
+
+
+This project uses `black` to format code and `ruff` for linting. We also support `pre-commit` to ensure
+these have been run. To configure your local environment, please install these development dependencies and set up
+the commit hooks.
+
 
 ## License
 
