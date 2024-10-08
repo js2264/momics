@@ -1,24 +1,22 @@
-# Get started
+# Get started with `momics`
 
 ## Installation
 
 With python `3.8` and higher, you can install `momics`  from [PyPI](https://pypi.org/project/momics) using `pip`.
 
-```
+```shell
 pip install momics
 ```
 
-The following requirements should be automatically installed:
-
-- `tiledb`, `pyarrow`, `numpy`, `scipy`, `pandas`, `pyBigWig`.
+The dependencies will automatically be installed.
 
 ```{tip}
-We highly recommend using the `conda` package manager to install scientific 
-packages like these. To get `conda`, you can download either the 
-full [Anaconda](https://www.continuum.io/downloads) Python distribution 
-which comes with lots of data science software or the minimal 
-[Miniconda](http://conda.pydata.org/miniconda.html) distribution 
-which is just the standalone package manager plus Python. 
+We highly recommend using the `conda` package manager to install scientific
+packages like `momics`. To get `conda`, you can download either the
+full [Anaconda](https://www.continuum.io/downloads) Python distribution
+which comes with lots of data science software or the minimal
+[Miniconda](http://conda.pydata.org/miniconda.html) distribution
+which is just the standalone package manager plus Python.
 
 In the latter case, you can install `momics` and all its dependencies as follows:
 
@@ -26,21 +24,20 @@ In the latter case, you can install `momics` and all its dependencies as follows
 
 ```
 
-## Workflow
+## Quick start
 
+```bash
+momics create my.momics
+momics add chroms -f ~/genomes/S288c/S288c.chrom.sizes my.momics
+momics add seq -f ~/genomes/S288c/S288c.fa my.momics
+momics add tracks -f bw_a=mnase.bw -f bw_b=atac.bw -f bw_c=chip.bw my.momics
+momics add features -f bed1=temp.bed my.momics
+momics query seq --coordinates "I:10-1000" my.momics
+momics query tracks --coordinates "I:10-1000" my.momics
 ```
-momics create hg19.momics 
 
-momics add chroms -f hg19.chrom.sizes hg19.momics
-momics add seq -f hg19.fa hg19.momics 
-momics add tracks -f bw_a=sample1.bw -f bw_b=sample2.bw -f bw_c=sample3.bw hg19.momics 
+## Going further
 
-momics ls --table chroms hg19.momics
-momics ls --table tracks hg19.momics
-
-momics query seq --coordinates "I:10-1000" hg19.momics
-momics query tracks --coordinates "I:10-1000" hg19.momics
-
-momics export --track bw_b --output b_exported.bw hg19.momics
-momics remove --track bw_c hg19.momics
-```
+- Check out the `momics` [API quick guide](api) or the [full API reference](../api/index) for more information.
+- Check out the `momics` [CLI quick guide](cli) or the [full CLI reference](../cli/index) for more information.
+- Read more about TileDB data storage principles: [https://docs.tiledb.com/main](https://docs.tiledb.com/main)
