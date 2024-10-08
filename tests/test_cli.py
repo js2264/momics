@@ -27,6 +27,13 @@ def path():
         shutil.rmtree(tmp_dir)
 
 
+def test_cli_help(runner):
+    result = runner.invoke(cli.cli)
+    assert result.exit_code == 0
+    result = runner.invoke(cli.cli, ["--help"])
+    assert result.exit_code == 0
+
+
 def test_create(runner, path):
     result = runner.invoke(cli.create.create, [path])
     assert result.exit_code == 0
@@ -37,6 +44,7 @@ def test_create(runner, path):
 
 def test_add_chroms(runner, path, bw3):
     chroms = utils.get_chr_lengths(bw3)
+    print(chroms)
     with open("chrom_lengths.txt", "w") as f:
         for chrom, length in chroms.items():
             f.write(f"{chrom}\t{length}\n")
@@ -44,6 +52,8 @@ def test_add_chroms(runner, path, bw3):
     assert result.exit_code == 0
     result = runner.invoke(cli.ls.ls, ["--table", "chroms", path])
     assert result.exit_code == 0
+    mom = momics.Momics(path)
+    assert mom.chroms()["chrom"].__eq__(["I", "II", "III", "IV"]).all()
     os.remove("chrom_lengths.txt")
 
 
@@ -82,6 +92,26 @@ def test_add_features(runner, path):
     assert result.exit_code == 0
     result = runner.invoke(cli.ls.ls, ["--table", "features", path])
     assert result.exit_code == 0
+
+
+def test_query_sequence(runner, path):
+    result = runner.invoke(cli.cli, ["query", "seq", "-c", "I:1-10", path])
+    assert result.output == ">I:1-10\nATCGATCGAT\n"
+    result = runner.invoke(cli.cli, ["query", "seq", "-f", "out.bins.bed", path])
+    assert result.output[0:28] == ">I:1-10\nATCGATCGAT\n>I:11-20\n"
+    result = runner.invoke(cli.cli, ["query", "seq", "-f", "out.bins.bed", "-o", "out.fa", path])
+    assert result.exit_code == 0
+    os.remove("out.fa")
+
+
+def test_query_tracks(runner, path):
+    result = runner.invoke(cli.cli, ["query", "tracks", "-c", "I:1-10", path])
+    assert result.output[0:40] == "range\tchrom\tposition\tbw1\tbw2\nI:1-10\tI\t1\t"
+    result = runner.invoke(cli.cli, ["query", "tracks", "-f", "out.bins.bed", path])
+    assert result.output[0:40] == "range\tchrom\tposition\tbw1\tbw2\nI:1-10\tI\t1\t"
+    result = runner.invoke(cli.cli, ["query", "tracks", "-f", "out.bins.bed", "-o", "out.tsv", path])
+    assert result.exit_code == 0
+    os.remove("out.tsv")
     os.remove("out.bins.bed")
 
 
@@ -95,7 +125,8 @@ def test_remove_track(runner, path):
 
 
 def test_cp_track(runner, path, bw3):
-    result = runner.invoke(cli.cp.cp, ["--track", "bw2", "-o", "out.bw", path])
+    result = runner.invoke(cli.cp.cp, ["--type", "track", "--label", "bw2", "-o", "out.bw", "-f", path])
+    print(result.output)
     assert result.exit_code == 0
     assert os.path.exists("out.bw")
     mom = momics.Momics(path)
@@ -113,9 +144,42 @@ def test_cp_track(runner, path, bw3):
 
     assert np.allclose(q.coverage["bw2"]["I:990-1010"], res["bw2"]["I:990-1010"], atol=1e-6)
     # assert np.allclose(q.coverage["bw2"]["I:1990-2010"], res["bw2"]["I:1990-2010"], atol=1e-6)
+    os.remove("out.bw")
+
+
+def test_cp_features(runner, path):
+    result = runner.invoke(cli.cp.cp, ["--type", "features", "--label", "bed2", "-o", "out.bed", "-f", path])
+    assert result.exit_code == 0
+    assert os.path.exists("out.bed")
+    bed = BedTool("out.bed")
+    assert ("I", 301, 310) == (bed[30].chrom, bed[30].start, bed[30].end)
+
+
+def test_cp_seq(runner, path):
+    result = runner.invoke(cli.cp.cp, ["--type", "sequence", "-o", "out.fa", "-f", path])
+    assert result.exit_code == 0
+    assert os.path.exists("out.fa")
+    bed = BedTool("out.bed")
+    assert ("I", 301, 310) == (bed[30].chrom, bed[30].start, bed[30].end)
+
+
+@pytest.mark.order(3)
+def test_config(runner):
+    assert os.getenv("AWS_ACCESS_KEY_ID") is not None
+    assert os.getenv("AWS_SECRET_ACCESS_KEY") is not None
+    result = runner.invoke(cli.cli, ["config", "s3", "list"])
+    assert result.exit_code == 0
+    result = runner.invoke(cli.cli, ["config", "s3", "set", "aws_access_key_id", "ABCD"])
+    assert result.exit_code == 0
+    assert "Set aws_access_key_id to ABCD" in result.output
+    result = runner.invoke(cli.cli, ["config", "s3", "get", "aws_access_key_id"])
+    assert result.exit_code == 0
+    assert "aws_access_key_id: ABCD" in result.output
 
 
 def test_delete(runner, path):
+    result = runner.invoke(cli.delete.delete, ["-y", "oiasudhncoaisuhmdcoiaushcd"])
+    assert result.output == "Repository oiasudhncoaisuhmdcoiaushcd does not exist.\n"
     result = runner.invoke(cli.delete.delete, ["-y", path])
     assert result.exit_code == 0
     assert not os.path.exists(path)

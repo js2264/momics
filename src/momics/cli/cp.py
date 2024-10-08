@@ -1,3 +1,4 @@
+import os
 import click
 
 from .. import export, momics
@@ -6,35 +7,55 @@ from . import cli
 
 @cli.command()
 @click.option(
-    "--track",
+    "--type",
     "-t",
-    help="Track to copy as a bigwig file",
-    type=str,
-    required=False,
+    help="Type of data to extract",
+    type=click.Choice(["sequence", "track", "features"]),
+    required=True,
 )
 @click.option(
-    "--features",
-    "-f",
-    help="Features set to copy as a bed file",
+    "--label",
+    "-l",
+    help="For `track` and `features` types, the name of the track or feature set to extract.",
     type=str,
     required=False,
 )
 @click.option(
     "--output",
     "-o",
-    help="Path of output file to write",
+    help="Path of output file to write.",
     type=str,
     required=True,
 )
+@click.option(
+    "--force",
+    "-f",
+    help="Force overwrite of existing files.",
+    is_flag=True,
+    default=False,
+    show_default=True,
+)
 @click.argument("path", metavar="MOMICS_REPO", required=True)
 @click.pass_context
-def cp(ctx, path, track, features, output):
-    """Copy a track/feature set from a momics repo to a bigwig/bed file."""
+def cp(ctx, path, type, label, force, output):
+    """Copy sequence/track/feature set from a momics repo to a fa/bigwig/bed file."""
+
+    if not force:
+        click.confirm(
+            f"{output} file already exists. \
+            Are you sure you want to overwrite it",
+            abort=True,
+        )
+        os.remove(output)
+
     m = momics.Momics(path)
-    if track:
-        export.export_track(m, track, output)
-    elif features:
-        export.export_features(m, features, output)
+    if type == "sequence":
+        export.export_sequence(m, output)
+    elif type == "track":
+        export.export_track(m, label, output)
+    elif type == "features":
+        export.export_features(m, label, output)
     else:
-        print("Please specify either --track or --features")
         return False
+
+    return True

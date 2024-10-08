@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pybedtools
 import pyBigWig
@@ -32,7 +33,8 @@ def _dict_to_bigwig(bw_dict: dict, output: Path):
     header = [(chrom, len(coverage)) for chrom, coverage in bw_dict.items()]
     bw.addHeader(header)
     for chrom, coverage in bw_dict.items():
-        bw.addEntries(chrom, 1, span=1, step=1, values=coverage)
+        values0 = np.float32(coverage)
+        bw.addEntries(chrom, 1, values=values0, span=1, step=1)
     bw.close()
 
 
