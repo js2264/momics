@@ -59,16 +59,14 @@ class MultiRangeQuery:
         self.seq = None
 
     def _check_memory_available(self, n):
-        estimated_required_memory = (
-            4 * n * sum([s.stop - s.start + 1 for s in self.ranges])
-        ) * 1.4
-        emem = {round(estimated_required_memory / 1e9, 2)}
+        estimated_required_memory = (4 * n * sum([s.stop - s.start + 1 for s in self.ranges])) * 1.2
+        emem = round(estimated_required_memory / 1e9, 2)
         avail_mem = psutil.virtual_memory().available
-        amem = {round(avail_mem / 1e9, 2)}
+        amem = round(avail_mem / 1e9, 2)
         if estimated_required_memory > avail_mem:
             logger.warning(
-                f"Estimated required memory ({emem}GB) exceeds available memory "
-                f"({amem}GB)."
+                f"Estimated required memory ({emem}GB) exceeds available memory \
+                    ({amem}GB)."
             )
 
     def _query_tracks_per_batch(self, chrom, ranges, attrs, cfg):
@@ -76,17 +74,16 @@ class MultiRangeQuery:
 
             # Prepare queries: list of slices [(start, stop), (start, stop), ...]
             start0 = time.time()
-            query = [
-                slice(int(start) - 1, int(end))
-                for start, end in (r.split("-") for r in ranges)
-            ]
+            query = [slice(int(start) - 1, int(end)) for start, end in (r.split("-") for r in ranges)]
             logger.debug(f"define query in {round(time.time() - start0,4)}s")
 
             # Query tiledb
             start0 = time.time()
             tdb = self.momics._build_uri("coverage", f"{chrom}.tdb")
             with tiledb.open(tdb, "r", config=cfg) as A:
-                subarray = A.query(attrs=attrs).multi_index[query,]
+                subarray = A.query(attrs=attrs).multi_index[
+                    query,
+                ]
             logger.debug(f"query tiledb in {round(time.time() - start0,4)}s")
 
             # Extract scores from tileDB and wrangle them into DataFrame
@@ -112,9 +109,7 @@ class MultiRangeQuery:
             logger.error(f"Error processing query batch: {e}")
             raise
 
-    def query_tracks(
-        self, threads: Optional[int] = None, tracks: Optional[list] = None
-    ) -> "MultiRangeQuery":
+    def query_tracks(self, threads: Optional[int] = None, tracks: Optional[list] = None) -> "MultiRangeQuery":
         """Query multiple coverage ranges from a Momics repo.
 
         Args:
@@ -183,17 +178,16 @@ class MultiRangeQuery:
 
             # Prepare queries: list of slices [(start, stop), (start, stop), ...]
             start0 = time.time()
-            query = [
-                slice(int(start) - 1, int(end))
-                for start, end in (r.split("-") for r in ranges)
-            ]
+            query = [slice(int(start) - 1, int(end)) for start, end in (r.split("-") for r in ranges)]
             logger.debug(f"define query in {round(time.time() - start0,4)}s")
 
             # Query tiledb
             start0 = time.time()
             tdb = self.momics._build_uri("genome", "sequence", f"{chrom}.tdb")
             with tiledb.open(tdb, "r", config=cfg) as A:
-                subarray = A.multi_index[query,]
+                subarray = A.multi_index[
+                    query,
+                ]
             logger.debug(f"query tiledb in {round(time.time() - start0,4)}s")
 
             # Extract scores from tileDB and wrangle them into DataFrame
@@ -209,9 +203,7 @@ class MultiRangeQuery:
                 start_idx = 0
                 query_lengths = [s.stop - s.start for s in query]
                 for i, length in enumerate(query_lengths):
-                    results[attr][keys[i]] = "".join(
-                        seq[start_idx : start_idx + length].tolist()
-                    )
+                    results[attr][keys[i]] = "".join(seq[start_idx : start_idx + length].tolist())
                     start_idx += length
             logger.debug(f"wrangle data in {round(time.time() - start0,4)}s")
 
@@ -279,19 +271,14 @@ class MultiRangeQuery:
         # Prepare empty long DataFrame without scores, to merge with results
         cov = self.coverage
         if cov is None:
-            raise AttributeError(
-                "self.coverage is None. Call `self.query_tracks()` to populate it."
-            )
+            raise AttributeError("self.coverage is None. Call `self.query_tracks()` to populate it.")
 
         ranges_str = []
         for inter in self.ranges:
             chrom = inter.chrom
             start = inter.start
             end = inter.end
-            label = [
-                {"range": f"{chrom}:{start}-{end}", "chrom": chrom, "position": x}
-                for x in range(start, end + 1)
-            ]
+            label = [{"range": f"{chrom}:{start}-{end}", "chrom": chrom, "position": x} for x in range(start, end + 1)]
             ranges_str.extend(label)
         df = pd.DataFrame(ranges_str)
 
@@ -308,9 +295,7 @@ class MultiRangeQuery:
 
         seq = self.seq
         if seq is None:
-            raise AttributeError(
-                "self.seq is None. Call `self.query_sequence()` to populate it."
-            )
+            raise AttributeError("self.seq is None. Call `self.query_sequence()` to populate it.")
 
         seq_records = []
         for header, sequence in seq["nucleotide"].items():
@@ -328,13 +313,9 @@ class MultiRangeQuery:
             output (Path): Path to the output NPZ file.
         """
         if self.coverage is None:
-            raise AttributeError(
-                "self.coverage is None. Call `self.query_tracks()` to populate it."
-            )
+            raise AttributeError("self.coverage is None. Call `self.query_tracks()` to populate it.")
         if self.seq is None:
-            raise AttributeError(
-                "self.seq is None. Call `self.query_sequence()` to populate it."
-            )
+            raise AttributeError("self.seq is None. Call `self.query_sequence()` to populate it.")
         serialized_cov = pickle.dumps(self.coverage)
         serialized_seq = pickle.dumps(self.seq)
         logger.info(f"Saving results of multi-range query to {output}...")

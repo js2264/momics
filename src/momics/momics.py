@@ -1,6 +1,7 @@
 import concurrent.futures
 import os
 import tempfile
+import multiprocessing
 import threading
 import time
 from datetime import datetime
@@ -19,6 +20,36 @@ from .config import MomicsConfig
 from .logging import logger
 
 lock = threading.Lock()
+
+
+TILEDB_COMPRESSION = 2
+TILEDB_CHUNKSIZE = 10000
+TILEDB_TILESIZE = 64000
+TILEDB_POSITION_FILTERS = tiledb.FilterList(
+    [
+        # tiledb.DoubleDeltaFilter(),
+    ],
+    chunksize=TILEDB_CHUNKSIZE,
+)
+TILEDB_COV_FILTERS = tiledb.FilterList(
+    [
+        # tiledb.LZ4Filter(level=TILEDB_COMPRESSION),
+        tiledb.ZstdFilter(level=TILEDB_COMPRESSION),
+    ],
+    chunksize=TILEDB_CHUNKSIZE,
+)
+TILEDB_SEQ_FILTERS = tiledb.FilterList(
+    [
+        # tiledb.LZ4Filter(level=TILEDB_COMPRESSION),
+        tiledb.ZstdFilter(level=TILEDB_COMPRESSION),
+    ],
+    chunksize=TILEDB_CHUNKSIZE,
+)
+
+
+def _set_tiledb_tile(tile, chrom_length):
+    t = min(chrom_length, TILEDB_TILESIZE)
+    return t
 
 
 class Momics:
@@ -93,7 +124,7 @@ class Momics:
 
         return a
 
-    def _create_sequence_schema(self, tile: int, chunksize: int, compression: int):
+    def _create_sequence_schema(self, tile: int):
         # Create every /sequence/{chrom}.tdb
         chroms = self.chroms()
         for chrom in chroms["chrom"]:
@@ -104,17 +135,11 @@ class Momics:
                     name="position",
                     domain=(0, chrom_length),
                     dtype=np.int64,
-                    tile=min(chrom_length, tile),
-                    filters=tiledb.FilterList(
-                        [
-                            tiledb.LZ4Filter(),
-                            tiledb.ZstdFilter(level=compression),
-                        ],
-                        chunksize=chunksize,
-                    ),
+                    tile=_set_tiledb_tile(tile, chrom_length),
+                    filters=TILEDB_POSITION_FILTERS,
                 )
             )
-            attr = tiledb.Attr(name="nucleotide", dtype=np.str_)
+            attr = tiledb.Attr(name="nucleotide", dtype=np.str_, filters=TILEDB_SEQ_FILTERS)
             schema = tiledb.ArraySchema(
                 ctx=self.cfg.ctx,
                 domain=dom,
@@ -123,7 +148,7 @@ class Momics:
             )
             tiledb.Array.create(tdb, schema)
 
-    def _create_track_schema(self, max_bws: int, tile: int, chunksize: int, compression: int):
+    def _create_track_schema(self, max_bws: int, tile: int):
         # Create /coverage/tracks.tdb
         tdb = self._build_uri("coverage", "tracks.tdb")
         dom = tiledb.Domain(
@@ -144,17 +169,11 @@ class Momics:
                     name="position",
                     domain=(0, chrom_length),
                     dtype=np.int64,
-                    tile=min(chrom_length, tile),
-                    filters=tiledb.FilterList(
-                        [
-                            tiledb.LZ4Filter(),
-                            tiledb.ZstdFilter(level=compression),
-                        ],
-                        chunksize=chunksize,
-                    ),
+                    tile=_set_tiledb_tile(tile, chrom_length),
+                    filters=TILEDB_POSITION_FILTERS,
                 )
             )
-            attr = tiledb.Attr(name="placeholder", dtype="float32")
+            attr = tiledb.Attr(name="placeholder", dtype="float32", filters=TILEDB_COV_FILTERS)
             schema = tiledb.ArraySchema(
                 ctx=self.cfg.ctx,
                 domain=dom,
@@ -163,7 +182,7 @@ class Momics:
             )
             tiledb.Array.create(tdb, schema)
 
-    def _create_features_schema(self, max_features: int, tile: int, chunksize: int, compression: int):
+    def _create_features_schema(self, max_features: int, tile: int):
         # Create /features/tracks.tdb
         tdb = self._build_uri("features", "features.tdb")
         dom = tiledb.Domain(
@@ -196,27 +215,15 @@ class Momics:
                     name="start",
                     domain=(0, chrom_length),
                     dtype=np.int64,
-                    tile=min(chrom_length, tile),
-                    filters=tiledb.FilterList(
-                        [
-                            tiledb.LZ4Filter(),
-                            tiledb.ZstdFilter(level=compression),
-                        ],
-                        chunksize=chunksize,
-                    ),
+                    tile=_set_tiledb_tile(tile, chrom_length),
+                    filters=TILEDB_POSITION_FILTERS,
                 ),
                 tiledb.Dim(
                     name="stop",
                     domain=(0, chrom_length),
                     dtype=np.int64,
-                    tile=min(chrom_length, tile),
-                    filters=tiledb.FilterList(
-                        [
-                            tiledb.LZ4Filter(),
-                            tiledb.ZstdFilter(level=compression),
-                        ],
-                        chunksize=chunksize,
-                    ),
+                    tile=_set_tiledb_tile(tile, chrom_length),
+                    filters=TILEDB_POSITION_FILTERS,
                 ),
             )
             attrs = [
@@ -253,7 +260,7 @@ class Momics:
 
             # Add attribute to array
             if not has_attr:
-                new_attr = tiledb.Attr(attribute_name, dtype="float32")
+                new_attr = tiledb.Attr(attribute_name, dtype="float32", filters=TILEDB_COV_FILTERS)
                 se = tiledb.ArraySchemaEvolution(self.cfg.ctx)
                 se.add_attribute(new_attr)
                 se.array_evolve(uri)
@@ -301,6 +308,9 @@ class Momics:
             with tiledb.open(tdb, mode="w", config=cfg) as A:
                 A[0:chrom_length] = orig_scores
 
+            cfg.update({"sm.compute_concurrency_level": multiprocessing.cpu_count() - 1})
+            cfg.update({"sm.io_concurrency_level": multiprocessing.cpu_count() - 1})
+
         def _log_task_completion(future, chrom, ntasks, completed_tasks):
             if future.exception() is not None:
                 logger.error(f"Tracks ingestion over {chrom} failed with exception: " f"{future.exception()}")
@@ -341,6 +351,8 @@ class Momics:
                 }
                 with tiledb.open(tdb, mode="w", config=cfg) as A:
                     A[[dim1] * len(inter), inter["start"], inter["end"]] = d
+            cfg.update({"sm.compute_concurrency_level": multiprocessing.cpu_count() - 1})
+            cfg.update({"sm.io_concurrency_level": multiprocessing.cpu_count() - 1})
 
         def _log_task_completion(future, chrom, ntasks, completed_tasks):
             if future.exception() is not None:
@@ -395,6 +407,8 @@ class Momics:
             cfg.update({"sm.io_concurrency_level": 1})
             with tiledb.open(tdb, mode="w", config=cfg) as A:
                 A[0:chrom_length] = {"nucleotide": chrom_seq}
+            cfg.update({"sm.compute_concurrency_level": multiprocessing.cpu_count() - 1})
+            cfg.update({"sm.io_concurrency_level": multiprocessing.cpu_count() - 1})
 
         def _log_task_completion(future, chrom, ntasks, completed_tasks):
             if future.exception() is not None:
@@ -608,7 +622,7 @@ class Momics:
         utils._check_fasta_lengths(fasta, chroms)
 
         # Create sequence tables schema
-        self._create_sequence_schema(tile, chunksize, compression)
+        self._create_sequence_schema(tile)
 
         # Populate each `/genome/sequence/{chrom}.tdb`
         self._populate_sequence_table(fasta, threads)
@@ -649,7 +663,7 @@ class Momics:
 
         # If `path/features/features.tdb` (and `{chroms.tdb}`) do not exist, create it
         if self.features().empty:
-            self._create_features_schema(max_features, tile, chunksize, compression)
+            self._create_features_schema(max_features, tile)
 
         # Populate each `path/features/{chrom}.tdb`
         self._populate_features_chroms_table(features, threads)
@@ -691,7 +705,7 @@ class Momics:
 
         # If `path/coverage/tracks.tdb` (and `{chroms.tdb}`) do not exist, create it
         if self.tracks().empty:
-            self._create_track_schema(max_bws, tile, chunksize, compression)
+            self._create_track_schema(max_bws, tile)
 
         # Populate each `path/coverage/{chrom}.tdb`
         self._populate_chroms_table(bws, threads)

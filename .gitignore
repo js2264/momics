@@ -63,3 +63,4 @@ output*
 results*
 perfs_benchmark.log
 .env
+bench/

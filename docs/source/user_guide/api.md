@@ -12,8 +12,8 @@ The main entry point for the Python API is the `momics.Momics` class. This
 class provides methods for creating and populating `momics` repositories.
 
 ```python
-from momics import Momics
-mom = Momics("path_to_new_repo.momics")
+import momics
+mom = momics.Momics("path_to_new_repo.momics")
 ```
 
 The `momics.Momics` class has several attributes, including `path` and `cfg`.
@@ -97,8 +97,7 @@ to register query ranges, run queries and export results.
 ### Registering a query
 
 ```python
-from momics.multirangequery import MultiRangeQuery
-q = MultiRangeQuery(mom, "I:10-1000")
+q = momics.MultiRangeQuery(mom, "I:10-1000")
 ```
 
 ### Running a query
