@@ -20,7 +20,7 @@ def tree(ctx, path):
     chroms_uri = mom._build_uri("genome", "chroms") + ".tdb"
     sequence_uri = mom._build_uri("genome", chrs[0]) + ".tdb"
     tracks_uri = mom._build_uri("coverage", "tracks") + ".tdb"
-    features_uri = mom._build_uri("features", "features") + ".tdb"
+    features_uri = mom._build_uri("annotations", "features") + ".tdb"
 
     has_chroms = vfs.is_dir(chroms_uri)
     has_seq = vfs.is_dir(sequence_uri)
@@ -39,9 +39,13 @@ def tree(ctx, path):
         print("\u2714 Tracks registered")
     else:
         print("\u2716 Tracks not registered")
+    if has_features:
+        print("\u2714 Features registered")
+    else:
+        print("\u2716 Features not registered")
 
     # print(f"Momics repository  >  {path}")
-    # print("-----------------     " + "".join(["-"] * len(path)))
+    print("-".join([""] * 80))
     print(f"{name}")
 
     if has_chroms:
@@ -50,7 +54,7 @@ def tree(ctx, path):
 
     if has_seq:
         [
-            print("     \\_ " + chrom + " ".join([""] * (12 - len(chrom))) + mom._build_uri("genome", chrom) + ".tdb")
+            print("     \\_ " + chrom + " ".join([""] * (12 - len(chrom))) + ">  " + mom._build_uri("genome", chrom) + ".tdb")
             for chrom in chrs.iloc[0 : min(2, len(chrs))]
         ]
         if len(chrs) > 2:
@@ -70,7 +74,9 @@ def tree(ctx, path):
         print(" \\_ features        ")
         print(f"     \\_ features   >  {features_uri}")
         [
-            print("     \\_ " + chrom + " ".join([""] * (12 - len(chrom))) + ">  " + mom._build_uri("features", chrom) + ".tdb")
+            print(
+                "     \\_ " + chrom + " ".join([""] * (12 - len(chrom))) + ">  " + mom._build_uri("annotations", chrom) + ".tdb"
+            )
             for chrom in chrs.iloc[0 : min(2, len(chrs))]
         ]
         if len(chrs) > 2:

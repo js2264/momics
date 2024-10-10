@@ -104,7 +104,7 @@ class Momics:
     def _create_repository(self):
         genome_path = self._build_uri("genome")
         coverage_path = self._build_uri("coverage")
-        features_path = self._build_uri("features")
+        features_path = self._build_uri("annotations")
         tiledb.group_create(self.path, ctx=self.cfg.ctx)
         tiledb.group_create(genome_path, ctx=self.cfg.ctx)
         tiledb.group_create(coverage_path, ctx=self.cfg.ctx)
@@ -121,6 +121,26 @@ class Momics:
                 a = A.df[0 : len(A) - 1]
 
         return a
+
+    def _create_chroms_schema(self, chr_lengths: dict):
+        tdb = self._build_uri("genome", "chroms.tdb")
+        dom_genome = tiledb.Domain(
+            tiledb.Dim(
+                name="chrom_index",
+                domain=(0, len(chr_lengths) - 1),
+                dtype=np.int32,
+                tile=len(chr_lengths),
+            )
+        )
+        attr_chr = tiledb.Attr(name="chrom", dtype="ascii", var=True)
+        attr_length = tiledb.Attr(name="length", dtype=np.int64)
+        schema = tiledb.ArraySchema(
+            ctx=self.cfg.ctx,
+            domain=dom_genome,
+            attrs=[attr_chr, attr_length],
+            sparse=False,
+        )
+        tiledb.Array.create(tdb, schema)
 
     def _create_sequence_schema(self, tile: int):
         # Create every /genome/{chrom}.tdb
@@ -182,7 +202,7 @@ class Momics:
 
     def _create_features_schema(self, max_features: int, tile: int):
         # Create /features/tracks.tdb
-        tdb = self._build_uri("features", "features.tdb")
+        tdb = self._build_uri("annotations", "features.tdb")
         dom = tiledb.Domain(
             tiledb.Dim(name="idx", domain=(0, max_features), dtype=np.int64, tile=1),
         )
@@ -201,7 +221,7 @@ class Momics:
         chroms = self.chroms()
         for chrom in chroms["chrom"]:
             chrom_length = np.array(chroms[chroms["chrom"] == chrom]["length"])[0]
-            tdb = self._build_uri("features", f"{chrom}.tdb")
+            tdb = self._build_uri("annotations", f"{chrom}.tdb")
             dom = tiledb.Domain(
                 tiledb.Dim(
                     name="idx",
@@ -336,7 +356,7 @@ class Momics:
 
     def _populate_features_chroms_table(self, features: Dict[str, pybedtools.BedTool], threads: int):
         def _process_chrom(self, chrom, feats, registered_features):
-            tdb = self._build_uri("features", f"{chrom}.tdb")
+            tdb = self._build_uri("annotations", f"{chrom}.tdb")
             cfg = self.cfg.cfg
             cfg.update({"sm.compute_concurrency_level": 1})
             cfg.update({"sm.io_concurrency_level": 1})
@@ -361,7 +381,7 @@ class Momics:
                 logger.debug(f"task {completed_tasks[0]}/{ntasks} :: " f"ingested features over {chrom}.")
 
         n = self.features().shape[0]
-        tdb = self._build_uri("features", "features.tdb")
+        tdb = self._build_uri("annotations", "features.tdb")
         with tiledb.open(tdb, mode="w", ctx=self.cfg.ctx) as array:
             array[n : (n + len(features))] = {
                 "label": list(features.keys()),
@@ -496,7 +516,7 @@ class Momics:
             chroms = self.chroms()
             ranges = []
             for chrom in chroms["chrom"]:
-                tdb = self._build_uri("features", f"{chrom}.tdb")
+                tdb = self._build_uri("annotations", f"{chrom}.tdb")
                 idx = ft[ft["label"] == label]["idx"].iloc[0]
                 with tiledb.open(tdb, "r", ctx=self.cfg.ctx) as A:
                     x = A.query(cond=f"idx=={idx}").df[:]
@@ -508,7 +528,7 @@ class Momics:
 
         else:
             try:
-                features = self._get_table(self._build_uri("features", "features.tdb"))
+                features = self._get_table(self._build_uri("annotations", "features.tdb"))
                 features = features[features["label"] != "\x00"]
             except FileExistsError:
                 features = pd.DataFrame(columns=["idx", "label", "n"])
@@ -558,28 +578,13 @@ class Momics:
         if not self.chroms().empty:
             raise ValueError("`chroms` table has already been filled out.")
 
-        tdb = self._build_uri("genome", "chroms.tdb")
-        dom_genome = tiledb.Domain(
-            tiledb.Dim(
-                name="chrom_index",
-                domain=(0, len(chr_lengths) - 1),
-                dtype=np.int32,
-                tile=len(chr_lengths),
-            )
-        )
-        attr_chr = tiledb.Attr(name="chrom", dtype="ascii", var=True)
-        attr_length = tiledb.Attr(name="length", dtype=np.int64)
-        schema = tiledb.ArraySchema(
-            ctx=self.cfg.ctx,
-            domain=dom_genome,
-            attrs=[attr_chr, attr_length],
-            sparse=False,
-        )
-        tiledb.Array.create(tdb, schema)
+        # Create chroms tables schema
+        self._create_chroms_schema(chr_lengths)
 
         # Populate `chrom` array
         chr = list(chr_lengths.keys())
         length = list(chr_lengths.values())
+        tdb = self._build_uri("genome", "chroms.tdb")
         with tiledb.open(tdb, "w", ctx=self.cfg.ctx) as A:
             A[0 : len(chr)] = {"chrom": np.array(chr, dtype="S"), "length": length}
             A.meta["genome_assembly_version"] = genome_version

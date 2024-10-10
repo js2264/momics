@@ -56,7 +56,7 @@ def test_add_chroms(runner, path, bw3):
     assert mom.chroms()["chrom"].__eq__(["I", "II", "III", "IV"]).all()
     os.remove("chrom_lengths.txt")
     result = runner.invoke(cli.tree.tree, [path])
-    assert len(result.output.strip().split("\n")) == 6
+    assert len(result.output.strip().split("\n")) == 8
 
 
 def test_add_tracks(runner, path, bw3):
@@ -67,7 +67,7 @@ def test_add_tracks(runner, path, bw3):
     mom = momics.Momics(path)
     assert mom.tracks()["label"].__eq__(["bw1", "bw2"]).all()
     result = runner.invoke(cli.tree.tree, [path])
-    assert len(result.output.strip().split("\n")) == 11
+    assert len(result.output.strip().split("\n")) == 13
 
 
 def test_add_sequence(runner, path, fa3):
@@ -76,7 +76,7 @@ def test_add_sequence(runner, path, fa3):
     mom = momics.Momics(path)
     assert mom.seq()["chrom"].__eq__(["I", "II", "III", "IV"]).all()
     result = runner.invoke(cli.tree.tree, [path])
-    assert len(result.output.strip().split("\n")) == 14
+    assert len(result.output.strip().split("\n")) == 16
 
 
 def test_add_features(runner, path):
@@ -95,7 +95,7 @@ def test_add_features(runner, path):
     assert mom.features()["label"].__eq__(["bed1", "bed2"]).all()
     assert mom.features()["n"].__eq__([13001, 13005]).all()
     result = runner.invoke(cli.tree.tree, [path])
-    assert len(result.output.strip().split("\n")) == 19
+    assert len(result.output.strip().split("\n")) == 21
     assert result.exit_code == 0
     result = runner.invoke(cli.ls.ls, ["--table", "features", path])
     assert result.exit_code == 0
