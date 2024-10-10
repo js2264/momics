@@ -18,10 +18,10 @@ momics add chroms -f ~/genomes/S288c/S288c.chrom.sizes testCLI.momics
 momics add seq -f ~/genomes/S288c/S288c.fa testCLI.momics
 
 # Ingest genomic coverage tracks
-momics add tracks -f bw_a=mnase.bw -f bw_b=atac.bw -f bw_c=chip.bw testCLI.momics
+momics add tracks -f bw_a=track1.bw -f bw_b=track2.bw -f bw_c=track3.bw testCLI.momics
 
 # Ingest genomic features
-momics add features -f bed1=temp.bed testCLI.momics
+momics add features -f bed1=regions.bed testCLI.momics
 
 # Print all created tables
 momics tree testCLI.momics
@@ -33,9 +33,9 @@ momics ls --table features testCLI.momics
 
 # Perform queries
 momics query seq --coordinates "I:10-1000" testCLI.momics
+momics query seq --file regions.bed -o out.fa testCLI.momics
 momics query tracks --coordinates "I:10-1000" testCLI.momics
-momics query seq --file temp.bed testCLI.momics
-momics query tracks --file temp.bed testCLI.momics
+momics query tracks --file regions.bed testCLI.momics
 ```
 
 ## Extra CLI utilities

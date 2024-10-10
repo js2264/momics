@@ -87,7 +87,7 @@ class Momics:
             self._create_repository()
             logger.info(f"Created {self.path}")
         else:
-            logger.info(f"Found {self.path}")
+            logger.debug(f"Found {self.path}")
 
     def _is_cloud_hosted(self):
         if self.path.startswith(("s3://", "gcs://", "azure://")):
@@ -103,14 +103,12 @@ class Momics:
 
     def _create_repository(self):
         genome_path = self._build_uri("genome")
-        seq_path = self._build_uri("genome", "sequence")
         coverage_path = self._build_uri("coverage")
         features_path = self._build_uri("features")
         tiledb.group_create(self.path, ctx=self.cfg.ctx)
         tiledb.group_create(genome_path, ctx=self.cfg.ctx)
         tiledb.group_create(coverage_path, ctx=self.cfg.ctx)
         tiledb.group_create(features_path, ctx=self.cfg.ctx)
-        tiledb.group_create(seq_path, ctx=self.cfg.ctx)
 
     def _get_table(self, uri: str) -> Optional[pd.DataFrame]:
         if not self.cfg.vfs.is_dir(uri):
@@ -125,11 +123,11 @@ class Momics:
         return a
 
     def _create_sequence_schema(self, tile: int):
-        # Create every /sequence/{chrom}.tdb
+        # Create every /genome/{chrom}.tdb
         chroms = self.chroms()
         for chrom in chroms["chrom"]:
             chrom_length = np.array(chroms[chroms["chrom"] == chrom]["length"])[0]
-            tdb = self._build_uri("genome", "sequence", f"{chrom}.tdb")
+            tdb = self._build_uri("genome", f"{chrom}.tdb")
             dom = tiledb.Domain(
                 tiledb.Dim(
                     name="position",
@@ -397,7 +395,7 @@ class Momics:
 
     def _populate_sequence_table(self, fasta: str, threads: int):
         def _process_chrom(self, chrom, chroms, fasta):
-            tdb = self._build_uri("genome", "sequence", f"{chrom}.tdb")
+            tdb = self._build_uri("genome", f"{chrom}.tdb")
             chrom_length = np.array(chroms[chroms["chrom"] == chrom]["length"])[0]
             with pyfaidx.Fasta(fasta) as fa:
                 chrom_seq = fa.get_seq(chrom, 1, chrom_length + 1)
@@ -454,7 +452,7 @@ class Momics:
             raise OSError("`chroms` table has not been filled out yet.")
 
         try:
-            tdb = self._build_uri("genome", "sequence", f"{self.chroms()['chrom'][0]}.tdb")
+            tdb = self._build_uri("genome", f"{self.chroms()['chrom'][0]}.tdb")
             _ = self._get_table(tdb)
             pass
         except FileExistsError as e:
@@ -463,7 +461,7 @@ class Momics:
         chroms = self.chroms()
         chroms["seq"] = pd.Series()
         for chrom in chroms["chrom"]:
-            tdb = self._build_uri("genome", "sequence", f"{chrom}.tdb")
+            tdb = self._build_uri("genome", f"{chrom}.tdb")
             chrom_len = chroms[chroms["chrom"] == chrom]["length"].iloc[0]
             with tiledb.open(tdb, "r", ctx=self.cfg.ctx) as A:
                 start_nt = "".join(A.df[0:9]["nucleotide"])
@@ -614,7 +612,7 @@ class Momics:
             raise ValueError("Please fill out `chroms` table first.")
 
         # Abort if sequence table already exists
-        tdb = self._build_uri("genome", "sequence", f"{chroms['chrom'][0]}.tdb")
+        tdb = self._build_uri("genome", f"{chroms['chrom'][0]}.tdb")
         if self.cfg.vfs.is_dir(tdb):
             raise tiledb.cc.TileDBError(f"Error: TileDB '{tdb}' already exists.")
 

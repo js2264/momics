@@ -183,7 +183,7 @@ class MultiRangeQuery:
 
             # Query tiledb
             start0 = time.time()
-            tdb = self.momics._build_uri("genome", "sequence", f"{chrom}.tdb")
+            tdb = self.momics._build_uri("genome", f"{chrom}.tdb")
             with tiledb.open(tdb, "r", config=cfg) as A:
                 subarray = A.multi_index[
                     query,

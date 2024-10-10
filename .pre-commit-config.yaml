@@ -11,6 +11,6 @@ repos:
       - id: black
         args: ['--config=./pyproject.toml']
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.0.116
+    rev: v0.6.9
     hooks:
       - id: ruff

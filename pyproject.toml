@@ -103,8 +103,8 @@ exclude = [
     ".venv",
     "__main__.py",
 ]
-ignore = ["E402", "I001"]
-extend-select = [
+lint.ignore = ["E402", "I001"]
+lint.extend-select = [
     "B",  # bugbear
     "E",  # style errors
     "F",  # pyflakes
@@ -113,7 +113,7 @@ extend-select = [
     # "UP", # pyupgrade
     "W",  # style  warnings
 ]
-isort.known-first-party = ["momics"]
+lint.isort.known-first-party = ["momics"]
 
 [tool.pytest.ini_options]
 markers = ["order: mark test to run in a specific order"]

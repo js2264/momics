@@ -56,16 +56,8 @@ class LocalConfig:
             "azure": ["account_name", "account_key"],
         }
         for section in self.cfg.sections():
-            if not all(
-                [
-                    self.cfg.get(section, key, fallback=False)
-                    for key in required_keys[section]
-                ]
-            ):
-                raise ValueError(
-                    f"Invalid cloud configuration. "
-                    f"Please provide all required values: {required_keys[section]}"
-                )
+            if not all([self.cfg.get(section, key, fallback=False) for key in required_keys[section]]):
+                raise ValueError(f"Invalid cloud configuration. " f"Please provide all required values: {required_keys[section]}")
         return True
 
 
@@ -86,8 +78,7 @@ class S3Config:
         self.secret_access_key = secret_access_key
         if not self._is_valid():
             raise ValueError(
-                "Invalid S3 configuration. Please provide all required "
-                "values: `region`, `access_key_id`, `secret_access_key`"
+                "Invalid S3 configuration. Please provide all required " "values: `region`, `access_key_id`, `secret_access_key`"
             )
 
     def _is_valid(self):
@@ -107,10 +98,7 @@ class GCSConfig:
         self.project_id = project_id
         self.credentials = credentials
         if not self._is_valid():
-            raise ValueError(
-                "Invalid GCS configuration. Please provide all "
-                "required values: `project_id`, `credentials`"
-            )
+            raise ValueError("Invalid GCS configuration. Please provide all " "required values: `project_id`, `credentials`")
 
     def _is_valid(self):
         return all([self.project_id, self.credentials])
@@ -129,10 +117,7 @@ class AzureConfig:
         self.account_name = account_name
         self.account_key = account_key
         if not self._is_valid():
-            raise ValueError(
-                "Invalid Azure configuration. "
-                "Please provide all required values: `account_name`, `account_key`"
-            )
+            raise ValueError("Invalid Azure configuration. " "Please provide all required values: `account_name`, `account_key`")
 
     def _is_valid(self):
         return all([self.account_name, self.account_key])
@@ -208,7 +193,7 @@ class MomicsConfig:
                 local_cfg._validate_local_config()
                 self.type = "local"
                 self.cfg = self._create_tiledb_config_from_local(local_cfg)
-                logger.info(f"Using local config from {local_cfg.config_path} file.")
+                logger.debug(f"Using local config from {local_cfg.config_path} file.")
             # Otherwise, use blank configuration.
             except ValueError:
                 self.type = None
@@ -250,31 +235,19 @@ class MomicsConfig:
     def _create_tiledb_config_from_local(self, local_cfg):
         json = local_cfg.get("gcs", "credentials", default=None)
         if json is not None:
-            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = local_cfg.get(
-                "gcs", "credentials", default=None
-            )
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = local_cfg.get("gcs", "credentials", default=None)
         return tiledb.Config(
             {
                 "vfs.s3.region": local_cfg.get("s3", "region", default=None),
-                "vfs.s3.aws_access_key_id": local_cfg.get(
-                    "s3", "access_key_id", default=None
-                ),
-                "vfs.s3.aws_secret_access_key": local_cfg.get(
-                    "s3", "secret_access_key", default=None
-                ),
+                "vfs.s3.aws_access_key_id": local_cfg.get("s3", "access_key_id", default=None),
+                "vfs.s3.aws_secret_access_key": local_cfg.get("s3", "secret_access_key", default=None),
                 #
                 #
                 "vfs.gcs.project_id": local_cfg.get("gcs", "project_id", default=None),
-                "vfs.gcs.credentials": local_cfg.get(
-                    "gcs", "credentials", default=None
-                ),
+                "vfs.gcs.credentials": local_cfg.get("gcs", "credentials", default=None),
                 #
                 #
-                "vfs.azure.storage_account_name": local_cfg.get(
-                    "azure", "account_name", default=None
-                ),
-                "vfs.azure.storage_account_key": local_cfg.get(
-                    "azure", "account_key", default=None
-                ),
+                "vfs.azure.storage_account_name": local_cfg.get("azure", "account_name", default=None),
+                "vfs.azure.storage_account_key": local_cfg.get("azure", "account_key", default=None),
             }
         )
