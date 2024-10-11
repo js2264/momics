@@ -38,6 +38,7 @@ dependencies = [
     "click>=7",
     "packaging",
     "psutil",
+    "setuptools"
 ]
 
 [project.urls]
