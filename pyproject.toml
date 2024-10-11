@@ -29,7 +29,7 @@ classifiers = [
 dependencies = [
     "tiledb",
     "pyBigWig",
-    "pybedtools",
+    "pyranges",
     "pyfaidx",
     "Biopython",
     "numpy",

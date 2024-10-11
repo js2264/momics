@@ -1,8 +1,8 @@
 import numpy as np
+import pyranges as pr
 import pandas as pd
 import pytest
 import tiledb
-from pybedtools import BedTool
 
 import momics
 from momics import utils
@@ -123,7 +123,7 @@ def test_Momics_remove_tracks(momics_path: str, bw1: str, bw2: str, bed1: str):
     assert mom.tracks().iloc[:, 0:2].__eq__(out).all().all()
     q = MultiRangeQuery(mom, "I:991-1010").query_tracks()
     assert list(q.coverage.keys()) == ["bw2", "custom", "bw3", "bw4"]
-    bed = BedTool(bed1)
+    bed = pr.read_bed(bed1)
     q = MultiRangeQuery(mom, bed).query_tracks()
     assert list(q.coverage.keys()) == ["bw2", "custom", "bw3", "bw4"]
 
@@ -132,7 +132,7 @@ def test_Momics_remove_tracks(momics_path: str, bw1: str, bw2: str, bed1: str):
 def test_Momics_binnify(momics_path: str):
     mom = momics.Momics(momics_path)
     q = mom.bins(width=1000, step=1000)
-    assert q.to_dataframe().shape == (60, 3)
+    assert q.df.shape == (60, 3)
 
 
 @pytest.mark.order(2)
@@ -164,5 +164,5 @@ def test_Momics_features(momics_path: str):
     mom.add_features(sets)
     assert mom.features().shape == (4, 3)
 
-    ft1 = mom.bins(1000, 2000, cut_last_bin_out=True).to_dataframe()
-    mom.features("ft1").to_dataframe()[["chrom", "start", "end"]].__eq__(ft1)
+    ft1 = mom.bins(1000, 2000, cut_last_bin_out=True).df
+    mom.features("ft1").df[["Chromosome", "Start", "End"]].__eq__(ft1)

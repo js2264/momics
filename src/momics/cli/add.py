@@ -1,6 +1,6 @@
 import click
 import numpy as np
-import pybedtools
+import pyranges as pr
 
 from .. import momics
 from . import cli
@@ -118,7 +118,7 @@ def features(ctx, file, path, threads):
     fs = {}
     for f in file:
         bed = f.split("=", 1)[1]
-        bed = pybedtools.BedTool(bed)
+        bed = pr.read_bed(bed)
         fs[f.split("=", 1)[0]] = bed
     m = momics.Momics(path)
     m.add_features(fs, threads=threads)

@@ -1,8 +1,8 @@
+import collections
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
-import pybedtools
+import pyranges as pr
 import pyBigWig
 import pyfaidx
 
@@ -81,27 +81,28 @@ def _check_track_name(track, tracks):
         raise ValueError(f"Provided track name '{track}' does not exist in `tracks` table")
 
 
-def parse_ucsc_coordinates(coords: str) -> pd.DataFrame:
-    """Parse UCSC-style coordinates as a pybedtools.BedTool object.
+def parse_ucsc_coordinates(coords: str) -> pr.PyRanges:
+    """Parse UCSC-style coordinates as a pr.PyRanges object.
 
     Args:
-        coords (str): A UCSC-style set of coordinates (e.g., "I:11-100"). Note
-        that the coordinates are 1-based.
+        coords (str): A UCSC-style set of coordinates (e.g., "I:11-100").
 
     Returns:
-        pd.DataFrame: A pybedtools.BedTool object.
+        pr.PyRanges: A pr.PyRanges object.
     """
     if isinstance(coords, str):
         coords = [coords]
 
-    coord_strings = []
+    coords_dict = collections.defaultdict(list)
     for coord in coords:
         try:
             chr_part, range_part = coord.split(":")
             start, end = range_part.split("-")
             start = int(start)
             end = int(end)
-            coord_strings.append(f"{chr_part} {start} {end}")
+            coords_dict["chr"].append(chr_part)
+            coords_dict["start"].append(start)
+            coords_dict["end"].append(end)
 
         except ValueError as e:
             raise ValueError(f"Invalid start/end values in coordinate '{coord}'. " + "Start and end must be integers.") from e
@@ -110,4 +111,4 @@ def parse_ucsc_coordinates(coords: str) -> pd.DataFrame:
                 f"Invalid format for UCSC-style coordinate '{coord}'. " + "Expected format: 'chrom:start-end'."
             ) from e
 
-    return pybedtools.BedTool("\n".join(coord_strings), from_string=True)
+    return pr.PyRanges(chromosomes=coords_dict["chr"], starts=coords_dict["start"], ends=coords_dict["end"])

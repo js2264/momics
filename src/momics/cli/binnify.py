@@ -24,8 +24,7 @@ from . import cli
 @click.option(
     "--cut_last_bin_out",
     "-c",
-    help="Remove the last bin in each chromosome, which likely does not have "
-    + "the same width.",
+    help="Remove the last bin in each chromosome, which likely does not have " + "the same width.",
     is_flag=True,
     default=False,
     show_default=True,
@@ -42,7 +41,7 @@ from . import cli
 def binnify(ctx, path, width, step, cut_last_bin_out, output):
     """Binnify chromosomes from a Momics repository."""
     m = momics.Momics(path)
-    bins = m.bins(width, step, cut_last_bin_out).to_dataframe()
+    bins = m.bins(width, step, cut_last_bin_out).df
     bins = bins.to_csv(sep="\t", index=False, header=False)
 
     if output is not None:

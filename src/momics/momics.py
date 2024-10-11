@@ -10,7 +10,7 @@ from typing import Dict, Optional
 
 import numpy as np
 import pandas as pd
-import pybedtools
+import pyranges as pr
 import pyBigWig
 import pyfaidx
 import tiledb
@@ -24,7 +24,6 @@ lock = threading.Lock()
 
 TILEDB_COMPRESSION = 2
 TILEDB_CHUNKSIZE = 10000
-TILEDB_TILESIZE = 64000
 TILEDB_POSITION_FILTERS = tiledb.FilterList(
     [
         # tiledb.DoubleDeltaFilter(),
@@ -48,7 +47,7 @@ TILEDB_SEQ_FILTERS = tiledb.FilterList(
 
 
 def _set_tiledb_tile(tile, chrom_length):
-    t = min(chrom_length, TILEDB_TILESIZE)
+    t = min(chrom_length, tile)
     return t
 
 
@@ -354,7 +353,7 @@ class Momics:
                 futures.append(future)
             concurrent.futures.wait(futures)
 
-    def _populate_features_chroms_table(self, features: Dict[str, pybedtools.BedTool], threads: int):
+    def _populate_features_chroms_table(self, features: Dict[str, pr.PyRanges], threads: int):
         def _process_chrom(self, chrom, feats, registered_features):
             tdb = self._build_uri("annotations", f"{chrom}.tdb")
             cfg = self.cfg.cfg
@@ -368,7 +367,7 @@ class Momics:
                     "metadata": np.array(["."] * len(inter), dtype=np.str_),
                 }
                 with tiledb.open(tdb, mode="w", config=cfg) as A:
-                    A[[dim1] * len(inter), inter["start"], inter["end"]] = d
+                    A[[dim1] * len(inter), inter["Start"], inter["End"]] = d
             cfg.update({"sm.compute_concurrency_level": multiprocessing.cpu_count() - 1})
             cfg.update({"sm.io_concurrency_level": multiprocessing.cpu_count() - 1})
 
@@ -387,7 +386,6 @@ class Momics:
                 "label": list(features.keys()),
                 "n": [len(x) for x in features.values()],
             }
-        features = {label: inter.to_dataframe() for label, inter in features.items()}
         tasks = []
         chroms = self.chroms()
         for chrom in chroms["chrom"]:
@@ -401,7 +399,7 @@ class Momics:
         with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
             futures = []
             for chrom, _ in tasks:
-                feats = {label: inter[inter["chrom"] == chrom].drop("chrom", axis=1) for label, inter in features.items()}
+                feats = {label: inter[chrom].df for label, inter in features.items()}
                 future = executor.submit(
                     _process_chrom,
                     self,
@@ -523,7 +521,18 @@ class Momics:
                     x.iloc[:, 0] = chrom
                     x.iloc[:, 1] = x.iloc[:, 1] - 1
                     ranges.append(x)
-            res = pybedtools.BedTool.from_dataframe(pd.concat(ranges))
+            df = pd.concat(ranges)
+            df2 = pd.DataFrame(
+                {
+                    "Chromosome": df["idx"],
+                    "Start": df["start"] + 1,
+                    "End": df["stop"],
+                    "strand": df["strand"],
+                    "score": df["score"],
+                    "metadata": df["metadata"],
+                }
+            )
+            res = pr.PyRanges(df2)
             return res
 
         else:
@@ -534,7 +543,7 @@ class Momics:
                 features = pd.DataFrame(columns=["idx", "label", "n"])
             return features
 
-    def bins(self, width, step, cut_last_bin_out=False):
+    def bins(self, width, step, cut_last_bin_out=False) -> pr.PyRanges:
         """Generate a BedTool of tiled genomic bins
 
         Args:
@@ -544,7 +553,7 @@ class Momics:
                 chromosome. Defaults to False.
 
         Returns:
-            _type_: pd.DataFrame: DataFrame with columns "chrom", 'start', 'end'.
+            _type_: pr.PyRanges: a PyRanges object of tiled genomic bins.
         """
         bins = []
         chroms = self.chroms().set_index("chrom")["length"].to_dict()
@@ -560,7 +569,7 @@ class Momics:
         if cut_last_bin_out:
             df = df[(df["end"] - df["start"]) == width - 1]
 
-        bt = pybedtools.BedTool.from_dataframe(df)
+        bt = pr.PyRanges(chromosomes=df["chrom"], starts=df["start"], ends=df["end"])
 
         return bt
 
@@ -594,9 +603,7 @@ class Momics:
         self,
         fasta: Path,
         threads: int = 1,
-        tile: int = 50000,
-        chunksize: int = 4000000,
-        compression: int = 3,
+        tile: int = 32000,
     ) -> "Momics":
         """Ingest a fasta file into a Momics repository
 
@@ -604,7 +611,6 @@ class Momics:
             fasta (str): Path to a Fasta file containing the genome reference sequence.
             threads (int, optional): Threads to parallelize I/O. Defaults to 1.
             tile (int, optional): Tile size for TileDB. Defaults to 50000.
-            compression (int, optional): Compression level for TileDB. Defaults to 3.
 
         Returns:
             Momics: The updated Momics object
@@ -637,9 +643,7 @@ class Momics:
         features: dict,
         threads: int = 1,
         max_features: int = 9999,
-        tile: int = 50000,
-        chunksize: int = 4000000,
-        compression: int = 3,
+        tile: int = 32000,
     ) -> "Momics":
         """Ingest feature sets to the `.momics` repository.
 
@@ -678,9 +682,7 @@ class Momics:
         bws: dict,
         threads: int = 1,
         max_bws: int = 9999,
-        tile: int = 50000,
-        chunksize: int = 4000000,
-        compression: int = 3,
+        tile: int = 32000,
     ) -> "Momics":
         """Ingest bigwig coverage tracks to the `.momics` repository.
 

@@ -1,11 +1,11 @@
 import click
-import pandas as pd
 from Bio import SeqIO
-from pybedtools import BedTool
+import pyranges as pr
 
 from momics.multirangequery import MultiRangeQuery
 
 from .. import momics
+from .. import utils
 from ..logging import logger
 from . import cli
 
@@ -63,13 +63,9 @@ def tracks(ctx, path, coordinates, file, output: str, threads: int = 1):
     mom = momics.Momics(path)
 
     if coordinates is not None:
-        chr, range_part = coordinates.split(":")
-        start = int(range_part.split("-")[0])
-        end = int(range_part.split("-")[1])
-        bed = pd.DataFrame([{"chrom": chr, "start": start, "end": end}])
-        bed = BedTool.from_dataframe(bed)
+        bed = utils.parse_ucsc_coordinates(coordinates)
     else:
-        bed = BedTool(file)
+        bed = pr.read_bed(file)
 
     res = MultiRangeQuery(mom, bed).query_tracks(threads=threads).to_df()
     if output is None:
@@ -118,13 +114,9 @@ def seq(ctx, path, coordinates, file, output: str, threads: int = 1):
     mom = momics.Momics(path)
 
     if coordinates is not None:
-        chr, range_part = coordinates.split(":")
-        start = int(range_part.split("-")[0])
-        end = int(range_part.split("-")[1])
-        bed = pd.DataFrame([{"chrom": chr, "start": start, "end": end}])
-        bed = BedTool.from_dataframe(bed)
+        bed = utils.parse_ucsc_coordinates(coordinates)
     else:
-        bed = BedTool(file)
+        bed = pr.read_bed(file)
 
     res = MultiRangeQuery(mom, bed).query_sequence(threads=threads).to_SeqRecord()
     if output is None:

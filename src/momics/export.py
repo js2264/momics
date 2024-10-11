@@ -1,6 +1,5 @@
 import logging
 import os
-import shutil
 from pathlib import Path
 
 import numpy as np
@@ -38,7 +37,7 @@ def export_track(momics: Momics, track: str, output: Path) -> Momics:
         chroms = np.array([chrom] * chrom_length)
         starts = np.array(range(chrom_length))
         ends = starts + 1
-        values0 = q.coverage[track][list(q.coverage[track].keys())[0]]
+        values0 = q.coverage[track][next(iter(q.coverage[track].keys()))]
         bw.addEntries(chroms, starts=starts, ends=ends, values=values0)
     bw.close()
 
@@ -63,7 +62,7 @@ def export_sequence(momics: Momics, output: Path) -> Momics:
     with open(output, "a") as output_handle:
         for chrom in chroms:
             q = MultiRangeQuery(momics, chrom).query_sequence()
-            seq = q.seq["nucleotide"][list(q.seq["nucleotide"].keys())[0]]
+            seq = q.seq["nucleotide"][next(iter(q.seq["nucleotide"].keys()))]
             sr = Bio.SeqRecord.SeqRecord(Bio.Seq.Seq(seq), id=chrom, description="")
             SeqIO.write(sr, output_handle, "fasta")
 
@@ -83,5 +82,5 @@ def export_features(momics: Momics, features: str, output: Path) -> Momics:
 
     # Init output file
     bed = momics.features(features)
-    shutil.copy(bed.TEMPFILES[0], output)
+    bed.to_bed(output)
     return True

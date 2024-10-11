@@ -7,8 +7,8 @@ from typing import Optional
 
 import numpy as np
 import pandas as pd
+import pyranges as pr
 import psutil
-import pybedtools
 import tiledb
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
@@ -24,21 +24,19 @@ class MultiRangeQuery:
     Attributes
     ----------
     momics (Momics): a local `.momics` repository.
-    queries (dict): Dict. of pd.DataFrames with at least three columns \
-        `chrom`, `start` and `end`, one per chromosome.
-    coordinates (list): List of UCSC-style coordinates.
+    queries (dict): Dict. of pr.PyRanges object.
     coverage (dict): Dictionary of coverage scores extracted from the \
         `.momics` repository, populated after calling `q.query_tracks()`
     seq (dict): Dictionary of sequences extracted from the `.momics` \
         repository, populated after calling `q.query_seq()`
     """
 
-    def __init__(self, momics: Momics, bed: pybedtools.BedTool):
+    def __init__(self, momics: Momics, bed: pr.PyRanges):
         """Initialize the MultiRangeQuery object.
 
         Args:
             momics (Momics): a Momics object
-            bed (pd.DataFrame): pybedtools.BedTool object
+            bed (pr.PyRanges): pr.PyRanges object
         """
         if not isinstance(momics, Momics):
             raise ValueError("momics must be a `Momics` object.")
@@ -52,14 +50,16 @@ class MultiRangeQuery:
                 chroms = self.momics.chroms()
                 chrlength = chroms[chroms["chrom"] == chrom]["length"].iloc[0]
                 bed = parse_ucsc_coordinates(f"{chrom}:1-{chrlength}")
+        else:
+            if not isinstance(bed, pr.PyRanges):
+                raise ValueError("bed must be a `pr.PyRanges` object.")
 
-        # ranges = [f"{inter.chrom}:{inter.start}-{inter.end}" for inter in bed]
         self.ranges = bed
         self.coverage = None
         self.seq = None
 
     def _check_memory_available(self, n):
-        estimated_required_memory = (4 * n * sum([s.stop - s.start + 1 for s in self.ranges])) * 1.2
+        estimated_required_memory = 4 * n * sum(self.ranges.End - self.ranges.Start + 1) * 1.2
         emem = round(estimated_required_memory / 1e9, 2)
         avail_mem = psutil.virtual_memory().available
         amem = round(avail_mem / 1e9, 2)
@@ -74,7 +74,7 @@ class MultiRangeQuery:
 
             # Prepare queries: list of slices [(start, stop), (start, stop), ...]
             start0 = time.time()
-            query = [slice(int(start) - 1, int(end)) for start, end in (r.split("-") for r in ranges)]
+            query = [slice(int(i) - 1, int(j)) for (i, j) in zip(ranges.Start, ranges.End)]
             logger.debug(f"define query in {round(time.time() - start0,4)}s")
 
             # Query tiledb
@@ -93,7 +93,7 @@ class MultiRangeQuery:
             # original slices.
             start0 = time.time()
             results = {attr: collections.defaultdict(list) for attr in attrs}
-            keys = [f"{chrom}:{i}" for i in ranges]
+            keys = [f"{c}:{i}-{j}" for c, i, j in zip(ranges.Chromosome, ranges.Start, ranges.End)]
             for attr in attrs:
                 cov = subarray[attr]
                 start_idx = 0
@@ -131,7 +131,7 @@ class MultiRangeQuery:
             cfg.update({"sm.io_concurrency_level": threads})
 
         # Extract attributes from schema
-        chroms = list(dict.fromkeys([x.chrom for x in self.ranges]))
+        chroms = self.ranges.chromosomes
         _sch = tiledb.open(
             self.momics._build_uri("coverage", f"{chroms[0]}.tdb"),
             "r",
@@ -145,10 +145,7 @@ class MultiRangeQuery:
         self._check_memory_available(len(attrs))
 
         # Split ranges by chromosome
-        ranges_per_chrom = collections.defaultdict(list)
-        for r in self.ranges:
-            chrom = r.chrom
-            ranges_per_chrom[chrom].append(f"{r.start}-{r.end}")
+        ranges_per_chrom = {key: value for (key, value) in self.ranges.items()}
 
         # Prepare empty dictionary of results {attr1: { ranges1: ., ranges2: .}, ...}
         results = []
@@ -178,7 +175,7 @@ class MultiRangeQuery:
 
             # Prepare queries: list of slices [(start, stop), (start, stop), ...]
             start0 = time.time()
-            query = [slice(int(start) - 1, int(end)) for start, end in (r.split("-") for r in ranges)]
+            query = [slice(int(i) - 1, int(j)) for (i, j) in zip(ranges.Start, ranges.End)]
             logger.debug(f"define query in {round(time.time() - start0,4)}s")
 
             # Query tiledb
@@ -197,7 +194,7 @@ class MultiRangeQuery:
             # original slices.
             start0 = time.time()
             results = {attr: collections.defaultdict(list) for attr in attrs}
-            keys = [f"{chrom}:{i}" for i in ranges]
+            keys = [f"{c}:{i}-{j}" for c, i, j in zip(ranges.Chromosome, ranges.Start, ranges.End)]
             for attr in attrs:
                 seq = subarray[attr]
                 start_idx = 0
@@ -234,10 +231,7 @@ class MultiRangeQuery:
 
         # Split ranges by chromosome
         attrs = ["nucleotide"]
-        ranges_per_chrom = collections.defaultdict(list)
-        for r in self.ranges:
-            chrom = r.chrom
-            ranges_per_chrom[chrom].append(f"{r.start}-{r.end}")
+        ranges_per_chrom = {key: value for (key, value) in self.ranges.items()}
 
         # Prepare empty dictionary of results {attr1: { ranges1: ., ranges2: . }, .}
         results = []
@@ -273,12 +267,13 @@ class MultiRangeQuery:
         if cov is None:
             raise AttributeError("self.coverage is None. Call `self.query_tracks()` to populate it.")
 
+        keys = [f"{c}:{i}-{j}" for c, i, j in zip(self.ranges.Chromosome, self.ranges.Start, self.ranges.End)]
         ranges_str = []
-        for inter in self.ranges:
-            chrom = inter.chrom
-            start = inter.start
-            end = inter.end
-            label = [{"range": f"{chrom}:{start}-{end}", "chrom": chrom, "position": x} for x in range(start, end + 1)]
+        for i, inter in self.ranges.df.iterrows():
+            chrom = inter.loc["Chromosome"]
+            start = inter.loc["Start"]
+            end = inter.loc["End"]
+            label = [{"range": keys[i], "chrom": chrom, "position": x} for x in range(start, end + 1)]
             ranges_str.extend(label)
         df = pd.DataFrame(ranges_str)
 
