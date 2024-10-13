@@ -37,10 +37,10 @@ pip install .
 
 - Add a track:
 
-To ingest a `.bw` genomic coverage data into a momics repository, you can use the `add` command:
+To ingest a `.bw` genomic coverage data into a momics repository, you can use the `ingest` command:
 
 ```sh
-momics add tracks -f bw1=path/to/file.bw path/to/momics_repo
+momics ingest tracks -f bw1=path/to/file.bw path/to/momics_repo
 ```
 
 - Query genomic coverage:

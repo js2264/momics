@@ -42,13 +42,13 @@ def test_create(runner, path):
     assert os.path.exists(path)
 
 
-def test_add_chroms(runner, path, bw3):
+def test_ingest_chroms(runner, path, bw3):
     chroms = utils.get_chr_lengths(bw3)
     print(chroms)
     with open("chrom_lengths.txt", "w") as f:
         for chrom, length in chroms.items():
             f.write(f"{chrom}\t{length}\n")
-    result = runner.invoke(cli.add.add, ["chroms", "--file", "chrom_lengths.txt", "--genome", "S288c", path])
+    result = runner.invoke(cli.ingest.ingest, ["chroms", "--file", "chrom_lengths.txt", "--genome", "S288c", path])
     assert result.exit_code == 0
     result = runner.invoke(cli.ls.ls, ["--table", "chroms", path])
     assert result.exit_code == 0
@@ -59,8 +59,8 @@ def test_add_chroms(runner, path, bw3):
     assert len(result.output.strip().split("\n")) == 8
 
 
-def test_add_tracks(runner, path, bw3):
-    result = runner.invoke(cli.add.add, ["tracks", "--file", f"bw1={bw3}", "-f", f"bw2={bw3}", path])
+def test_ingest_tracks(runner, path, bw3):
+    result = runner.invoke(cli.ingest.ingest, ["tracks", "--file", f"bw1={bw3}", "-f", f"bw2={bw3}", path])
     assert result.exit_code == 0
     result = runner.invoke(cli.ls.ls, ["--table", "tracks", path])
     assert result.exit_code == 0
@@ -70,8 +70,8 @@ def test_add_tracks(runner, path, bw3):
     assert len(result.output.strip().split("\n")) == 13
 
 
-def test_add_sequence(runner, path, fa3):
-    result = runner.invoke(cli.add.add, ["seq", "--file", fa3, path])
+def test_ingest_sequence(runner, path, fa3):
+    result = runner.invoke(cli.ingest.ingest, ["seq", "--file", fa3, path])
     assert result.exit_code == 0
     mom = momics.Momics(path)
     assert mom.seq()["chrom"].__eq__(["I", "II", "III", "IV"]).all()
@@ -79,17 +79,17 @@ def test_add_sequence(runner, path, fa3):
     assert len(result.output.strip().split("\n")) == 16
 
 
-def test_add_features(runner, path):
+def test_ingest_features(runner, path):
     result = runner.invoke(cli.binnify.binnify, ["--width", "10", "-s", "10", "-o", "out.bins.bed", "-c", path])
     assert result.exit_code == 0
-    result = runner.invoke(cli.add.add, ["features", "--file", "bed1=out.bins.bed", path])
+    result = runner.invoke(cli.ingest.ingest, ["features", "--file", "bed1=out.bins.bed", path])
     assert result.exit_code == 0
     mom = momics.Momics(path)
     assert mom.features()["label"].__eq__(["bed1"]).all()
     assert mom.features()["n"].__eq__([13001]).all()
     result = runner.invoke(cli.binnify.binnify, ["--width", "10", "-s", "10", "-o", "out.bins.bed", path])
     assert result.exit_code == 0
-    result = runner.invoke(cli.add.add, ["features", "--file", "bed2=out.bins.bed", path])
+    result = runner.invoke(cli.ingest.ingest, ["features", "--file", "bed2=out.bins.bed", path])
     assert result.exit_code == 0
     mom = momics.Momics(path)
     assert mom.features()["label"].__eq__(["bed1", "bed2"]).all()

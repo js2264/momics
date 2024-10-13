@@ -26,7 +26,7 @@ print(mom.cfg)
 ## Registering chromosomes
 
 The first step after creating a `momics` repository is to register the chromosome
-lengths. This can be done using the `add_chroms` method of the `momics.Momics` class.
+lengths. This can be done using the `ingest_chroms` method of the `momics.Momics` class.
 
 ```python
 chr_lengths = {
@@ -48,7 +48,7 @@ chr_lengths = {
     "XVI": 948066,
     "Mito": 85779
 }
-mom.add_chroms(chr_lengths, genome_reference = "S288c")
+mom.ingest_chroms(chr_lengths, genome_reference = "S288c")
 ```
 
 Once they are registered, chromosomes can be listed using `mom.chroms()` method.
@@ -61,20 +61,20 @@ print(chroms)
 ## Populating `momics` repositories
 
 Once the chromosome lengths have been registered, the `momics` repository can be
-populated with `tracks`, `features` or `sequence` using the corresponding `add_*` method.
+populated with `tracks`, `features` or `sequence` using the corresponding `ingest_*` method.
 
 ```python
 # Ingest genome reference sequence
-mom.add_sequence("path_to_genome.fa", threads = 18)
+mom.ingest_sequence("path_to_genome.fa", threads = 18)
 
 # Ingest genomic features
-mom.add_features({
+mom.ingest_features({
     "bed1": "path_to_bed1.bed",
     "bed2": "path_to_bed2.bed"
 })
 
 # Ingest genomic coverage tracks
-mom.add_tracks({
+mom.ingest_tracks({
     bw_a="path_to_bw_a.bw",
     bw_b="path_to_bw_b.bw",
     bw_c="path_to_bw_c.bw"

@@ -28,10 +28,10 @@ In the latter case, you can install `momics` and all its dependencies as follows
 
 ```bash
 momics create my.momics
-momics add chroms -f ~/genomes/S288c/S288c.chrom.sizes my.momics
-momics add seq -f ~/genomes/S288c/S288c.fa my.momics
-momics add tracks -f bw_a=mnase.bw -f bw_b=atac.bw -f bw_c=chip.bw my.momics
-momics add features -f bed1=temp.bed my.momics
+momics ingest chroms -f ~/genomes/S288c/S288c.chrom.sizes my.momics
+momics ingest seq -f ~/genomes/S288c/S288c.fa my.momics
+momics ingest tracks -f bw_a=mnase.bw -f bw_b=atac.bw -f bw_c=chip.bw my.momics
+momics ingest features -f bed1=temp.bed my.momics
 momics query seq --coordinates "I:10-1000" my.momics
 momics query tracks --coordinates "I:10-1000" my.momics
 ```

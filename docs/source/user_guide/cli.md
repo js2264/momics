@@ -12,16 +12,16 @@ momics -v
 momics create testCLI.momics
 
 # Register chromosome lengths
-momics add chroms -f ~/genomes/S288c/S288c.chrom.sizes testCLI.momics
+momics ingest chroms -f ~/genomes/S288c/S288c.chrom.sizes testCLI.momics
 
 # Ingest genome reference sequence
-momics add seq -f ~/genomes/S288c/S288c.fa testCLI.momics
+momics ingest seq -f ~/genomes/S288c/S288c.fa testCLI.momics
 
 # Ingest genomic coverage tracks
-momics add tracks -f bw_a=track1.bw -f bw_b=track2.bw -f bw_c=track3.bw testCLI.momics
+momics ingest tracks -f bw_a=track1.bw -f bw_b=track2.bw -f bw_c=track3.bw testCLI.momics
 
 # Ingest genomic features
-momics add features -f bed1=regions.bed testCLI.momics
+momics ingest features -f bed1=regions.bed testCLI.momics
 
 # Print all created tables
 momics tree testCLI.momics

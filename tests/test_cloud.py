@@ -45,7 +45,7 @@ def test_s3_IO(fa1: str, bw1: str):
     print(bw1)
     chroms = utils.get_chr_lengths(bw1)
     print(chroms)
-    mom.add_chroms(chroms)
+    mom.ingest_chroms(chroms)
     print(mom.chroms())
     out = pd.DataFrame(
         {
@@ -57,10 +57,10 @@ def test_s3_IO(fa1: str, bw1: str):
     assert mom.chroms().__eq__(out).all().all()
 
     # Add seq
-    mom.add_sequence(fa1, tile=10000)
+    mom.ingest_sequence(fa1, tile=10000)
 
     # Add tracks
-    mom.add_tracks({"bw1": bw1}, tile=10000)
+    mom.ingest_tracks({"bw1": bw1}, tile=10000)
     out = pd.DataFrame(
         {
             "idx": [0],
@@ -108,7 +108,7 @@ def test_gcs_IO(fa1: str, bw1: str):
 
     # Add chroms
     chroms = utils.get_chr_lengths(bw1)
-    mom.add_chroms(chroms)
+    mom.ingest_chroms(chroms)
     out = pd.DataFrame(
         {
             "chrom_index": [0, 1, 2],
@@ -119,10 +119,10 @@ def test_gcs_IO(fa1: str, bw1: str):
     assert mom.chroms().__eq__(out).all().all()
 
     # Add seq
-    mom.add_sequence(fa1, tile=10000)
+    mom.ingest_sequence(fa1, tile=10000)
 
     # Add tracks
-    mom.add_tracks({"bw1": bw1}, tile=10000)
+    mom.ingest_tracks({"bw1": bw1}, tile=10000)
     out = pd.DataFrame(
         {
             "idx": [0],
@@ -195,7 +195,7 @@ def test_azure_IO(fa1: str, bw1: str):
     print(bw1)
     chroms = utils.get_chr_lengths(bw1)
     print(chroms)
-    mom.add_chroms(chroms)
+    mom.ingest_chroms(chroms)
     out = pd.DataFrame(
         {
             "chrom_index": [0, 1, 2],
@@ -206,10 +206,10 @@ def test_azure_IO(fa1: str, bw1: str):
     assert mom.chroms().__eq__(out).all().all()
 
     # Add seq
-    mom.add_sequence(fa1, threads=2, tile=10000)
+    mom.ingest_sequence(fa1, threads=2, tile=10000)
 
     # Add tracks
-    mom.add_tracks({"bw1": bw1}, threads=2, tile=10000)
+    mom.ingest_tracks({"bw1": bw1}, threads=2, tile=10000)
     out = pd.DataFrame(
         {
             "idx": [0],

@@ -29,7 +29,7 @@ def cli(ctx):
 
 # Load and register cli subcommands
 from . import (
-    add,
+    ingest,
     binnify,
     cloudconfig,
     cp,
@@ -43,7 +43,7 @@ from . import (
 
 __all__ = [
     "create",
-    "add",
+    "ingest",
     "ls",
     "tree",
     "query",

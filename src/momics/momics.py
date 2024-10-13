@@ -573,7 +573,7 @@ class Momics:
 
         return bt
 
-    def add_chroms(self, chr_lengths: dict, genome_version: str = "") -> "Momics":
+    def ingest_chroms(self, chr_lengths: dict, genome_version: str = "") -> "Momics":
         """Add chromosomes (and genome) information the `.momics` repository.
 
         Args:
@@ -599,7 +599,7 @@ class Momics:
             A.meta["genome_assembly_version"] = genome_version
             A.meta["timestamp"] = datetime.now().isoformat()
 
-    def add_sequence(
+    def ingest_sequence(
         self,
         fasta: Path,
         threads: int = 1,
@@ -638,7 +638,7 @@ class Momics:
 
         logger.info(f"Genome sequence ingested in {round(time.time() - start0,4)}s.")
 
-    def add_features(
+    def ingest_features(
         self,
         features: dict,
         threads: int = 1,
@@ -677,7 +677,7 @@ class Momics:
 
         logger.info(f"{len(features)} feature sets ingested in " f"{round(time.time() - start0,4)}s.")
 
-    def add_tracks(
+    def ingest_tracks(
         self,
         bws: dict,
         threads: int = 1,
@@ -720,7 +720,7 @@ class Momics:
 
         logger.info(f"{len(bws)} tracks ingested in {round(time.time() - start0,4)}s.")
 
-    def add_track(
+    def ingest_track(
         self,
         coverage: dict,
         track: str,
@@ -765,7 +765,7 @@ class Momics:
         # and ingest it using `add_tracks`
         tmp_bw = tempfile.NamedTemporaryFile(delete=False)
         utils._dict_to_bigwig(coverage, tmp_bw.name)
-        self.add_tracks({track: tmp_bw.name}, threads=threads)
+        self.ingest_tracks({track: tmp_bw.name}, threads=threads)
         os.remove(tmp_bw.name)
 
     def remove_track(self, track: str) -> "Momics":

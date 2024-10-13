@@ -8,11 +8,11 @@ from . import cli
 
 @cli.group()
 @click.pass_context
-def add(ctx):
-    """Add a file to a Momics."""
+def ingest(ctx):
+    """Ingest a data file to a Momics."""
 
 
-@add.command()
+@ingest.command()
 @click.option(
     "--file",
     "-f",
@@ -36,11 +36,11 @@ def chroms(ctx, file, genome, path):
         for line in chroms:
             chrom, length = line.strip().split()
             chrom_lengths[chrom] = int(length)
-    m.add_chroms(chrom_lengths, genome_version=genome)
+    m.ingest_chroms(chrom_lengths, genome_version=genome)
     print(m.chroms())
 
 
-@add.command()
+@ingest.command()
 @click.option(
     "--file",
     "-f",
@@ -60,16 +60,16 @@ def chroms(ctx, file, genome, path):
 )
 @click.pass_context
 def tracks(ctx, file, path, threads):
-    """Add tracks to Momics."""
+    """Ingest tracks to Momics."""
     fs = {}
     for f in file:
         fs[f.split("=", 1)[0]] = f.split("=", 1)[1]
     m = momics.Momics(path)
-    m.add_tracks(fs, threads=threads)
+    m.ingest_tracks(fs, threads=threads)
     print(m.tracks().iloc[np.where(m.tracks()["label"] != "None")].iloc[:, 0:2])
 
 
-@add.command()
+@ingest.command()
 @click.option(
     "--file",
     "-f",
@@ -86,13 +86,13 @@ def tracks(ctx, file, path, threads):
 )
 @click.pass_context
 def seq(ctx, file, path, threads):
-    """Add genomic sequence to Momics."""
+    """Ingest genomic sequence to Momics."""
     m = momics.Momics(path)
-    m.add_sequence(file, threads=threads)
+    m.ingest_sequence(file, threads=threads)
     print(m.seq())
 
 
-@add.command()
+@ingest.command()
 @click.option(
     "--file",
     "-f",
@@ -114,12 +114,12 @@ def seq(ctx, file, path, threads):
 )
 @click.pass_context
 def features(ctx, file, path, threads):
-    """Add genomic features to Momics."""
+    """Ingest genomic features to Momics."""
     fs = {}
     for f in file:
         bed = f.split("=", 1)[1]
         bed = pr.read_bed(bed)
         fs[f.split("=", 1)[0]] = bed
     m = momics.Momics(path)
-    m.add_features(fs, threads=threads)
+    m.ingest_features(fs, threads=threads)
     print(m.features().iloc[np.where(m.features()["label"] != "None")].iloc[:, 0:2])
