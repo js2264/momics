@@ -3,7 +3,7 @@ import json
 import pickle
 import time
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional, Dict
 
 import numpy as np
 import pandas as pd
@@ -55,8 +55,8 @@ class MultiRangeQuery:
                 raise ValueError("bed must be a `pr.PyRanges` object.")
 
         self.ranges = bed
-        self.coverage = None
-        self.seq = None
+        self.coverage: Optional[Dict] = None
+        self.seq: Optional[Dict] = None
 
     def _check_memory_available(self, n):
         estimated_required_memory = 4 * n * sum(self.ranges.End - self.ranges.Start + 1) * 1.2
@@ -160,7 +160,7 @@ class MultiRangeQuery:
                 )
             )
 
-        combined_results = {attr: {} for attr in attrs}
+        combined_results: dict = {attr: dict() for attr in attrs}
         for d in results:
             for attr in attrs:
                 combined_results[attr].update(d[attr])
@@ -246,7 +246,7 @@ class MultiRangeQuery:
                 )
             )
 
-        combined_results = {attr: {} for attr in attrs}
+        combined_results: dict = {attr: dict() for attr in attrs}
         for d in results:
             for attr in attrs:
                 combined_results[attr].update(d[attr])
@@ -281,7 +281,7 @@ class MultiRangeQuery:
             df[track] = [value for sublist in cov[track].values() for value in sublist]
         return df
 
-    def to_SeqRecord(self) -> SeqRecord:
+    def to_SeqRecord(self) -> List[SeqRecord]:
         """Parse self.seq attribute to a SeqRecord
 
         Returns:
@@ -301,7 +301,7 @@ class MultiRangeQuery:
 
         return seq_records
 
-    def to_npz(self, output: Path):
+    def to_npz(self, output: Path) -> None:
         """Write the results of a multi-range query to a NPZ file.
 
         Args:
@@ -317,16 +317,23 @@ class MultiRangeQuery:
         with open(output, "wb") as f:
             np.savez_compressed(f, coverage=serialized_cov, seq=serialized_seq)
 
-    def to_json(self, output: Path):
+    def to_json(self, output: Path) -> None:
         """Write the results of a multi-range query to a JSON file.
 
         Args:
             output (Path): Path to the output JSON file.
         """
         data = self.coverage
+        if data is None:
+            raise AttributeError("self.coverage is None. Call `self.query_tracks()` to populate it.")
+
         for key, _ in data.items():
             for key2, value2 in data[key].items():
                 data[key][key2] = value2.tolist()
+
+        if self.seq is None:
+            raise AttributeError("self.seq is None. Call `self.query_sequence()` to populate it.")
+
         data["nucleotide"] = self.seq["nucleotide"]
         logger.info(f"Saving results of multi-range query to {output}...")
         with open(output, "w") as json_file:

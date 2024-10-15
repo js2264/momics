@@ -6,7 +6,7 @@ import threading
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Literal, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -46,7 +46,7 @@ TILEDB_SEQ_FILTERS = tiledb.FilterList(
 )
 
 
-def _set_tiledb_tile(tile, chrom_length):
+def _set_tiledb_tile(tile, chrom_length) -> int:
     t = min(chrom_length, tile)
     return t
 
@@ -65,7 +65,7 @@ class Momics:
         self,
         path: str,
         config: Optional[MomicsConfig] = None,
-    ):
+    ) -> None:
         """
         Initialize the Momics class.
         By default, a `.momics` repository is created at the specified path if
@@ -88,7 +88,7 @@ class Momics:
         else:
             logger.debug(f"Found {self.path}")
 
-    def _is_cloud_hosted(self):
+    def _is_cloud_hosted(self) -> Union[str, Literal[False]]:
         if self.path.startswith(("s3://", "gcs://", "azure://")):
             return self.path.split("://")[0]
         else:
@@ -100,7 +100,7 @@ class Momics:
         else:
             return str(Path(self.path).joinpath(*subdirs))
 
-    def _create_repository(self):
+    def _create_repository(self) -> None:
         genome_path = self._build_uri("genome")
         coverage_path = self._build_uri("coverage")
         features_path = self._build_uri("annotations")
@@ -121,7 +121,7 @@ class Momics:
 
         return a
 
-    def _create_chroms_schema(self, chr_lengths: dict):
+    def _create_chroms_schema(self, chr_lengths: dict) -> None:
         tdb = self._build_uri("genome", "chroms.tdb")
         dom_genome = tiledb.Domain(
             tiledb.Dim(
@@ -141,7 +141,7 @@ class Momics:
         )
         tiledb.Array.create(tdb, schema)
 
-    def _create_sequence_schema(self, tile: int):
+    def _create_sequence_schema(self, tile: int) -> None:
         # Create every /genome/{chrom}.tdb
         chroms = self.chroms()
         for chrom in chroms["chrom"]:
@@ -165,7 +165,7 @@ class Momics:
             )
             tiledb.Array.create(tdb, schema)
 
-    def _create_track_schema(self, max_bws: int, tile: int):
+    def _create_track_schema(self, max_bws: int, tile: int) -> None:
         # Create /coverage/tracks.tdb
         tdb = self._build_uri("coverage", "tracks.tdb")
         dom = tiledb.Domain(
@@ -199,7 +199,7 @@ class Momics:
             )
             tiledb.Array.create(tdb, schema)
 
-    def _create_features_schema(self, max_features: int, tile: int):
+    def _create_features_schema(self, max_features: int, tile: int) -> None:
         # Create /features/tracks.tdb
         tdb = self._build_uri("annotations", "features.tdb")
         dom = tiledb.Domain(
@@ -256,7 +256,7 @@ class Momics:
             )
             tiledb.Array.create(tdb, schema)
 
-    def _populate_track_table(self, bws: Dict[str, str]):
+    def _populate_track_table(self, bws: Dict[str, str]) -> None:
         n = self.tracks().shape[0]
 
         tdb = self._build_uri("coverage", "tracks.tdb")
@@ -266,8 +266,8 @@ class Momics:
                 "path": list(bws.values()),
             }
 
-    def _populate_chroms_table(self, bws: Dict[str, str], threads: int):
-        def _add_attribute_to_array(uri, attribute_name):
+    def _populate_chroms_table(self, bws: Dict[str, str], threads: int) -> None:
+        def _add_attribute_to_array(uri, attribute_name) -> None:
             # Check that attribute does not already exist
             has_attr = False
             with tiledb.open(uri, mode="r", ctx=self.cfg.ctx) as A:
@@ -294,7 +294,7 @@ class Momics:
                 se.drop_attribute("placeholder")
                 se.array_evolve(uri)
 
-        def _process_chrom(self, chrom, chrom_length, bws):
+        def _process_chrom(self, chrom, chrom_length, bws) -> None:
 
             tdb = self._build_uri("coverage", f"{chrom}.tdb")
 
@@ -328,7 +328,7 @@ class Momics:
             cfg.update({"sm.compute_concurrency_level": multiprocessing.cpu_count() - 1})
             cfg.update({"sm.io_concurrency_level": multiprocessing.cpu_count() - 1})
 
-        def _log_task_completion(future, chrom, ntasks, completed_tasks):
+        def _log_task_completion(future, chrom, ntasks, completed_tasks) -> None:
             if future.exception() is not None:
                 logger.error(f"Tracks ingestion over {chrom} failed with exception: " f"{future.exception()}")
             else:
@@ -349,12 +349,12 @@ class Momics:
             futures = []
             for chrom, chrom_length in tasks:
                 future = executor.submit(_process_chrom, self, chrom, chrom_length, bws)
-                future.add_done_callback(lambda f, c=chrom: _log_task_completion(f, c, ntasks, completed_tasks))
+                future.add_done_callback(lambda f, c=chrom: _log_task_completion(f, c, ntasks, completed_tasks))  # type: ignore
                 futures.append(future)
             concurrent.futures.wait(futures)
 
-    def _populate_features_chroms_table(self, features: Dict[str, pr.PyRanges], threads: int):
-        def _process_chrom(self, chrom, feats, registered_features):
+    def _populate_features_chroms_table(self, features: Dict[str, pr.PyRanges], threads: int) -> None:
+        def _process_chrom(self, chrom, feats, registered_features) -> None:
             tdb = self._build_uri("annotations", f"{chrom}.tdb")
             cfg = self.cfg.cfg
             cfg.update({"sm.compute_concurrency_level": 1})
@@ -371,7 +371,7 @@ class Momics:
             cfg.update({"sm.compute_concurrency_level": multiprocessing.cpu_count() - 1})
             cfg.update({"sm.io_concurrency_level": multiprocessing.cpu_count() - 1})
 
-        def _log_task_completion(future, chrom, ntasks, completed_tasks):
+        def _log_task_completion(future, chrom, ntasks, completed_tasks) -> None:
             if future.exception() is not None:
                 logger.error(f"Feature set ingestion over {chrom} failed with exception: " f"{future.exception()}")
             else:
@@ -407,12 +407,12 @@ class Momics:
                     feats,
                     registered_features,
                 )
-                future.add_done_callback(lambda f, c=chrom: _log_task_completion(f, c, ntasks, completed_tasks))
+                future.add_done_callback(lambda f, c=chrom: _log_task_completion(f, c, ntasks, completed_tasks))  # type: ignore
                 futures.append(future)
             concurrent.futures.wait(futures)
 
-    def _populate_sequence_table(self, fasta: str, threads: int):
-        def _process_chrom(self, chrom, chroms, fasta):
+    def _populate_sequence_table(self, fasta: Union[str, Path], threads: int) -> None:
+        def _process_chrom(self, chrom, chroms, fasta) -> None:
             tdb = self._build_uri("genome", f"{chrom}.tdb")
             chrom_length = np.array(chroms[chroms["chrom"] == chrom]["length"])[0]
             with pyfaidx.Fasta(fasta) as fa:
@@ -426,7 +426,7 @@ class Momics:
             cfg.update({"sm.compute_concurrency_level": multiprocessing.cpu_count() - 1})
             cfg.update({"sm.io_concurrency_level": multiprocessing.cpu_count() - 1})
 
-        def _log_task_completion(future, chrom, ntasks, completed_tasks):
+        def _log_task_completion(future, chrom, ntasks, completed_tasks) -> None:
             if future.exception() is not None:
                 logger.error(f"Fasta ingestion over {chrom} failed with exception: " f"{future.exception()}")
             else:
@@ -443,7 +443,7 @@ class Momics:
             futures = []
             for chrom in tasks:
                 future = executor.submit(_process_chrom, self, chrom, chroms, fasta)
-                future.add_done_callback(lambda f, c=chrom: _log_task_completion(f, c, ntasks, completed_tasks))
+                future.add_done_callback(lambda f, c=chrom: _log_task_completion(f, c, ntasks, completed_tasks))  # type: ignore
                 futures.append(future)
             concurrent.futures.wait(futures)
 
@@ -496,6 +496,8 @@ class Momics:
         """
         try:
             tracks = self._get_table(self._build_uri("coverage", "tracks.tdb"))
+            if type(tracks) is not pd.DataFrame:
+                raise ValueError("Failed to fetch tracks table.")
             tracks = tracks[tracks["label"] != "\x00"]
         except FileExistsError:
             tracks = pd.DataFrame(columns=["idx", "label", "path"])
@@ -522,7 +524,10 @@ class Momics:
                     x.iloc[:, 1] = x.iloc[:, 1] - 1
                     ranges.append(x)
             df = pd.concat(ranges)
-            df2 = pd.DataFrame(
+            if len(df) == 0:
+                raise ValueError(f"Feature set '{label}' is empty.")
+
+            res = pr.PyRanges(
                 {
                     "Chromosome": df["idx"],
                     "Start": df["start"] + 1,
@@ -532,12 +537,13 @@ class Momics:
                     "metadata": df["metadata"],
                 }
             )
-            res = pr.PyRanges(df2)
             return res
 
         else:
             try:
                 features = self._get_table(self._build_uri("annotations", "features.tdb"))
+                if type(features) is not pd.DataFrame:
+                    raise ValueError("Failed to fetch features table.")
                 features = features[features["label"] != "\x00"]
             except FileExistsError:
                 features = pd.DataFrame(columns=["idx", "label", "n"])
@@ -599,6 +605,8 @@ class Momics:
             A.meta["genome_assembly_version"] = genome_version
             A.meta["timestamp"] = datetime.now().isoformat()
 
+        return self
+
     def ingest_sequence(
         self,
         fasta: Path,
@@ -638,6 +646,8 @@ class Momics:
 
         logger.info(f"Genome sequence ingested in {round(time.time() - start0,4)}s.")
 
+        return self
+
     def ingest_features(
         self,
         features: dict,
@@ -676,6 +686,8 @@ class Momics:
         self._populate_features_chroms_table(features, threads)
 
         logger.info(f"{len(features)} feature sets ingested in " f"{round(time.time() - start0,4)}s.")
+
+        return self
 
     def ingest_tracks(
         self,
@@ -719,6 +731,8 @@ class Momics:
         self._populate_track_table(bws)
 
         logger.info(f"{len(bws)} tracks ingested in {round(time.time() - start0,4)}s.")
+
+        return self
 
     def ingest_track(
         self,
@@ -764,9 +778,11 @@ class Momics:
         # Save the coverage dict as a temporary bigwig file
         # and ingest it using `add_tracks`
         tmp_bw = tempfile.NamedTemporaryFile(delete=False)
-        utils._dict_to_bigwig(coverage, tmp_bw.name)
+        utils._dict_to_bigwig(coverage, Path(tmp_bw.name))
         self.ingest_tracks({track: tmp_bw.name}, threads=threads)
         os.remove(tmp_bw.name)
+
+        return self
 
     def remove_track(self, track: str) -> "Momics":
         """Remove a track from a `.momics` repository.
@@ -795,6 +811,8 @@ class Momics:
         idx = tracks["idx"][tracks["label"] == track].values[0]
         with tiledb.open(tdb, mode="w", ctx=self.cfg.ctx) as A:
             A[idx] = {"label": None, "path": None}
+
+        return self
 
     def remove(self) -> bool:
         """Remove a `.momics` repository."""

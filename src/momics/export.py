@@ -37,9 +37,11 @@ def export_track(momics: Momics, track: str, output: Path) -> Momics:
         chroms = np.array([chrom] * chrom_length)
         starts = np.array(range(chrom_length))
         ends = starts + 1
-        values0 = q.coverage[track][next(iter(q.coverage[track].keys()))]
+        values0 = q.coverage[track][next(iter(q.coverage[track].keys()))]  # type: ignore
         bw.addEntries(chroms, starts=starts, ends=ends, values=values0)
     bw.close()
+
+    return momics
 
 
 def export_sequence(momics: Momics, output: Path) -> Momics:
@@ -62,9 +64,11 @@ def export_sequence(momics: Momics, output: Path) -> Momics:
     with open(output, "a") as output_handle:
         for chrom in chroms:
             q = MultiRangeQuery(momics, chrom).query_sequence()
-            seq = q.seq["nucleotide"][next(iter(q.seq["nucleotide"].keys()))]
+            seq = q.seq["nucleotide"][next(iter(q.seq["nucleotide"].keys()))]  # type: ignore
             sr = Bio.SeqRecord.SeqRecord(Bio.Seq.Seq(seq), id=chrom, description="")
             SeqIO.write(sr, output_handle, "fasta")
+
+    return momics
 
 
 def export_features(momics: Momics, features: str, output: Path) -> Momics:
@@ -83,4 +87,4 @@ def export_features(momics: Momics, features: str, output: Path) -> Momics:
     # Init output file
     bed = momics.features(features)
     bed.to_bed(output)
-    return True
+    return momics

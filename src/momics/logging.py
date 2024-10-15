@@ -2,7 +2,7 @@ import logging
 
 
 class MomicsFormatter(logging.Formatter):
-    def format(self, record):
+    def format(self, record) -> str:
         return super().format(record)
 
 
