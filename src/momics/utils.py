@@ -8,7 +8,7 @@ import pyBigWig
 import pyfaidx
 
 
-def get_chr_lengths(bw: Path) -> dict:
+def get_chr_lengths(bw: Union[Path, str]) -> dict:
     """Parse bigwig header to extract chromosome lengths
 
     Args:
@@ -17,13 +17,15 @@ def get_chr_lengths(bw: Path) -> dict:
     Returns:
         dict: Dictionary of chromosome lengths
     """
+    if isinstance(bw, Path):
+        bw = bw.name
     with pyBigWig.open(bw) as b:
         a = b.chroms()
     b.close()
     return a
 
 
-def _dict_to_bigwig(bw_dict: dict, output: Path) -> Path:
+def _dict_to_bigwig(bw_dict: dict, output: Union[Path, str]) -> Path:
     """Write a dictionary of coverages to a bigwig file
 
     Args:
@@ -33,6 +35,9 @@ def _dict_to_bigwig(bw_dict: dict, output: Path) -> Path:
     Returns:
         Path to the output bigwig file
     """
+    if isinstance(output, Path):
+        output = output.name
+
     bw = pyBigWig.open(output, "w")
     header = [(chrom, len(coverage)) for chrom, coverage in bw_dict.items()]
     bw.addHeader(header)
@@ -41,11 +46,13 @@ def _dict_to_bigwig(bw_dict: dict, output: Path) -> Path:
         bw.addEntries(chrom, 1, values=values0, span=1, step=1)
     bw.close()
 
-    return output
+    return Path(output)
 
 
 def _check_fasta_lengths(fasta, chroms) -> None:
     reference_lengths = dict(zip(chroms["chrom"], chroms["length"]))
+    if isinstance(fasta, Path):
+        fasta = fasta.name
     with pyfaidx.Fasta(fasta) as fa:
         lengths = {name: len(seq) for name, seq in fa.items()}
     if lengths != reference_lengths:
@@ -55,6 +62,8 @@ def _check_fasta_lengths(fasta, chroms) -> None:
 def _check_chr_lengths(bw_files, chroms) -> None:
     reference_lengths = dict(zip(chroms["chrom"], chroms["length"]))
     for file in list(bw_files.values()):
+        if isinstance(file, Path):
+            file = file.name
         with pyBigWig.open(file) as bw:
             lengths = bw.chroms()
             if lengths != reference_lengths:

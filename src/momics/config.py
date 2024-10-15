@@ -1,7 +1,7 @@
 import configparser
 import os
 from pathlib import Path
-from typing import Any, Literal, Optional, Union
+from typing import Literal, Optional, Union
 
 import tiledb
 
@@ -36,7 +36,7 @@ class LocalConfig:
         with open(self.config_path, "w") as configfile:
             self.cfg.write(configfile)
 
-    def get(self, section, key, default=None) -> Union[str, Any, None]:
+    def get(self, section, key, default=None) -> Union[str, None]:
         """Get value from the config file."""
         return self.cfg.get(section, key, fallback=default)
 

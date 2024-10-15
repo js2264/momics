@@ -23,8 +23,8 @@ def path():
     if os.path.exists(tmp_dir):
         shutil.rmtree(tmp_dir)
     yield tmp_dir
-    # if os.path.exists(tmp_dir):
-    #     shutil.rmtree(tmp_dir)
+    if os.path.exists(tmp_dir):
+        shutil.rmtree(tmp_dir)
 
 
 def test_cli_help(runner):
@@ -185,6 +185,6 @@ def test_config(runner):
 def test_delete(runner, path):
     result = runner.invoke(cli.delete.delete, ["-y", "oiasudhncoaisuhmdcoiaushcd"])
     assert result.output == "Repository oiasudhncoaisuhmdcoiaushcd does not exist.\n"
-    # result = runner.invoke(cli.delete.delete, ["-y", path])
-    # assert result.exit_code == 0
-    # assert not os.path.exists(path)
+    result = runner.invoke(cli.delete.delete, ["-y", path])
+    assert result.exit_code == 0
+    assert not os.path.exists(path)

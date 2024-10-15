@@ -524,10 +524,7 @@ class Momics:
                     x.iloc[:, 1] = x.iloc[:, 1] - 1
                     ranges.append(x)
             df = pd.concat(ranges)
-            if len(df) == 0:
-                raise ValueError(f"Feature set '{label}' is empty.")
-
-            res = pr.PyRanges(
+            df2 = pd.DataFrame(
                 {
                     "Chromosome": df["idx"],
                     "Start": df["start"] + 1,
@@ -537,6 +534,7 @@ class Momics:
                     "metadata": df["metadata"],
                 }
             )
+            res = pr.PyRanges(df2)
             return res
 
         else:
@@ -776,11 +774,11 @@ class Momics:
             raise ValueError(f"Provided label '{track}' already present in `tracks` table")
 
         # Save the coverage dict as a temporary bigwig file
-        # and ingest it using `add_tracks`
+        # and ingest it using `ingest_tracks`
         tmp_bw = tempfile.NamedTemporaryFile(delete=False)
-        utils._dict_to_bigwig(coverage, Path(tmp_bw.name))
-        self.ingest_tracks({track: tmp_bw.name}, threads=threads)
-        os.remove(tmp_bw.name)
+        path = utils._dict_to_bigwig(coverage, Path(tmp_bw.name))
+        self.ingest_tracks({track: path.name}, threads=threads)
+        os.remove(path.name)
 
         return self
 
