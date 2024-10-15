@@ -53,24 +53,22 @@ autodoc_class_signature = "separated"
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
-pygments_style = "sphinx"
+pygments_style = "one-dark"
 todo_include_todos = False
 master_doc = "index"
-
-# -- Options for HTML output -------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_static_path = ["_static"]
 html_logo = "_static/logo.svg"
 html_favicon = "_static/logo.svg"
 html_sourcelink_suffix = ""
-html_last_updated_fmt = ""  # to reveal the build date in the pages meta
+html_last_updated_fmt = ""
 htmlhelp_basename = "momicsdoc"
 html_last_updated_fmt = "%b %d, %Y"
 html_title = "momics"
 
+html_theme = "sphinx_rtd_theme"
 # html_theme = "furo"
-html_theme = "pydata_sphinx_theme"
+# html_theme = "pydata_sphinx_theme"
 html_theme_options = {
     "use_edit_page_button": True,
     "external_links": "",

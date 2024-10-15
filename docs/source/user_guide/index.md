@@ -10,8 +10,6 @@ about the stability of any specific class, function, etc.
 Pin versions if you're worried about breaking changes!
 ```
 
-## Content 
-
 ```{toctree}
 :maxdepth: 3
 
@@ -19,4 +17,3 @@ get-started
 api
 cli
 ```
-

@@ -1,7 +1,7 @@
 .. _cli:
 
-CLI
-====
+CLI Reference
+=============
 
 .. click:: momics.cli:cli
   :prog: momics

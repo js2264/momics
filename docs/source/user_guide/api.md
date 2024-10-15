@@ -1,4 +1,4 @@
-# Python API
+# Introduction to `momics` API
 
 ## Introduction
 
@@ -142,4 +142,4 @@ q.to_npz("output.npz")
 ## Going further
 
 - See the [full API reference](../api/index) for more information.
-- Check out the `momics` CLI quick guide: [cli](cli)
+- Check out the `momics` [CLI quick guide](./cli) or the [full CLI reference](../cli/index) for more information.

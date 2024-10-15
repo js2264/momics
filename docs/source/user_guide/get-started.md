@@ -39,5 +39,5 @@ momics query tracks --coordinates "I:10-1000" my.momics
 ## Going further
 
 - Check out the `momics` [API quick guide](api) or the [full API reference](../api/index) for more information.
-- Check out the `momics` [CLI quick guide](cli) or the [full CLI reference](../cli/index) for more information.
+- Check out the `momics` [CLI quick guide](./cli) or the [full CLI reference](../cli/index) for more information.
 - Read more about TileDB data storage principles: [https://docs.tiledb.com/main](https://docs.tiledb.com/main)

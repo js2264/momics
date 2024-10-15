@@ -1,4 +1,4 @@
-# Command line interface (CLI)
+# Introduction to `momics` CLI
 
 The `momics` package includes command-line tools for creating, querying and manipulating `.momics` files.
 
