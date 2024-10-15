@@ -38,7 +38,8 @@ dependencies = [
     "click>=7",
     "packaging",
     "psutil",
-    "setuptools"
+    "setuptools",
+    "typing-extensions",
 ]
 
 [project.urls]
@@ -150,7 +151,7 @@ exclude_lines = [
 [tool.hatch.envs.default.scripts]
 fix = "ruff check --fix src tests"
 lint = "ruff check src tests"
-test = "pytest . --order-scope=module"
+test = "pytest ."
 docs = "sphinx-autobuild docs docs/_build/html"
 
 [tool.hatch.envs.test]
