@@ -3,6 +3,7 @@ from typing_extensions import Self
 
 import numpy as np
 import pyranges as pr
+import logging
 
 from .momics import Momics
 from .multirangequery import MultiRangeQuery
@@ -78,27 +79,35 @@ class RangeGenerator:
     def __iter__(self) -> Self:
         return self
 
-    def __next__(self) -> Tuple[np.ndarray, np.ndarray]:  # type: ignore
+    def __next__(self) -> Tuple[np.ndarray, np.ndarray]:
         if self.current >= self.stop:
             raise StopIteration
         current_value = self.current
         self.current += self.step
         subrg = pr.PyRanges(self.ranges.df[current_value : current_value + self.step])
+
+        # Fetch only required tracks
+        attrs = [self.label]
         q = MultiRangeQuery(self.momics, subrg)
-        q.query_tracks(threads=1)
+        if self.data != "nucleotide":
+            attrs.append(self.data)
+
+        logging.disable(logging.WARNING)
+        q.query_tracks(tracks=attrs)
+        logging.disable(logging.NOTSET)
 
         # If input is a track, reshape and filter out NaN values
         if self.data in q.coverage.keys():  # type: ignore
             X = np.array(list(q.coverage[self.data].values()))  # type: ignore
-            filter = ~np.isnan(X).any(axis=1)
-            X = X[filter]
+            # filter = ~np.isnan(X).any(axis=1)
+            # X = X[filter]
             X = np.nan_to_num(X, nan=0)
             sh = X.shape
             X = X.reshape(-1, sh[1], 1)
 
         # If input is the sequences, one-hot-encode the sequences and resize
         elif self.data == "nucleotide":
-            q.query_sequence(threads=1)
+            q.query_sequence()
             seqs = list(q.seq["nucleotide"].values())  # type: ignore
 
             # One-hot-encode the sequences lists in seqs
@@ -112,9 +121,6 @@ class RangeGenerator:
                 return oha
 
             X = np.array([one_hot_encode(seq) for seq in seqs])
-            print(X.shape)
-            filter = ~np.isnan(X).any(axis=1)[:, 0]
-            print(filter.shape)
             sh = X.shape
             X = X.reshape(-1, sh[1], 4)
         else:
@@ -124,7 +130,7 @@ class RangeGenerator:
         if self.label not in q.coverage.keys():  # type: ignore
             raise ValueError(f"Label {self.label} not found in coverage.")
         out = np.array(list(q.coverage[self.label].values()))  # type: ignore
-        out = out[filter]
+        # out = out[filter]
         out = np.nan_to_num(out, nan=0)
 
         # Recenter label if needed
