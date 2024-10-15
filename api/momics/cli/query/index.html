@@ -1,0 +1,260 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>momics.cli.query &mdash; momics</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=aefb6c79" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/logo.svg"/>
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=83a61292"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="momics.cli.remove" href="../remove/index.html" />
+    <link rel="prev" title="momics.cli.ls" href="../ls/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            momics
+              <img src="../../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of content</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_guide/index.html">User guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../user_guide/get-started.html">Get started with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../user_guide/get-started.html#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../user_guide/get-started.html#quick-start">Quick start</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../user_guide/get-started.html#going-further">Going further</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../user_guide/api.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../user_guide/api.html#introduction">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../user_guide/api.html#creating-momics-repositories">Creating <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../user_guide/api.html#registering-chromosomes">Registering chromosomes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../user_guide/api.html#populating-momics-repositories">Populating <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../user_guide/api.html#querying-momics-repositories">Querying <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../user_guide/api.html#registering-a-query">Registering a query</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../user_guide/api.html#running-a-query">Running a query</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../user_guide/api.html#exporting-query-results">Exporting query results</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../user_guide/api.html#going-further">Going further</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../user_guide/cli.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> CLI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../user_guide/cli.html#basic-cli-usage">Basic CLI usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../user_guide/cli.html#extra-cli-utilities">Extra CLI utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../user_guide/cli.html#going-further">Going further</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">momics</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">momics.cli</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../config/index.html">momics.config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../export/index.html">momics.export</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../generator/index.html">momics.generator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../logging/index.html">momics.logging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../momics/index.html">momics.momics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../multirangequery/index.html">momics.multirangequery</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../utils/index.html">momics.utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../version/index.html">momics.version</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../index.html#momics.Momics"><code class="docutils literal notranslate"><span class="pre">Momics</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../index.html#momics.MultiRangeQuery"><code class="docutils literal notranslate"><span class="pre">MultiRangeQuery</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../index.html#momics.RangeGenerator"><code class="docutils literal notranslate"><span class="pre">RangeGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../index.html#momics.__format_version__"><code class="docutils literal notranslate"><span class="pre">__format_version__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../index.html#momics.__version__"><code class="docutils literal notranslate"><span class="pre">__version__</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli/index.html">CLI Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../cli/index.html#momics">momics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cli/index.html#momics-binnify">binnify</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cli/index.html#momics-config">config</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../cli/index.html#momics-config-azure">azure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../cli/index.html#momics-config-gcs">gcs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../cli/index.html#momics-config-s3">s3</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cli/index.html#momics-cp">cp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cli/index.html#momics-create">create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cli/index.html#momics-delete">delete</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cli/index.html#momics-ingest">ingest</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../cli/index.html#momics-ingest-chroms">chroms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../cli/index.html#momics-ingest-features">features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../cli/index.html#momics-ingest-seq">seq</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../cli/index.html#momics-ingest-tracks">tracks</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cli/index.html#momics-ls">ls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cli/index.html#momics-query">query</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../cli/index.html#momics-query-seq">seq</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../cli/index.html#momics-query-tracks">tracks</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cli/index.html#momics-remove">remove</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../cli/index.html#momics-tree">tree</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">momics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">momics</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">momics.cli</a></li>
+      <li class="breadcrumb-item active">momics.cli.query</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/api/momics/cli/query/index.rst" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-momics.cli.query">
+<span id="momics-cli-query"></span><h1>momics.cli.query<a class="headerlink" href="#module-momics.cli.query" title="Link to this heading"></a></h1>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#momics.cli.query.query" title="momics.cli.query.query"><code class="xref py py-obj docutils literal notranslate"><span class="pre">query</span></code></a>(ctx)</p></td>
+<td><p>Query a Momics table</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#momics.cli.query.seq" title="momics.cli.query.seq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">seq</span></code></a>(ctx, path, coordinates, file, output[, threads])</p></td>
+<td><p>Extract chromosomal sequences over chromosome intervals.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#momics.cli.query.tracks" title="momics.cli.query.tracks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tracks</span></code></a>(ctx, path, coordinates, file, output[, threads])</p></td>
+<td><p>Extract track coverages over a chromosome interval.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="momics.cli.query.query">
+<span class="sig-prename descclassname"><span class="pre">momics.cli.query.</span></span><span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#momics.cli.query.query" title="Link to this definition"></a></dt>
+<dd><p>Query a Momics table</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="momics.cli.query.seq">
+<span class="sig-prename descclassname"><span class="pre">momics.cli.query.</span></span><span class="sig-name descname"><span class="pre">seq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#momics.cli.query.seq" title="Link to this definition"></a></dt>
+<dd><p>Extract chromosomal sequences over chromosome intervals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output</strong> (<em>str</em>)</p></li>
+<li><p><strong>threads</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="momics.cli.query.tracks">
+<span class="sig-prename descclassname"><span class="pre">momics.cli.query.</span></span><span class="sig-name descname"><span class="pre">tracks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#momics.cli.query.tracks" title="Link to this definition"></a></dt>
+<dd><p>Extract track coverages over a chromosome interval.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output</strong> (<em>str</em>)</p></li>
+<li><p><strong>threads</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../ls/index.html" class="btn btn-neutral float-left" title="momics.cli.ls" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../remove/index.html" class="btn btn-neutral float-right" title="momics.cli.remove" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-2024, Jacques Serizay.
+      <span class="lastupdated">Last updated on Oct 15, 2024.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
