@@ -81,9 +81,7 @@ class MultiRangeQuery:
             start0 = time.time()
             tdb = self.momics._build_uri("coverage", f"{chrom}.tdb")
             with tiledb.open(tdb, "r", config=cfg) as A:
-                subarray = A.query(attrs=attrs).multi_index[
-                    query,
-                ]
+                subarray = A.query(attrs=attrs).multi_index[query]
             logger.debug(f"query tiledb in {round(time.time() - start0,4)}s")
 
             # Extract scores from tileDB and wrangle them into DataFrame
@@ -182,9 +180,7 @@ class MultiRangeQuery:
             start0 = time.time()
             tdb = self.momics._build_uri("genome", f"{chrom}.tdb")
             with tiledb.open(tdb, "r", config=cfg) as A:
-                subarray = A.multi_index[
-                    query,
-                ]
+                subarray = A.multi_index[query]
             logger.debug(f"query tiledb in {round(time.time() - start0,4)}s")
 
             # Extract scores from tileDB and wrangle them into DataFrame

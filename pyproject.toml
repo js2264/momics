@@ -69,7 +69,7 @@ test = [
     "python-dotenv",
     "pytest",
     "pytest-cov",
-    "pytest-ordering",
+    "pytest-order",
     "ruff",
 ]
 dev = [
@@ -150,7 +150,7 @@ exclude_lines = [
 [tool.hatch.envs.default.scripts]
 fix = "ruff check --fix src tests"
 lint = "ruff check src tests"
-test = "pytest ."
+test = "pytest . --order-scope=module"
 docs = "sphinx-autobuild docs docs/_build/html"
 
 [tool.hatch.envs.test]
