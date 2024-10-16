@@ -15,7 +15,12 @@ def tree(ctx, path):
 
     mom = momics.Momics(path)
     chrs = mom.chroms()["chrom"]
-    name = Path(os.path.dirname(path)).with_suffix("").name
+
+    if path.endswith("/"):
+        name = Path(os.path.dirname(path)).with_suffix("").name
+    else:
+        name = Path(path).with_suffix("").name
+
     vfs = mom.cfg.vfs
     chroms_uri = mom._build_uri("genome", "chroms") + ".tdb"
     sequence_uri = mom._build_uri("genome", chrs[0]) + ".tdb"

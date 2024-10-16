@@ -33,6 +33,7 @@ class RangeGenerator:
         data: str,
         label: str,
         label_center: Optional[int] = None,
+        silent: bool = False,
     ) -> None:
         """Initialize the RangeGenerator object.
 
@@ -59,6 +60,7 @@ class RangeGenerator:
         self.stop = len(ranges)
         self.step = batch_size
         self.current = self.start
+        self.silent = silent
 
         tr = momics.tracks()
         if data == "nucleotide":
@@ -92,8 +94,11 @@ class RangeGenerator:
         if self.data != "nucleotide":
             attrs.append(self.data)
 
-        logging.disable(logging.WARNING)
+        if self.silent:
+            logging.disable(logging.WARNING)
         q.query_tracks(tracks=attrs)
+        if self.silent:
+            logging.disable(logging.WARNING)
         logging.disable(logging.NOTSET)
 
         # If input is a track, reshape and filter out NaN values
