@@ -8,6 +8,7 @@ import tiledb
 from .logging import logger
 
 DEFAULT_CONFIG_PATH = Path.home() / ".momics.ini"
+_has_logged = False
 
 
 class LocalConfig:
@@ -177,19 +178,27 @@ class MomicsConfig:
 
         # If a manual configuration is passed, use it.
         self.type: Optional[str] = None
+        global _has_logged
 
         if s3 is not None:
             self.type = "s3"
             self.cfg = self._create_manual_tiledb_config(s3)
-            logger.info("Using S3 config.")
+            if not _has_logged:
+                _has_logged = True
+                logger.info("Using S3 config.")
         elif gcs is not None:
             self.type = "gcs"
             self.cfg = self._create_manual_tiledb_config(gcs)
-            logger.info("Using GCS config.")
+            if not _has_logged:
+                _has_logged = True
+                logger.info("Using GCS config.")
         elif azure is not None:
             self.type = "azure"
             self.cfg = self._create_manual_tiledb_config(azure)
-            logger.info("Using Azure config.")
+            if not _has_logged:
+                _has_logged = True
+                logger.info("Using Azure config.")
+
         # Otherwise, parse local config.
         else:
             lcfg = LocalConfig(local_cfg)
@@ -202,11 +211,13 @@ class MomicsConfig:
             # Otherwise, use blank configuration.
             except ValueError:
                 self.cfg = tiledb.Config()
-                logger.info(
-                    "No cloud config found for momics. "
-                    "Consider populating `~/.momics.ini` file with "
-                    "configuration settings for cloud access."
-                )
+                if not _has_logged:
+                    _has_logged = True
+                    logger.info(
+                        "No cloud config found for momics."
+                        "Consider populating `~/.momics.ini` file with "
+                        "configuration settings for cloud access."
+                    )
 
         self.ctx = tiledb.cc.Context(self.cfg)
         self.vfs = tiledb.VFS(config=self.cfg, ctx=self.ctx)
