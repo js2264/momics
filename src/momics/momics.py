@@ -488,26 +488,39 @@ class Momics:
 
         return chroms
 
-    def tracks(self) -> pd.DataFrame:
+    def tracks(self, label: Optional[str] = None) -> Union[pd.DataFrame, pr.PyRanges]:
         """Extract table of ingested bigwigs.
 
         Returns:
             pd.DataFrame: A data frame listing one ingested bigwig file per row
         """
-        try:
-            tracks = self._get_table(self._build_uri("coverage", "tracks.tdb"))
-            if type(tracks) is not pd.DataFrame:
-                raise ValueError("Failed to fetch tracks table.")
-            tracks = tracks[tracks["label"] != "\x00"]
-        except FileExistsError:
-            tracks = pd.DataFrame(columns=["idx", "label", "path"])
-        return tracks
+        if label is not None:
+            tr = self.tracks()
+            if label not in tr["label"].values:
+                raise ValueError(f"Feature set '{label}' not found.")
+            chroms = self.chroms()
+            cov = {chrom: np.empty(length, dtype=object) for (chrom, length) in zip(chroms.chrom, chroms.length)}
+            for chrom in chroms["chrom"]:
+                tdb = self._build_uri("coverage", f"{chrom}.tdb")
+                with tiledb.open(tdb, "r", ctx=self.cfg.ctx) as A:
+                    cov[chrom] = A.query(attrs=[label])[:][label][:-1]
+            return cov
+        else:
+            try:
+                tracks = self._get_table(self._build_uri("coverage", "tracks.tdb"))
+                if type(tracks) is not pd.DataFrame:
+                    raise ValueError("Failed to fetch tracks table.")
+                tracks = tracks[tracks["label"] != "\x00"]
+            except FileExistsError:
+                tracks = pd.DataFrame(columns=["idx", "label", "path"])
+            return tracks
 
-    def features(self, label: Optional[str] = None) -> pd.DataFrame:
+    def features(self, label: Optional[str] = None) -> Union[pd.DataFrame, pr.PyRanges]:
         """Extract table of ingested features sets.
 
         Returns:
-            pd.DataFrame: A data frame listing one ingested features set per row
+            - if `label` is None: pd.DataFrame: A data frame listing one ingested feature set per row
+            - if `label` is not None: pr.PyRanges: A PyRanges object of the specified feature set
         """
         if label is not None:
             ft = self.features()
@@ -547,12 +560,12 @@ class Momics:
                 features = pd.DataFrame(columns=["idx", "label", "n"])
             return features
 
-    def bins(self, width, step, cut_last_bin_out=False) -> pr.PyRanges:
+    def bins(self, width, stride, cut_last_bin_out=False) -> pr.PyRanges:
         """Generate a BedTool of tiled genomic bins
 
         Args:
             width (_type_): The width of each bin.
-            step (_type_): The step size for tiling.
+            stride (_type_): The stride size for tiling.
             cut_last_bin_out (bool, optional): Remove the last bin of each \
                 chromosome. Defaults to False.
 
@@ -567,7 +580,7 @@ class Momics:
             while start < length:
                 end = min(start + width, length)
                 bins.append({"chrom": chrom, "start": (start + 1), "end": end})
-                start += step
+                start += stride
 
         df = pd.DataFrame(bins)
         if cut_last_bin_out:
