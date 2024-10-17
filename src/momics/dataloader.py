@@ -12,27 +12,27 @@ from .multirangequery import MultiRangeQuery
 class RangeDataLoader(tf.keras.utils.Sequence):
     """
     This class is implemented to train deep learning models, where the
-    input data is a track or a sequence and the label is another track.
-    The generator will iterate over the ranges in batches and extract
-    the data and label for each range.
+    input data (features) is a track or a sequence and the labeled data (target)
+    is another track. The data loader will iterate over the ranges in batches
+    and extract the features and target for each range.
 
     Attributes
     ----------
     momics (Momics): a local `.momics` repository.
     ranges (dict): pr.PyRanges object.
-    data (str): the name of the track to use as data
-    label (str): the name of the track to use as label
-    label_size (int): To which width should the label be centered
+    features (str): the name of the track to use for input data
+    target (str): the name of the track to use for output data
+    target_size (int): To which width should the target be centered
     """
 
     def __init__(
         self,
         momics: Momics,
         ranges: pr.PyRanges,
-        batch_size: Optional[int],
-        data: str,
-        label: str,
-        label_size: Optional[int] = None,
+        features: str,
+        target: str,
+        target_size: Optional[int] = None,
+        batch_size: Optional[int] = None,
         silent: bool = False,
     ) -> None:
         """Initialize the RangeGenerator object.
@@ -40,10 +40,11 @@ class RangeDataLoader(tf.keras.utils.Sequence):
         Args:
             momics (Momics): a Momics object
             ranges (pr.PyRanges): pr.PyRanges object
+            features (str): the name of the track to use for input data
+            target_size (int): To which width should the target be centered
+            target (str): the name of the track to use for output data
             batch_size (int): the batch size
-            data (str): the name of the track to use as data
-            label (str): the name of the track to use as label
-            label_size (int): To which width should the label be centered
+            silent (bool): whether to suppress info messages
         """
 
         # Check that all ranges have the same width
@@ -63,20 +64,20 @@ class RangeDataLoader(tf.keras.utils.Sequence):
         self.silent = silent
 
         tr = momics.tracks()
-        if data == "nucleotide":
+        if features == "nucleotide":
             _ = momics.seq()
 
-        if data not in list(tr["label"]) and data != "nucleotide":
-            raise ValueError(f"Track {data} not found in momics repository.")
-        if label not in list(tr["label"]):
-            raise ValueError(f"Track {label} not found in momics repository.")
+        if features not in list(tr["label"]) and features != "nucleotide":
+            raise ValueError(f"Track {features} not found in momics repository.")
+        if target not in list(tr["label"]):
+            raise ValueError(f"Track {target} not found in momics repository.")
 
-        self.data = data
-        self.label = label
+        self.features = features
+        self.target = target
 
-        if label_size is not None and label_size >= int(widths[0]):
+        if target_size is not None and target_size >= int(widths[0]):
             raise ValueError("Label center must be smaller than the range width.")
-        self.label_size = label_size
+        self.target_size = target_size
 
     def __len__(self) -> int:
         return int(np.ceil(len(self.ranges) / self.batch_size))
@@ -85,10 +86,10 @@ class RangeDataLoader(tf.keras.utils.Sequence):
         subrg = pr.PyRanges(self.ranges.df[idx * self.batch_size : (idx + 1) * self.batch_size])
 
         # Fetch only required tracks
-        attrs = [self.label]
+        attrs = [self.target]
         q = MultiRangeQuery(self.momics, subrg)
-        if self.data != "nucleotide":
-            attrs.append(self.data)
+        if self.features != "nucleotide":
+            attrs.append(self.features)
 
         if self.silent:
             logging.disable(logging.WARNING)
@@ -98,8 +99,8 @@ class RangeDataLoader(tf.keras.utils.Sequence):
         logging.disable(logging.NOTSET)
 
         # If input is a track, reshape and filter out NaN values
-        if self.data in q.coverage.keys():  # type: ignore
-            X = np.array(list(q.coverage[self.data].values()))  # type: ignore
+        if self.features in q.coverage.keys():  # type: ignore
+            X = np.array(list(q.coverage[self.features].values()))  # type: ignore
             # filter = ~np.isnan(X).any(axis=1)
             # X = X[filter]
             X = np.nan_to_num(X, nan=0)
@@ -107,7 +108,7 @@ class RangeDataLoader(tf.keras.utils.Sequence):
             X = X.reshape(-1, sh[1], 1)
 
         # If input is the sequences, one-hot-encode the sequences and resize
-        elif self.data == "nucleotide":
+        elif self.features == "nucleotide":
             q.query_sequence()
             seqs = list(q.seq["nucleotide"].values())  # type: ignore
 
@@ -125,18 +126,18 @@ class RangeDataLoader(tf.keras.utils.Sequence):
             sh = X.shape
             X = X.reshape(-1, sh[1], 4)
         else:
-            raise ValueError("data must be a track label or 'nucleotide'")
+            raise ValueError("features must be a track label or 'nucleotide'")
 
         # Extract label and filter out NaN values
-        out = np.array(list(q.coverage[self.label].values()))  # type: ignore
+        out = np.array(list(q.coverage[self.target].values()))  # type: ignore
         # out = out[filter]
         out = np.nan_to_num(out, nan=0)
 
         # Recenter label if needed
-        if self.label_size is not None:
+        if self.target_size is not None:
             midpos = out.shape[1] // 2
-            out = out[:, int(midpos - self.label_size / 2) : int(midpos + self.label_size / 2)]
-            dim = self.label_size
+            out = out[:, int(midpos - self.target_size / 2) : int(midpos + self.target_size / 2)]
+            dim = self.target_size
         else:
             sh = out.shape
             dim = sh[1]

@@ -1,7 +1,7 @@
 import pytest
 
 import momics
-from momics.generator import RangeGenerator
+from momics.dataloader import RangeGenerator
 
 
 @pytest.mark.order(99)

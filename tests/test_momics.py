@@ -131,7 +131,7 @@ def test_Momics_remove_tracks(momics_path: str, bw1: str, bw2: str, bed1: str):
 @pytest.mark.order(2)
 def test_Momics_binnify(momics_path: str):
     mom = momics.Momics(momics_path)
-    q = mom.bins(width=1000, step=1000)
+    q = mom.bins(width=1000, stride=1000)
     assert q.df.shape == (60, 3)
 
 

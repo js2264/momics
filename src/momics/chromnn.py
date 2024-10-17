@@ -3,6 +3,9 @@ from tensorflow.keras import layers  # type: ignore
 
 kernel_init = tf.keras.initializers.VarianceScaling()
 
+DEFAULT_CHROMNN_INPUT_LAYER = layers.Input(shape=(2048, 1))
+DEFAULT_CHROMNN_OUTPUT_LAYER = layers.Dense(64, activation="linear")
+
 
 class ChromNN:
     """
@@ -14,7 +17,7 @@ class ChromNN:
     ----------
     """
 
-    def __init__(self, input=layers.Input(shape=(2048, 1)), output=layers.Dense(32, activation="linear")) -> None:
+    def __init__(self, input=DEFAULT_CHROMNN_INPUT_LAYER, output=DEFAULT_CHROMNN_OUTPUT_LAYER) -> None:
         """ """
 
         kernel_init = tf.keras.initializers.VarianceScaling()

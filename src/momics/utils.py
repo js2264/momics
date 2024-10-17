@@ -1,6 +1,6 @@
 import collections
 from pathlib import Path
-from typing import List, Union
+from typing import List, Tuple, Union
 
 import numpy as np
 import pyranges as pr
@@ -127,3 +127,67 @@ def parse_ucsc_coordinates(coords: Union[List, str]) -> pr.PyRanges:
             ) from e
 
     return pr.PyRanges(chromosomes=coords_dict["chr"], starts=coords_dict["start"], ends=coords_dict["end"])
+
+
+def split_ranges(pyranges, ratio=0.8) -> Tuple[pr.PyRanges, pr.PyRanges]:
+    """
+    Split a PyRanges object into two PyRanges objects based on a ratio.
+    The first PyRanges object will contain the first `ratio` proportion of the
+    ranges, and the second PyRanges object will contain the remaining ranges.
+
+    Args:
+        pyranges (pr.PyRanges): A PyRanges object.
+        ratio (float): A float between 0 and 1.
+
+    Returns:
+        Tuple[pr.PyRanges, pr.PyRanges]: A tuple of two PyRanges objects.
+    """
+    df = pyranges.df.sample(frac=1, random_state=42).reset_index(drop=True)
+    split_idx = int(len(df) * ratio)
+    train_df = df.iloc[:split_idx]
+    test_df = df.iloc[split_idx:]
+    train_pyranges = pr.PyRanges(train_df).sort()
+    test_pyranges = pr.PyRanges(test_df).sort()
+    return train_pyranges, test_pyranges
+
+
+def pyranges_to_bw(pyranges, scores, output) -> None:
+    """
+    Write a PyRanges object and corresponding scores to a BigWig file.
+    The PyRanges object must have the same length as the first dimension of the scores array.
+    The PyRanges object must have ranges of the same width as the second dimension of the scores array.
+
+    Args:
+        pyranges (pr.PyRanges): A PyRanges object.
+        scores (np.ndarray): A 2D NumPy array of scores.
+        output (str): Path to the output BigWig file.
+
+    Returns:
+        None
+    """
+    # Check that pyranges length is the same as scores dim 0
+    if len(pyranges) != scores.shape[0]:
+        raise ValueError("Length of PyRanges object must be the same as scores dimension 0")
+
+    # Check that all pyranges widths are equal to the scores dim 1
+    widths = pyranges.End - pyranges.Start
+    if len(set(widths)) != 1:
+        raise ValueError("All ranges must have the same width")
+    if next(iter(widths)) != scores.shape[1]:
+        raise ValueError("All ranges must have the same width as the second dimension of scores")
+
+    # Save chrom sizes in header
+    bw = pyBigWig.open(output, "w")
+    chrom_sizes = pyranges.df.groupby("Chromosome")["End"].max().to_dict()
+    chroms = list(chrom_sizes.keys())
+    sizes = list(chrom_sizes.values())
+    bw.addHeader(list(zip(chroms, sizes)))
+
+    # Iterate over the PyRanges and write corresponding scores
+    for i, (chrom, start, end) in enumerate(zip(pyranges.Chromosome, pyranges.Start, pyranges.End)):
+        score = scores[i]
+        positions = list(range(start, end))
+        bw.addEntries([chrom] * len(positions), positions, ends=[p + 1 for p in positions], values=score)
+
+    # Step 4: Close the BigWig file
+    bw.close()
