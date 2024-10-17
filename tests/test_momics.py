@@ -91,6 +91,26 @@ def test_Momics_ingest_track(momics_path: str, bw1: str, bw2: str):
 
 
 @pytest.mark.order(1)
+def test_Momics_recover_track(momics_path: str):
+    mom = momics.Momics(momics_path)
+    with pytest.raises(ValueError, match=r".*not found"):
+        mom.tracks("bw1323")
+
+    cov = mom.tracks("bw2")
+
+    chrom_sizes = {"I": 10000, "II": 20000, "III": 30000}
+    act = {chrom: [0] * length for chrom, length in chrom_sizes.items()}
+    for chrom, size in chrom_sizes.items():
+        intervals = [(i, i + 1000, i / 100000) for i in range(0, size, 1000)]
+        x = [[v] * n for (_, n, v) in intervals]
+        arr = np.array([item for sublist in x for item in sublist], dtype=np.float32)
+        act[chrom] = arr  # type: ignore
+
+    for chrom in chrom_sizes.keys():
+        assert cov[chrom].__eq__(act[chrom])
+
+
+@pytest.mark.order(1)
 def test_Momics_ingest_seq(momics_path: str, fa1: str, fa2: str):
     mom = momics.Momics(momics_path)
 

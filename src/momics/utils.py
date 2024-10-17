@@ -129,7 +129,7 @@ def parse_ucsc_coordinates(coords: Union[List, str]) -> pr.PyRanges:
     return pr.PyRanges(chromosomes=coords_dict["chr"], starts=coords_dict["start"], ends=coords_dict["end"])
 
 
-def split_ranges(pyranges, ratio=0.8) -> Tuple[pr.PyRanges, pr.PyRanges]:
+def split_ranges(pyranges, ratio=0.8, shuffle=True) -> Tuple[pr.PyRanges, pr.PyRanges]:
     """
     Split a PyRanges object into two PyRanges objects based on a ratio.
     The first PyRanges object will contain the first `ratio` proportion of the
@@ -142,7 +142,10 @@ def split_ranges(pyranges, ratio=0.8) -> Tuple[pr.PyRanges, pr.PyRanges]:
     Returns:
         Tuple[pr.PyRanges, pr.PyRanges]: A tuple of two PyRanges objects.
     """
-    df = pyranges.df.sample(frac=1, random_state=42).reset_index(drop=True)
+    if shuffle:
+        df = pyranges.df.sample(frac=1, random_state=42).reset_index(drop=True)
+    else:
+        df = pyranges.df
     split_idx = int(len(df) * ratio)
     train_df = df.iloc[:split_idx]
     test_df = df.iloc[split_idx:]
@@ -151,7 +154,7 @@ def split_ranges(pyranges, ratio=0.8) -> Tuple[pr.PyRanges, pr.PyRanges]:
     return train_pyranges, test_pyranges
 
 
-def pyranges_to_bw(pyranges, scores, output) -> None:
+def pyranges_to_bw(pyranges: pr.PyRanges, scores: np.ndarray, output: str) -> None:
     """
     Write a PyRanges object and corresponding scores to a BigWig file.
     The PyRanges object must have the same length as the first dimension of the scores array.

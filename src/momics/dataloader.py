@@ -35,7 +35,7 @@ class RangeDataLoader(tf.keras.utils.Sequence):
         batch_size: Optional[int] = None,
         silent: bool = False,
     ) -> None:
-        """Initialize the RangeGenerator object.
+        """Initialize the RangeDataLoader object.
 
         Args:
             momics (Momics): a Momics object
@@ -68,15 +68,15 @@ class RangeDataLoader(tf.keras.utils.Sequence):
             _ = momics.seq()
 
         if features not in list(tr["label"]) and features != "nucleotide":
-            raise ValueError(f"Track {features} not found in momics repository.")
+            raise ValueError(f"Features {features} not found in momics repository.")
         if target not in list(tr["label"]):
-            raise ValueError(f"Track {target} not found in momics repository.")
+            raise ValueError(f"Target {target} not found in momics repository.")
 
         self.features = features
         self.target = target
 
         if target_size is not None and target_size >= int(widths[0]):
-            raise ValueError("Label center must be smaller than the range width.")
+            raise ValueError("Target size must be smaller than the features width.")
         self.target_size = target_size
 
     def __len__(self) -> int:

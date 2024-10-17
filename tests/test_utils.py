@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import pyranges as pr
 import os
@@ -38,5 +39,44 @@ def test_dict_to_bigwig():
         "II": [11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
     }
     utils._dict_to_bigwig(bw_dict, "out.bw")
+    assert os.path.exists("out.bw")
+    os.remove("out.bw")
+
+
+@pytest.mark.order(999)
+def test_split_ranges():
+    rg = pr.from_dict(
+        {
+            "Chromosome": ["I", "I", "I", "I", "I", "I", "I", "I", "I", "I"],
+            "Start": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            "End": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+        }
+    )
+    train, val = utils.split_ranges(rg, 0.6, shuffle=True)
+    train, val = utils.split_ranges(rg, 0.6, shuffle=False)
+    assert len(train) == 6
+    assert len(val) == 4
+    assert train.df.iloc[0].Start == 1
+    assert train.df.iloc[-1].End == 15
+    assert val.df.iloc[0].Start == 7
+    assert val.df.iloc[-1].End == 19
+
+
+@pytest.mark.order(999)
+def test_pyranges_to_bw():
+
+    rg = pr.from_dict({"Chromosome": ["I", "I", "I"], "Start": [1, 11, 21], "End": [20, 20, 30]})
+    with pytest.raises(ValueError, match="All ranges must have the same width"):
+        utils.pyranges_to_bw(rg, np.array([[1], [2], [3]]), "out.bw")
+
+    rg = pr.from_dict({"Chromosome": ["I", "I", "I"], "Start": [1, 11, 21], "End": [10, 20, 30]})
+
+    with pytest.raises(ValueError, match=r"Length of PyRanges object must .*"):
+        utils.pyranges_to_bw(rg, np.array([[1], [2]]), "out.bw")
+
+    with pytest.raises(ValueError, match=r"All ranges must have the same width as.*"):
+        utils.pyranges_to_bw(rg, np.array([[1, 2], [2, 2], [3, 2]]), "out.bw")
+
+    utils.pyranges_to_bw(rg, np.array([[0.1] * 9, [0.2] * 9, [0.3] * 9]), "out.bw")
     assert os.path.exists("out.bw")
     os.remove("out.bw")
