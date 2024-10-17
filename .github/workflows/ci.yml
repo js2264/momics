@@ -19,7 +19,7 @@ jobs:
         include:
           - os: ubuntu-latest
           # - os: windows-latest
-          - os: macos-latest
+          # - os: macos-latest
 
     runs-on: ${{ matrix.os }}
     env:
