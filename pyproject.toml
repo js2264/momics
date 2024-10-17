@@ -40,6 +40,7 @@ dependencies = [
     "psutil",
     "setuptools",
     "typing-extensions",
+    "tensorflow[and-cuda]",
 ]
 
 [project.urls]
