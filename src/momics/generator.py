@@ -1,15 +1,15 @@
-from typing import Optional, Tuple
-from typing_extensions import Self
+from typing import Optional, Tuple  
 
 import numpy as np
 import pyranges as pr
 import logging
+import tensorflow as tf
 
 from .momics import Momics
 from .multirangequery import MultiRangeQuery
 
 
-class RangeGenerator:
+class RangeDataLoader(tf.keras.utils.Sequence):
     """
     This class is implemented to train deep learning models, where the
     input data is a track or a sequence and the label is another track.
@@ -22,7 +22,7 @@ class RangeGenerator:
     ranges (dict): pr.PyRanges object.
     data (str): the name of the track to use as data
     label (str): the name of the track to use as label
-    label_center (int): To which width should the label be centered
+    label_size (int): To which width should the label be centered
     """
 
     def __init__(
@@ -32,7 +32,7 @@ class RangeGenerator:
         batch_size: Optional[int],
         data: str,
         label: str,
-        label_center: Optional[int] = None,
+        label_size: Optional[int] = None,
         silent: bool = False,
     ) -> None:
         """Initialize the RangeGenerator object.
@@ -43,7 +43,7 @@ class RangeGenerator:
             batch_size (int): the batch size
             data (str): the name of the track to use as data
             label (str): the name of the track to use as label
-            label_center (int): To which width should the label be centered
+            label_size (int): To which width should the label be centered
         """
 
         # Check that all ranges have the same width
@@ -58,7 +58,7 @@ class RangeGenerator:
             batch_size = len(ranges)
         self.start = 0
         self.stop = len(ranges)
-        self.step = batch_size
+        self.batch_size = batch_size
         self.current = self.start
         self.silent = silent
 
@@ -74,19 +74,15 @@ class RangeGenerator:
         self.data = data
         self.label = label
 
-        if label_center is not None and label_center >= int(widths[0]):
+        if label_size is not None and label_size >= int(widths[0]):
             raise ValueError("Label center must be smaller than the range width.")
-        self.label_center = label_center
+        self.label_size = label_size
 
-    def __iter__(self) -> Self:
-        return self
+    def __len__(self) -> int:
+        return int(np.ceil(len(self.ranges) / self.batch_size))
 
-    def __next__(self) -> Tuple[np.ndarray, np.ndarray]:
-        if self.current >= self.stop:
-            raise StopIteration
-        current_value = self.current
-        self.current += self.step
-        subrg = pr.PyRanges(self.ranges.df[current_value : current_value + self.step])
+    def __getitem__(self, idx) -> Tuple[np.ndarray, np.ndarray]:
+        subrg = pr.PyRanges(self.ranges.df[idx * self.batch_size : (idx + 1) * self.batch_size])
 
         # Fetch only required tracks
         attrs = [self.label]
@@ -132,17 +128,15 @@ class RangeGenerator:
             raise ValueError("data must be a track label or 'nucleotide'")
 
         # Extract label and filter out NaN values
-        if self.label not in q.coverage.keys():  # type: ignore
-            raise ValueError(f"Label {self.label} not found in coverage.")
         out = np.array(list(q.coverage[self.label].values()))  # type: ignore
         # out = out[filter]
         out = np.nan_to_num(out, nan=0)
 
         # Recenter label if needed
-        if self.label_center is not None:
+        if self.label_size is not None:
             midpos = out.shape[1] // 2
-            out = out[:, int(midpos - self.label_center / 2) : int(midpos + self.label_center / 2)]
-            dim = self.label_center
+            out = out[:, int(midpos - self.label_size / 2) : int(midpos + self.label_size / 2)]
+            dim = self.label_size
         else:
             sh = out.shape
             dim = sh[1]
@@ -151,8 +145,5 @@ class RangeGenerator:
 
         return X, Y
 
-    def reset(self):
-        self.current = self.start
-
     def __str__(self):
-        return f"RangeGenerator(start={self.start}, stop={self.stop}, step={self.step})"
+        return f"RangeDataLoader(start={self.start}, stop={self.stop}, batch_size={self.batch_size})"
