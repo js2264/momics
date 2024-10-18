@@ -1,0 +1,338 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Introduction to momics API &mdash; momics</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=aefb6c79" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+    <link rel="shortcut icon" href="../_static/logo.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=83a61292"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Introduction to momics CLI" href="cli.html" />
+    <link rel="prev" title="Get started with momics" href="get-started.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            momics
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of content</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="get-started.html">Get started with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="get-started.html#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="get-started.html#quick-start">Quick start</a></li>
+<li class="toctree-l3"><a class="reference internal" href="get-started.html#going-further">Going further</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-momics-repositories">Creating <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#registering-chromosomes">Registering chromosomes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#populating-momics-repositories">Populating <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#querying-momics-repositories">Querying <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#registering-a-query">Registering a query</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#running-a-query">Running a query</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exporting-query-results">Exporting query results</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#going-further">Going further</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> CLI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cli.html#basic-cli-usage">Basic CLI usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html#extra-cli-utilities">Extra CLI utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html#going-further">Going further</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/momics/index.html">momics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/index.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/cli/index.html">momics.cli</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/chromnn/index.html">momics.chromnn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/config/index.html">momics.config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/dataloader/index.html">momics.dataloader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/export/index.html">momics.export</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/logging/index.html">momics.logging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/momics/index.html">momics.momics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/multirangequery/index.html">momics.multirangequery</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/utils/index.html">momics.utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/version/index.html">momics.version</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/index.html#momics.Momics"><code class="docutils literal notranslate"><span class="pre">Momics</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/index.html#momics.MultiRangeQuery"><code class="docutils literal notranslate"><span class="pre">MultiRangeQuery</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/index.html#momics.__format_version__"><code class="docutils literal notranslate"><span class="pre">__format_version__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/index.html#momics.__version__"><code class="docutils literal notranslate"><span class="pre">__version__</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../cli/index.html">CLI Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cli/index.html#momics">momics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../cli/index.html#momics-binnify">binnify</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cli/index.html#momics-config">config</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-config-azure">azure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-config-gcs">gcs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-config-s3">s3</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cli/index.html#momics-cp">cp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cli/index.html#momics-create">create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cli/index.html#momics-delete">delete</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cli/index.html#momics-ingest">ingest</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-ingest-chroms">chroms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-ingest-features">features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-ingest-seq">seq</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-ingest-tracks">tracks</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cli/index.html#momics-ls">ls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cli/index.html#momics-query">query</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-query-seq">seq</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-query-tracks">tracks</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cli/index.html#momics-remove">remove</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cli/index.html#momics-tree">tree</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">momics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">User guide</a></li>
+      <li class="breadcrumb-item active">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/user_guide/api.md" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="introduction-to-momics-api">
+<h1>Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> API<a class="headerlink" href="#introduction-to-momics-api" title="Link to this heading"></a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">momics</span></code> package provides a Python API for creating and interacting with the <code class="docutils literal notranslate"><span class="pre">momics</span></code> data
+model. This API is designed to be simple and intuitive, and is built on top of
+the <code class="docutils literal notranslate"><span class="pre">tiledb</span></code> library.</p>
+</section>
+<section id="creating-momics-repositories">
+<h2>Creating <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories<a class="headerlink" href="#creating-momics-repositories" title="Link to this heading"></a></h2>
+<p>The main entry point for the Python API is the <code class="docutils literal notranslate"><span class="pre">momics.Momics</span></code> class. This
+class provides methods for creating and populating <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">momics</span>
+<span class="n">mom</span> <span class="o">=</span> <span class="n">momics</span><span class="o">.</span><span class="n">Momics</span><span class="p">(</span><span class="s2">&quot;path_to_new_repo.momics&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">momics.Momics</span></code> class has several attributes, including <code class="docutils literal notranslate"><span class="pre">path</span></code> and <code class="docutils literal notranslate"><span class="pre">cfg</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">mom</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mom</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="registering-chromosomes">
+<h2>Registering chromosomes<a class="headerlink" href="#registering-chromosomes" title="Link to this heading"></a></h2>
+<p>The first step after creating a <code class="docutils literal notranslate"><span class="pre">momics</span></code> repository is to register the chromosome
+lengths. This can be done using the <code class="docutils literal notranslate"><span class="pre">ingest_chroms</span></code> method of the <code class="docutils literal notranslate"><span class="pre">momics.Momics</span></code> class.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">chr_lengths</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;I&quot;</span><span class="p">:</span> <span class="mi">230218</span><span class="p">,</span>
+    <span class="s2">&quot;II&quot;</span><span class="p">:</span> <span class="mi">813184</span><span class="p">,</span>
+    <span class="s2">&quot;III&quot;</span><span class="p">:</span> <span class="mi">316620</span><span class="p">,</span>
+    <span class="s2">&quot;IV&quot;</span><span class="p">:</span> <span class="mi">1531933</span><span class="p">,</span>
+    <span class="s2">&quot;V&quot;</span><span class="p">:</span> <span class="mi">576874</span><span class="p">,</span>
+    <span class="s2">&quot;VI&quot;</span><span class="p">:</span> <span class="mi">270161</span><span class="p">,</span>
+    <span class="s2">&quot;VII&quot;</span><span class="p">:</span> <span class="mi">1090940</span><span class="p">,</span>
+    <span class="s2">&quot;VIII&quot;</span><span class="p">:</span> <span class="mi">562643</span><span class="p">,</span>
+    <span class="s2">&quot;IX&quot;</span><span class="p">:</span> <span class="mi">439888</span><span class="p">,</span>
+    <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="mi">745751</span><span class="p">,</span>
+    <span class="s2">&quot;XI&quot;</span><span class="p">:</span> <span class="mi">666816</span><span class="p">,</span>
+    <span class="s2">&quot;XII&quot;</span><span class="p">:</span> <span class="mi">1078177</span><span class="p">,</span>
+    <span class="s2">&quot;XIII&quot;</span><span class="p">:</span> <span class="mi">924431</span><span class="p">,</span>
+    <span class="s2">&quot;XIV&quot;</span><span class="p">:</span> <span class="mi">784333</span><span class="p">,</span>
+    <span class="s2">&quot;XV&quot;</span><span class="p">:</span> <span class="mi">1091291</span><span class="p">,</span>
+    <span class="s2">&quot;XVI&quot;</span><span class="p">:</span> <span class="mi">948066</span><span class="p">,</span>
+    <span class="s2">&quot;Mito&quot;</span><span class="p">:</span> <span class="mi">85779</span>
+<span class="p">}</span>
+<span class="n">mom</span><span class="o">.</span><span class="n">ingest_chroms</span><span class="p">(</span><span class="n">chr_lengths</span><span class="p">,</span> <span class="n">genome_reference</span> <span class="o">=</span> <span class="s2">&quot;S288c&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Once they are registered, chromosomes can be listed using <code class="docutils literal notranslate"><span class="pre">mom.chroms()</span></code> method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">chroms</span> <span class="o">=</span> <span class="n">mom</span><span class="o">.</span><span class="n">chroms</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">chroms</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="populating-momics-repositories">
+<h2>Populating <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories<a class="headerlink" href="#populating-momics-repositories" title="Link to this heading"></a></h2>
+<p>Once the chromosome lengths have been registered, the <code class="docutils literal notranslate"><span class="pre">momics</span></code> repository can be
+populated with <code class="docutils literal notranslate"><span class="pre">tracks</span></code>, <code class="docutils literal notranslate"><span class="pre">features</span></code> or <code class="docutils literal notranslate"><span class="pre">sequence</span></code> using the corresponding <code class="docutils literal notranslate"><span class="pre">ingest_*</span></code> method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Ingest genome reference sequence</span>
+<span class="n">mom</span><span class="o">.</span><span class="n">ingest_sequence</span><span class="p">(</span><span class="s2">&quot;path_to_genome.fa&quot;</span><span class="p">,</span> <span class="n">threads</span> <span class="o">=</span> <span class="mi">18</span><span class="p">)</span>
+
+<span class="c1"># Ingest genomic features</span>
+<span class="n">mom</span><span class="o">.</span><span class="n">ingest_features</span><span class="p">({</span>
+    <span class="s2">&quot;bed1&quot;</span><span class="p">:</span> <span class="s2">&quot;path_to_bed1.bed&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bed2&quot;</span><span class="p">:</span> <span class="s2">&quot;path_to_bed2.bed&quot;</span>
+<span class="p">})</span>
+
+<span class="c1"># Ingest genomic coverage tracks</span>
+<span class="n">mom</span><span class="o">.</span><span class="n">ingest_tracks</span><span class="p">({</span>
+    <span class="n">bw_a</span><span class="o">=</span><span class="s2">&quot;path_to_bw_a.bw&quot;</span><span class="p">,</span>
+    <span class="n">bw_b</span><span class="o">=</span><span class="s2">&quot;path_to_bw_b.bw&quot;</span><span class="p">,</span>
+    <span class="n">bw_c</span><span class="o">=</span><span class="s2">&quot;path_to_bw_c.bw&quot;</span>
+<span class="p">},</span> <span class="n">threads</span> <span class="o">=</span> <span class="mi">18</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The ingested data can be listed using the corresponding method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">mom</span><span class="o">.</span><span class="n">sequence</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mom</span><span class="o">.</span><span class="n">features</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mom</span><span class="o">.</span><span class="n">tracks</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="querying-momics-repositories">
+<h2>Querying <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories<a class="headerlink" href="#querying-momics-repositories" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">momics</span></code> package provides a dedicated <code class="docutils literal notranslate"><span class="pre">MultiRangeQuery</span></code> class,
+to register query ranges, run queries and export results.</p>
+<section id="registering-a-query">
+<h3>Registering a query<a class="headerlink" href="#registering-a-query" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">q</span> <span class="o">=</span> <span class="n">momics</span><span class="o">.</span><span class="n">MultiRangeQuery</span><span class="p">(</span><span class="n">mom</span><span class="p">,</span> <span class="s2">&quot;I:10-1000&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="running-a-query">
+<h3>Running a query<a class="headerlink" href="#running-a-query" title="Link to this heading"></a></h3>
+<p>Once a query <code class="docutils literal notranslate"><span class="pre">q</span></code> is defined, it can be exectuted to extract data from
+<code class="docutils literal notranslate"><span class="pre">sequence</span></code> and <code class="docutils literal notranslate"><span class="pre">tracks</span></code> tables.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">q</span><span class="o">.</span><span class="n">query_sequence</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">seq</span><span class="p">)</span>
+
+<span class="n">q</span><span class="o">.</span><span class="n">query_tracks</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">coverage</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">to_df</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Both <code class="docutils literal notranslate"><span class="pre">query_*</span></code> methods profide a <code class="docutils literal notranslate"><span class="pre">threads</span></code> argument to parallelize the query
+using the efficient tileDB storage backend. By default, the number of threads
+is set to all available threads.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">q</span><span class="o">.</span><span class="n">query_sequence</span><span class="p">(</span><span class="n">threads</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">q</span><span class="o">.</span><span class="n">query_tracks</span><span class="p">(</span><span class="n">threads</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="exporting-query-results">
+<h3>Exporting query results<a class="headerlink" href="#exporting-query-results" title="Link to this heading"></a></h3>
+<p>The query results can be coerced into generic bioinformatic data objects and
+exported to output files using dedicated methods of the <code class="docutils literal notranslate"><span class="pre">MultiRangeQuery</span></code> class.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Coerce queried sequences as a SeqRecord object</span>
+<span class="n">q</span><span class="o">.</span><span class="n">to_SeqRecord</span><span class="p">()</span>
+
+<span class="c1"># Export the queried scores as a json file</span>
+<span class="n">q</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="s2">&quot;output.json&quot;</span><span class="p">)</span>
+
+<span class="c1"># Export both sequences and scores as a npz file</span>
+<span class="n">q</span><span class="o">.</span><span class="n">to_npz</span><span class="p">(</span><span class="s2">&quot;output.npz&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="going-further">
+<h2>Going further<a class="headerlink" href="#going-further" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>See the <a class="reference internal" href="../api/index.html"><span class="doc std std-doc">full API reference</span></a> for more information.</p></li>
+<li><p>Check out the <code class="docutils literal notranslate"><span class="pre">momics</span></code> <a class="reference internal" href="cli.html"><span class="doc std std-doc">CLI quick guide</span></a> or the <a class="reference internal" href="../cli/index.html"><span class="doc std std-doc">full CLI reference</span></a> for more information.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="get-started.html" class="btn btn-neutral float-left" title="Get started with momics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cli.html" class="btn btn-neutral float-right" title="Introduction to momics CLI" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-2024, Jacques Serizay.
+      <span class="lastupdated">Last updated on Oct 18, 2024.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
