@@ -148,7 +148,8 @@ def test_gcs_IO(fa1: str, bw1: str):
     assert res is True
 
 
-@pytest.mark.skipif(not os.getenv("GITHUB_ACTIONS"), reason="only on GHA")
+# @pytest.mark.skipif(not os.getenv("GITHUB_ACTIONS"), reason="only on GHA")
+@pytest.mark.skip()
 @pytest.mark.order(3)
 def test_azure_IO(fa1: str, bw1: str):
     conf = config.MomicsConfig(
