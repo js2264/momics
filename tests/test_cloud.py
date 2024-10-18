@@ -71,15 +71,15 @@ def test_s3_IO(fa1: str, bw1: str):
     assert mom.tracks().__eq__(out).all().all()
 
     # Query tracks
-    q = MultiRangeQuery(mom, "I:1-10").query_tracks()
+    q = MultiRangeQuery(mom, "I:0-10").query_tracks()
     assert len(q.coverage) == 1
-    assert len(q.coverage["bw1"]["I:1-10"]) == 10
+    assert len(q.coverage["bw1"]["I:0-10"]) == 10
     assert q.to_df()["chrom"].__eq__(pd.Series(["I"] * 10)).all()
 
     # Query sequences
     q.query_sequence()
     assert len(q.seq) == 1
-    assert q.seq["nucleotide"]["I:1-10"] == "ATCGATCGAT"
+    assert q.seq["nucleotide"]["I:0-10"] == "ATCGATCGAT"
 
     ## Purge existing repo
     res = mom.remove()
@@ -133,15 +133,15 @@ def test_gcs_IO(fa1: str, bw1: str):
     assert mom.tracks().__eq__(out).all().all()
 
     # Query tracks
-    q = MultiRangeQuery(mom, "I:1-10").query_tracks()
+    q = MultiRangeQuery(mom, "I:0-10").query_tracks()
     assert len(q.coverage) == 1
-    assert len(q.coverage["bw1"]["I:1-10"]) == 10
+    assert len(q.coverage["bw1"]["I:0-10"]) == 10
     assert q.to_df()["chrom"].__eq__(pd.Series(["I"] * 10)).all()
 
     # Query sequences
     q.query_sequence()
     assert len(q.seq) == 1
-    assert q.seq["nucleotide"]["I:1-10"] == "ATCGATCGAT"
+    assert q.seq["nucleotide"]["I:0-10"] == "ATCGATCGAT"
 
     ## Purge existing repo
     res = mom.remove()
@@ -220,15 +220,15 @@ def test_azure_IO(fa1: str, bw1: str):
     assert mom.tracks().__eq__(out).all().all()
 
     # Query tracks
-    q = MultiRangeQuery(mom, "I:1-10").query_tracks()
+    q = MultiRangeQuery(mom, "I:0-10").query_tracks()
     assert len(q.coverage) == 1
-    assert len(q.coverage["bw1"]["I:1-10"]) == 10
+    assert len(q.coverage["bw1"]["I:0-10"]) == 10
     assert q.to_df()["chrom"].__eq__(pd.Series(["I"] * 10)).all()
 
     # Query sequences
     q.query_sequence()
     assert len(q.seq) == 1
-    assert q.seq["nucleotide"]["I:1-10"] == "ATCGATCGAT"
+    assert q.seq["nucleotide"]["I:0-10"] == "ATCGATCGAT"
 
     ## Purge existing repo
     res = mom.remove()

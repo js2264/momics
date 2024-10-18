@@ -184,14 +184,18 @@ def pyranges_to_bw(pyranges: pr.PyRanges, scores: np.ndarray, output: str) -> No
 
     # Save chrom sizes in header
     bw = pyBigWig.open(output, "w")
-    chrom_sizes = pyranges.df.groupby("Chromosome", observed=False)["End"].max().to_dict()
-    chroms = list(chrom_sizes.keys())
-    sizes = list(chrom_sizes.values())
-    bw.addHeader(list(zip(chroms, sizes)))
+    # if there is only one chromosome, get its size and add it to the header
+    if len(pyranges.Chromosome.unique()) == 1:
+        chrom_size = pyranges.df["End"].max()
+        bw.addHeader([(next(iter(pyranges.Chromosome)), chrom_size)])
+    else:
+        chrom_sizes = pyranges.df.groupby("Chromosome", observed=False)["End"].max().to_dict()
+        chroms = list(chrom_sizes.keys())
+        sizes = list(chrom_sizes.values())
+        bw.addHeader(list(zip(chroms, sizes)))
 
     # Iterate over the PyRanges and write corresponding scores
     df = pyranges.df
-    df.Start = df.Start
     for i, (chrom, start, end) in enumerate(zip(df.Chromosome, df.Start, df.End)):
         score = scores[i]
         positions = list(range(start, end))
