@@ -533,6 +533,7 @@ class Momics:
                 idx = ft[ft["label"] == label]["idx"].iloc[0]
                 with tiledb.open(tdb, "r", ctx=self.cfg.ctx) as A:
                     x = A.query(cond=f"idx=={idx}").df[:]
+                    x.iloc[:, 0] = x.iloc[:, 0].astype(str)
                     x.iloc[:, 0] = chrom
                     x.iloc[:, 1] = x.iloc[:, 1] - 1
                     ranges.append(x)

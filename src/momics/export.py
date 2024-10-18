@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 import numpy as np
 import pyBigWig
+import tiledb
 import Bio
 from Bio import SeqIO
 
@@ -32,11 +33,12 @@ def export_track(momics: Momics, track: str, output: Path) -> Momics:
     chrom_sizes = momics.chroms()[["chrom", "length"]].apply(tuple, axis=1).tolist()
     bw.addHeader(chrom_sizes)
     for chrom, chrom_length in chrom_sizes:
-        q = MultiRangeQuery(momics, chrom).query_tracks(tracks=[track])
+        tdb = momics._build_uri("coverage", f"{chrom}.tdb")
+        with tiledb.open(tdb, "r", ctx=momics.cfg.ctx) as A:
+            values0 = A.query(attrs=[track])[:][track][1:]
         chroms = np.array([chrom] * chrom_length)
         starts = np.array(range(chrom_length))
         ends = starts + 1
-        values0 = q.coverage[track][next(iter(q.coverage[track].keys()))]  # type: ignore
         bw.addEntries(chroms, starts=starts, ends=ends, values=values0)
     bw.close()
 

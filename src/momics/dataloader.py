@@ -75,7 +75,7 @@ class RangeDataLoader(tf.keras.utils.Sequence):
         self.features = features
         self.target = target
 
-        if target_size is not None and target_size >= int(widths[0]):
+        if target_size is not None and target_size > int(widths[0]):
             raise ValueError("Target size must be smaller than the features width.")
         self.target_size = target_size
 

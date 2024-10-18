@@ -111,6 +111,7 @@ def temp_npz_file():
     temp_npz_file.unlink()
 
 
+@pytest.mark.order(2)
 def test_to_json_npz(momics_path: str, temp_json_file: Path, temp_npz_file: Path):
     mom = momics.Momics(momics_path)
     q = MultiRangeQuery(mom, "I:1-10").query_sequence().query_tracks()

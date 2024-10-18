@@ -142,10 +142,9 @@ def split_ranges(pyranges, ratio=0.8, shuffle=True) -> Tuple[pr.PyRanges, pr.PyR
     Returns:
         Tuple[pr.PyRanges, pr.PyRanges]: A tuple of two PyRanges objects.
     """
+    df = pyranges.df
     if shuffle:
         df = pyranges.df.sample(frac=1, random_state=42).reset_index(drop=True)
-    else:
-        df = pyranges.df
     split_idx = int(len(df) * ratio)
     train_df = df.iloc[:split_idx]
     test_df = df.iloc[split_idx:]
@@ -168,12 +167,16 @@ def pyranges_to_bw(pyranges: pr.PyRanges, scores: np.ndarray, output: str) -> No
     Returns:
         None
     """
+    # Abort if output file already exists
+    if Path(output).exists():
+        raise FileExistsError(f"Output file '{output}' already exists")
+
     # Check that pyranges length is the same as scores dim 0
     if len(pyranges) != scores.shape[0]:
         raise ValueError("Length of PyRanges object must be the same as scores dimension 0")
 
     # Check that all pyranges widths are equal to the scores dim 1
-    widths = pyranges.End - pyranges.Start
+    widths = pyranges.End - pyranges.Start + 1
     if len(set(widths)) != 1:
         raise ValueError("All ranges must have the same width")
     if next(iter(widths)) != scores.shape[1]:
@@ -181,15 +184,17 @@ def pyranges_to_bw(pyranges: pr.PyRanges, scores: np.ndarray, output: str) -> No
 
     # Save chrom sizes in header
     bw = pyBigWig.open(output, "w")
-    chrom_sizes = pyranges.df.groupby("Chromosome")["End"].max().to_dict()
+    chrom_sizes = pyranges.df.groupby("Chromosome", observed=False)["End"].max().to_dict()
     chroms = list(chrom_sizes.keys())
     sizes = list(chrom_sizes.values())
     bw.addHeader(list(zip(chroms, sizes)))
 
     # Iterate over the PyRanges and write corresponding scores
-    for i, (chrom, start, end) in enumerate(zip(pyranges.Chromosome, pyranges.Start, pyranges.End)):
+    df = pyranges.df
+    df.Start = df.Start
+    for i, (chrom, start, end) in enumerate(zip(df.Chromosome, df.Start, df.End)):
         score = scores[i]
-        positions = list(range(start, end))
+        positions = list(range(start, end + 1))
         bw.addEntries([chrom] * len(positions), positions, ends=[p + 1 for p in positions], values=score)
 
     # Step 4: Close the BigWig file

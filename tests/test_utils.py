@@ -77,6 +77,6 @@ def test_pyranges_to_bw():
     with pytest.raises(ValueError, match=r"All ranges must have the same width as.*"):
         utils.pyranges_to_bw(rg, np.array([[1, 2], [2, 2], [3, 2]]), "out.bw")
 
-    utils.pyranges_to_bw(rg, np.array([[0.1] * 9, [0.2] * 9, [0.3] * 9]), "out.bw")
+    utils.pyranges_to_bw(rg, np.array([[0.1] * 10, [0.2] * 10, [0.3] * 10]), "out.bw")
     assert os.path.exists("out.bw")
     os.remove("out.bw")

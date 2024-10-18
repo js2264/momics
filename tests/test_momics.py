@@ -1,3 +1,4 @@
+from pathlib import Path
 import numpy as np
 import pyranges as pr
 import pandas as pd
@@ -93,6 +94,8 @@ def test_Momics_ingest_track(momics_path: str, bw1: str, bw2: str):
 @pytest.mark.order(1)
 def test_Momics_recover_track(momics_path: str):
     mom = momics.Momics(momics_path)
+    print(mom.path)
+
     with pytest.raises(ValueError, match=r".*not found"):
         mom.tracks("bw1323")
 
@@ -102,12 +105,12 @@ def test_Momics_recover_track(momics_path: str):
     act = {chrom: [0] * length for chrom, length in chrom_sizes.items()}
     for chrom, size in chrom_sizes.items():
         intervals = [(i, i + 1000, i / 100000) for i in range(0, size, 1000)]
-        x = [[v] * n for (_, n, v) in intervals]
+        x = [[v] * 1000 for (_, _, v) in intervals]
         arr = np.array([item for sublist in x for item in sublist], dtype=np.float32)
         act[chrom] = arr  # type: ignore
 
     for chrom in chrom_sizes.keys():
-        assert cov[chrom].__eq__(act[chrom])
+        assert cov[chrom].__eq__(act[chrom]).all()
 
 
 @pytest.mark.order(1)
@@ -186,3 +189,10 @@ def test_Momics_features(momics_path: str):
 
     ft1 = mom.bins(1000, 2000, cut_last_bin_out=True).df
     mom.features("ft1").df[["Chromosome", "Start", "End"]].__eq__(ft1)
+
+
+@pytest.mark.order(99999999)
+def test_Momics_remove(momics_path: str):
+    mom = momics.Momics(momics_path)
+    mom.remove()
+    assert not Path(mom.path).exists()
