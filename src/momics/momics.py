@@ -416,6 +416,7 @@ class Momics:
             tdb = self._build_uri("genome", f"{chrom}.tdb")
             chrom_length = np.array(chroms[chroms["chrom"] == chrom]["length"])[0]
             with pyfaidx.Fasta(fasta) as fa:
+                # get_seq() is 1-based
                 chrom_seq = fa.get_seq(chrom, 1, chrom_length + 1)
                 chrom_seq = np.array(list(chrom_seq.seq), dtype=np.str_)
             cfg = self.cfg.cfg
@@ -533,15 +534,14 @@ class Momics:
                 idx = ft[ft["label"] == label]["idx"].iloc[0]
                 with tiledb.open(tdb, "r", ctx=self.cfg.ctx) as A:
                     x = A.query(cond=f"idx=={idx}").df[:]
-                    x.iloc[:, 0] = x.iloc[:, 0].astype(str)
-                    x.iloc[:, 0] = chrom
-                    x.iloc[:, 1] = x.iloc[:, 1] - 1
+                    x.idx = x.idx.astype(str)
+                    x.idx = chrom
                     ranges.append(x)
             df = pd.concat(ranges)
             df2 = pd.DataFrame(
                 {
                     "Chromosome": df["idx"],
-                    "Start": df["start"] + 1,
+                    "Start": df["start"],
                     "End": df["stop"],
                     "strand": df["strand"],
                     "score": df["score"],
@@ -570,6 +570,8 @@ class Momics:
             cut_last_bin_out (bool, optional): Remove the last bin of each \
                 chromosome. Defaults to False.
 
+            Remember that PyRanges are 0-based and end-exclusive.
+
         Returns:
             _type_: pr.PyRanges: a PyRanges object of tiled genomic bins.
         """
@@ -580,12 +582,12 @@ class Momics:
             start = 0
             while start < length:
                 end = min(start + width, length)
-                bins.append({"chrom": chrom, "start": (start + 1), "end": end})
+                bins.append({"chrom": chrom, "start": (start), "end": end})
                 start += stride
 
         df = pd.DataFrame(bins)
         if cut_last_bin_out:
-            df = df[(df["end"] - df["start"]) == width - 1]
+            df = df[(df["end"] - df["start"]) == width]
 
         bt = pr.PyRanges(chromosomes=df["chrom"], starts=df["start"], ends=df["end"])
 

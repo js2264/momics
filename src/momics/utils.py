@@ -194,7 +194,7 @@ def pyranges_to_bw(pyranges: pr.PyRanges, scores: np.ndarray, output: str) -> No
     df.Start = df.Start
     for i, (chrom, start, end) in enumerate(zip(df.Chromosome, df.Start, df.End)):
         score = scores[i]
-        positions = list(range(start, end + 1))
+        positions = list(range(start - 1, end))
         bw.addEntries([chrom] * len(positions), positions, ends=[p + 1 for p in positions], values=score)
 
     # Step 4: Close the BigWig file

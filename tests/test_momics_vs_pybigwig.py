@@ -13,6 +13,7 @@ def test_match_momics_pybigwig(momics_path: str, bw1):
     bed = momics.utils.parse_ucsc_coordinates(["I:990-1010", "I:1990-2010"])
 
     # momics version
+    print(mom.path)
     q = MultiRangeQuery(mom, bed).query_tracks()
 
     # pybigwig version
@@ -20,7 +21,7 @@ def test_match_momics_pybigwig(momics_path: str, bw1):
     bw = pyBigWig.open(bw1)
     for _, interval in bed.df.iterrows():
         str_coord = f"{interval.Chromosome}:{interval.Start}-{interval.End}"
-        res["bw2"][str_coord] = np.array(bw.values(interval.Chromosome, interval.Start - 1, interval.End), dtype=np.float32)
+        res["bw2"][str_coord] = np.array(bw.values(interval.Chromosome, interval.Start, interval.End), dtype=np.float32)
     bw.close()
     res["bw2"] = dict(res["bw2"])
 

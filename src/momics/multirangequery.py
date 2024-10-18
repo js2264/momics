@@ -49,7 +49,7 @@ class MultiRangeQuery:
                 chrom = bed
                 chroms = self.momics.chroms()
                 chrlength = chroms[chroms["chrom"] == chrom]["length"].iloc[0]
-                bed = parse_ucsc_coordinates(f"{chrom}:1-{chrlength}")
+                bed = parse_ucsc_coordinates(f"{chrom}:0-{chrlength}")
         else:
             if not isinstance(bed, pr.PyRanges):
                 raise ValueError("bed must be a `pr.PyRanges` object.")
@@ -59,7 +59,7 @@ class MultiRangeQuery:
         self.seq: Optional[Dict] = None
 
     def _check_memory_available(self, n):
-        estimated_required_memory = 4 * n * sum(self.ranges.End - self.ranges.Start + 1) * 1.2
+        estimated_required_memory = 4 * n * sum(self.ranges.End - self.ranges.Start) * 1.2
         emem = round(estimated_required_memory / 1e9, 2)
         avail_mem = psutil.virtual_memory().available
         amem = round(avail_mem / 1e9, 2)
@@ -74,7 +74,7 @@ class MultiRangeQuery:
 
             # Prepare queries: list of slices [(start, stop), (start, stop), ...]
             start0 = time.time()
-            query = [slice(int(i) - 1, int(j)) for (i, j) in zip(ranges.Start, ranges.End)]
+            query = [slice(int(i), int(j)) for (i, j) in zip(ranges.Start, ranges.End)]
             logger.debug(f"define query in {round(time.time() - start0,4)}s")
 
             # Query tiledb
@@ -173,7 +173,7 @@ class MultiRangeQuery:
 
             # Prepare queries: list of slices [(start, stop), (start, stop), ...]
             start0 = time.time()
-            query = [slice(int(i) - 1, int(j)) for (i, j) in zip(ranges.Start, ranges.End)]
+            query = [slice(int(i), int(j)) for (i, j) in zip(ranges.Start, ranges.End)]
             logger.debug(f"define query in {round(time.time() - start0,4)}s")
 
             # Query tiledb
@@ -269,7 +269,7 @@ class MultiRangeQuery:
             chrom = inter.loc["Chromosome"]
             start = inter.loc["Start"]
             end = inter.loc["End"]
-            label = [{"range": keys[i], "chrom": chrom, "position": x} for x in range(start, end + 1)]
+            label = [{"range": keys[i], "chrom": chrom, "position": x} for x in range(start, end)]
             ranges_str.extend(label)
         df = pd.DataFrame(ranges_str)
 

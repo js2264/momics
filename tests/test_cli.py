@@ -102,20 +102,20 @@ def test_ingest_features(runner, path):
 
 
 def test_query_sequence(runner, path):
-    result = runner.invoke(cli.cli, ["query", "seq", "-c", "I:1-10", path])
-    assert result.output == ">I:1-10\nATCGATCGAT\n"
+    result = runner.invoke(cli.cli, ["query", "seq", "-c", "I:0-10", path])
+    assert result.output == ">I:0-10\nATCGATCGAT\n"
     result = runner.invoke(cli.cli, ["query", "seq", "-f", "out.bins.bed", path])
-    assert result.output[0:28] == ">I:1-10\nATCGATCGAT\n>I:11-20\n"
+    assert result.output[0:28] == ">I:0-10\nATCGATCGAT\n>I:10-20\n"
     result = runner.invoke(cli.cli, ["query", "seq", "-f", "out.bins.bed", "-o", "out.fa", path])
     assert result.exit_code == 0
     os.remove("out.fa")
 
 
 def test_query_tracks(runner, path):
-    result = runner.invoke(cli.cli, ["query", "tracks", "-c", "I:1-10", path])
-    assert result.output[0:40] == "range\tchrom\tposition\tbw1\tbw2\nI:1-10\tI\t1\t"
+    result = runner.invoke(cli.cli, ["query", "tracks", "-c", "I:0-10", path])
+    assert result.output[0:40] == "range\tchrom\tposition\tbw1\tbw2\nI:0-10\tI\t0\t"
     result = runner.invoke(cli.cli, ["query", "tracks", "-f", "out.bins.bed", path])
-    assert result.output[0:40] == "range\tchrom\tposition\tbw1\tbw2\nI:1-10\tI\t1\t"
+    assert result.output[0:40] == "range\tchrom\tposition\tbw1\tbw2\nI:0-10\tI\t0\t"
     result = runner.invoke(cli.cli, ["query", "tracks", "-f", "out.bins.bed", "-o", "out.tsv", path])
     assert result.exit_code == 0
     os.remove("out.tsv")
@@ -145,7 +145,7 @@ def test_cp_track(runner, path, bw3):
     bw = pyBigWig.open(bw3)
     for _, interval in bed.df.iterrows():
         str_coord = f"{interval.Chromosome}:{interval.Start}-{interval.End}"
-        res["bw2"][str_coord] = np.array(bw.values(interval.Chromosome, interval.Start - 1, interval.End), dtype=np.float32)
+        res["bw2"][str_coord] = np.array(bw.values(interval.Chromosome, interval.Start, interval.End), dtype=np.float32)
     bw.close()
     res["bw2"] = dict(res["bw2"])
 
@@ -159,7 +159,7 @@ def test_cp_features(runner, path):
     assert result.exit_code == 0
     assert os.path.exists("out.bed")
     bed = pr.read_bed("out.bed")
-    assert ("I", 301, 310) == (bed.df.iloc[30].Chromosome, bed.df.iloc[30].Start, bed.df.iloc[30].End)
+    assert ("I", 300, 310) == (bed.df.iloc[30].Chromosome, bed.df.iloc[30].Start, bed.df.iloc[30].End)
 
 
 def test_cp_seq(runner, path):
