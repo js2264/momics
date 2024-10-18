@@ -1,6 +1,6 @@
 import os
 import platform
-import time
+import re
 
 import dotenv
 import pandas as pd
@@ -167,25 +167,20 @@ def test_azure_IO(fa1: str, bw1: str):
     def remove_directory_until_success(vfs, dir_uri, max_retries=10, retry_delay=2):
         attempts = 0
         while attempts < max_retries:
+            attempts += 1
             try:
                 vfs.remove_dir(dir_uri)
                 logging.logger.info(f"Successfully removed directory: {dir_uri}")
                 break
             except tiledb.TileDBError as e:
-                attempts += 1
-                print(
-                    f"Attempt {attempts}: Failed to remove directory '{dir_uri}'. \
-                        Error: {e}"
-                )
-                if attempts < max_retries:
-                    print(f"Retrying in {retry_delay} seconds...")
-                    time.sleep(retry_delay)
-                else:
-                    print(
-                        f"Max retries reached. Directory '{dir_uri}' could \
-                            not be removed."
-                    )
-                    raise e
+                error_message = str(e)
+                match = re.search(r"Remove blob failed on: (.+?);", error_message)
+                if match:
+                    non_empty_folder = match.group(1)
+                    remove_directory_until_success(vfs, non_empty_folder)
+            if attempts == max_retries:
+                print(f"Max retries reached. Directory '{dir_uri}' could not be removed.")
+                raise tiledb.TileDBError("Max retries reached. Non-emty directory could not be removed.")
 
     remove_directory_until_success(conf.vfs, uri)
 
