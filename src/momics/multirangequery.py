@@ -73,8 +73,11 @@ class MultiRangeQuery:
         try:
 
             # Prepare queries: list of slices [(start, stop), (start, stop), ...]
+            # !!!
+            # !!! MULTI_INDEX USES CLOSED INTERVALS, SO WE NEED TO SUBSTRACT 1 FROM THE END
+            # !!!
             start0 = time.time()
-            query = [slice(int(i), int(j)) for (i, j) in zip(ranges.Start, ranges.End)]
+            query = [slice(int(i), int(j) - 1) for (i, j) in zip(ranges.Start, ranges.End)]
             logger.debug(f"define query in {round(time.time() - start0,4)}s")
 
             # Query tiledb
@@ -95,7 +98,7 @@ class MultiRangeQuery:
             for attr in attrs:
                 cov = subarray[attr]
                 start_idx = 0
-                query_lengths = [s.stop - s.start for s in query]
+                query_lengths = [s.stop - s.start + 1 for s in query]
                 for i, length in enumerate(query_lengths):
                     results[attr][keys[i]] = cov[start_idx : start_idx + length]
                     start_idx += length
@@ -172,8 +175,11 @@ class MultiRangeQuery:
         try:
 
             # Prepare queries: list of slices [(start, stop), (start, stop), ...]
+            # !!!
+            # !!! MULTI_INDEX USES CLOSED INTERVALS, SO WE NEED TO SUBSTRACT 1 FROM THE END
+            # !!!
             start0 = time.time()
-            query = [slice(int(i), int(j)) for (i, j) in zip(ranges.Start, ranges.End)]
+            query = [slice(int(i), int(j) - 1) for (i, j) in zip(ranges.Start, ranges.End)]
             logger.debug(f"define query in {round(time.time() - start0,4)}s")
 
             # Query tiledb
@@ -194,7 +200,7 @@ class MultiRangeQuery:
             for attr in attrs:
                 seq = subarray[attr]
                 start_idx = 0
-                query_lengths = [s.stop - s.start for s in query]
+                query_lengths = [s.stop - s.start + 1 for s in query]
                 for i, length in enumerate(query_lengths):
                     results[attr][keys[i]] = "".join(seq[start_idx : start_idx + length].tolist())
                     start_idx += length

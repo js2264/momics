@@ -49,7 +49,7 @@ class RangeDataLoader(tf.keras.utils.Sequence):
 
         # Check that all ranges have the same width
         df = ranges.df
-        widths = df.End - df.Start + 1
+        widths = df.End - df.Start
         if len(set(widths)) != 1:
             raise ValueError("All ranges must have the same width")
 

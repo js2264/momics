@@ -43,7 +43,7 @@ def _dict_to_bigwig(bw_dict: dict, output: Union[Path, str]) -> Path:
     bw.addHeader(header)
     for chrom, coverage in bw_dict.items():
         values0 = np.float32(coverage)
-        bw.addEntries(chrom, 1, values=values0, span=1, step=1)
+        bw.addEntries(chrom, 0, values=values0, span=1, step=1)
     bw.close()
 
     return Path(output)
@@ -176,7 +176,7 @@ def pyranges_to_bw(pyranges: pr.PyRanges, scores: np.ndarray, output: str) -> No
         raise ValueError("Length of PyRanges object must be the same as scores dimension 0")
 
     # Check that all pyranges widths are equal to the scores dim 1
-    widths = pyranges.End - pyranges.Start + 1
+    widths = pyranges.End - pyranges.Start
     if len(set(widths)) != 1:
         raise ValueError("All ranges must have the same width")
     if next(iter(widths)) != scores.shape[1]:
@@ -194,7 +194,7 @@ def pyranges_to_bw(pyranges: pr.PyRanges, scores: np.ndarray, output: str) -> No
     df.Start = df.Start
     for i, (chrom, start, end) in enumerate(zip(df.Chromosome, df.Start, df.End)):
         score = scores[i]
-        positions = list(range(start - 1, end))
+        positions = list(range(start, end))
         bw.addEntries([chrom] * len(positions), positions, ends=[p + 1 for p in positions], values=score)
 
     # Step 4: Close the BigWig file

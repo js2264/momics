@@ -65,11 +65,11 @@ def test_split_ranges():
 @pytest.mark.order(999)
 def test_pyranges_to_bw():
 
-    rg = pr.from_dict({"Chromosome": ["I", "I", "I"], "Start": [1, 11, 21], "End": [20, 20, 30]})
+    rg = pr.from_dict({"Chromosome": ["I", "I", "I"], "Start": [0, 10, 20], "End": [20, 20, 30]})
     with pytest.raises(ValueError, match="All ranges must have the same width"):
         utils.pyranges_to_bw(rg, np.array([[1], [2], [3]]), "out.bw")
 
-    rg = pr.from_dict({"Chromosome": ["I", "I", "I"], "Start": [1, 11, 21], "End": [10, 20, 30]})
+    rg = pr.from_dict({"Chromosome": ["I", "I", "I"], "Start": [0, 10, 20], "End": [10, 20, 30]})
 
     with pytest.raises(ValueError, match=r"Length of PyRanges object must .*"):
         utils.pyranges_to_bw(rg, np.array([[1], [2]]), "out.bw")

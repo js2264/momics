@@ -35,7 +35,7 @@ def export_track(momics: Momics, track: str, output: Path) -> Momics:
     for chrom, chrom_length in chrom_sizes:
         tdb = momics._build_uri("coverage", f"{chrom}.tdb")
         with tiledb.open(tdb, "r", ctx=momics.cfg.ctx) as A:
-            values0 = A.query(attrs=[track])[:][track][1:]
+            values0 = A.query(attrs=[track])[:][track][:-1]
         chroms = np.array([chrom] * chrom_length)
         starts = np.array(range(chrom_length))
         ends = starts + 1
