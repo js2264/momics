@@ -140,7 +140,9 @@ class MultiRangeQuery:
         ).schema
         attrs = [_sch.attr(i).name for i in range(_sch.nattr)]
         if tracks is not None:
-            attrs = [attr for attr in attrs if attr in tracks]
+            if not all([track in attrs for track in tracks]):
+                raise ValueError(f"Tracks {tracks} not found in the repository.")
+            attrs = tracks
 
         # Check memory available and warn if it's not enough
         self._check_memory_available(len(attrs))

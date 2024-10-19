@@ -53,7 +53,7 @@ autodoc_class_signature = "separated"
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
-pygments_style = "one-dark"
+# pygments_style = "one-dark"
 todo_include_todos = False
 master_doc = "index"
 
