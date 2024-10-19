@@ -18,12 +18,36 @@ The `momics` package aims to facilitate:
 Follow `momics` development on [GitHub](https://github.com/js2264/momics).
 
 ```{toctree}
-:caption: Contents
+:caption: User Guide
 :maxdepth: 1
 
+user_guide/intro
+user_guide/concepts
 user_guide/get-started
 user_guide/api
 user_guide/cli
+```
+
+```{toctree}
+:caption: Tutorials
+:maxdepth: 1
+
+tutorials/integrating-multiomics
+tutorials/cloud-repos
+tutorials/nn-training
+```
+
+```{toctree}
+:caption: References
+:maxdepth: 1
+
 api/index
 cli/index
+```
+
+```{toctree}
+:caption: Changelog
+:maxdepth: 1
+
+changes
 ```
