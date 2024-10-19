@@ -2,7 +2,7 @@ import click
 import numpy as np
 import pyranges as pr
 
-from .. import momics
+from ..momics import Momics
 from . import cli
 
 
@@ -30,7 +30,7 @@ def ingest(ctx):
 @click.pass_context
 def chroms(ctx, file, genome, path):
     """Register chromosomes sizes to Momics."""
-    m = momics.Momics(path)
+    m = Momics(path)
     chrom_lengths = {}
     with open(file) as chroms:
         for line in chroms:
@@ -64,7 +64,7 @@ def tracks(ctx, file, path, threads):
     fs = {}
     for f in file:
         fs[f.split("=", 1)[0]] = f.split("=", 1)[1]
-    m = momics.Momics(path)
+    m = Momics(path)
     m.ingest_tracks(fs, threads=threads)
     print(m.tracks().iloc[np.where(m.tracks()["label"] != "None")].iloc[:, 0:2])
 
@@ -87,7 +87,7 @@ def tracks(ctx, file, path, threads):
 @click.pass_context
 def seq(ctx, file, path, threads):
     """Ingest genomic sequence to Momics."""
-    m = momics.Momics(path)
+    m = Momics(path)
     m.ingest_sequence(file, threads=threads)
     print(m.seq())
 
@@ -120,6 +120,6 @@ def features(ctx, file, path, threads):
         bed = f.split("=", 1)[1]
         bed = pr.read_bed(bed)
         fs[f.split("=", 1)[0]] = bed
-    m = momics.Momics(path)
+    m = Momics(path)
     m.ingest_features(fs, threads=threads)
     print(m.features().iloc[np.where(m.features()["label"] != "None")].iloc[:, 0:2])

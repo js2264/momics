@@ -2,7 +2,7 @@ import click
 from Bio import SeqIO
 import pyranges as pr
 
-from momics.multirangequery import MultiRangeQuery
+from momics.momicsquery import MomicsQuery
 
 from .. import momics
 from .. import utils
@@ -67,7 +67,7 @@ def tracks(ctx, path, coordinates, file, output: str, threads: int = 1):
     else:
         bed = pr.read_bed(file)
 
-    res = MultiRangeQuery(mom, bed).query_tracks(threads=threads).to_df()
+    res = MomicsQuery(mom, bed).query_tracks(threads=threads).to_df()
     if output is None:
         print(res.to_csv(sep="\t", index=False))
     else:
@@ -118,7 +118,7 @@ def seq(ctx, path, coordinates, file, output: str, threads: int = 1):
     else:
         bed = pr.read_bed(file)
 
-    res = MultiRangeQuery(mom, bed).query_sequence(threads=threads).to_SeqRecord()
+    res = MomicsQuery(mom, bed).query_sequence(threads=threads).to_SeqRecord()
     if output is None:
         for record in res:
             print(f">{record.id}")

@@ -5,9 +5,9 @@ import pandas as pd
 import pytest
 import tiledb
 
-import momics
+from momics import momics
 from momics import utils
-from momics.multirangequery import MultiRangeQuery
+from momics.momicsquery import MomicsQuery
 
 
 @pytest.mark.order(1)
@@ -144,10 +144,10 @@ def test_Momics_remove_tracks(momics_path: str, bw1: str, bw2: str, bed1: str):
     )
     print(out)
     assert mom.tracks().iloc[:, 0:2].__eq__(out).all().all()
-    q = MultiRangeQuery(mom, "I:991-1010").query_tracks()
+    q = MomicsQuery(mom, "I:991-1010").query_tracks()
     assert list(q.coverage.keys()) == ["bw2", "custom", "bw3", "bw4"]
     bed = pr.read_bed(bed1)
-    q = MultiRangeQuery(mom, bed).query_tracks()
+    q = MomicsQuery(mom, bed).query_tracks()
     assert list(q.coverage.keys()) == ["bw2", "custom", "bw3", "bw4"]
 
 

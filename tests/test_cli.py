@@ -8,8 +8,8 @@ import pyBigWig
 import shutil
 import momics.cli as cli
 from momics import utils
-from momics import momics
-from momics import multirangequery
+from momics.momics import Momics
+from momics import momicsquery
 
 
 @pytest.fixture
@@ -52,7 +52,7 @@ def test_ingest_chroms(runner, path, bw3):
     assert result.exit_code == 0
     result = runner.invoke(cli.ls.ls, ["--table", "chroms", path])
     assert result.exit_code == 0
-    mom = momics.Momics(path)
+    mom = Momics(path)
     assert mom.chroms()["chrom"].__eq__(["I", "II", "III", "IV"]).all()
     os.remove("chrom_lengths.txt")
     result = runner.invoke(cli.tree.tree, [path])
@@ -64,7 +64,7 @@ def test_ingest_tracks(runner, path, bw3):
     assert result.exit_code == 0
     result = runner.invoke(cli.ls.ls, ["--table", "tracks", path])
     assert result.exit_code == 0
-    mom = momics.Momics(path)
+    mom = Momics(path)
     assert mom.tracks()["label"].__eq__(["bw1", "bw2"]).all()
     result = runner.invoke(cli.tree.tree, [path])
     assert len(result.output.strip().split("\n")) == 13
@@ -73,7 +73,7 @@ def test_ingest_tracks(runner, path, bw3):
 def test_ingest_sequence(runner, path, fa3):
     result = runner.invoke(cli.ingest.ingest, ["seq", "--file", fa3, path])
     assert result.exit_code == 0
-    mom = momics.Momics(path)
+    mom = Momics(path)
     assert mom.seq()["chrom"].__eq__(["I", "II", "III", "IV"]).all()
     result = runner.invoke(cli.tree.tree, [path])
     assert len(result.output.strip().split("\n")) == 16
@@ -84,14 +84,14 @@ def test_ingest_features(runner, path):
     assert result.exit_code == 0
     result = runner.invoke(cli.ingest.ingest, ["features", "--file", "bed1=out.bins.bed", path])
     assert result.exit_code == 0
-    mom = momics.Momics(path)
+    mom = Momics(path)
     assert mom.features()["label"].__eq__(["bed1"]).all()
     assert mom.features()["n"].__eq__([13001]).all()
     result = runner.invoke(cli.binnify.binnify, ["--width", "10", "-s", "10", "-o", "out.bins.bed", path])
     assert result.exit_code == 0
     result = runner.invoke(cli.ingest.ingest, ["features", "--file", "bed2=out.bins.bed", path])
     assert result.exit_code == 0
-    mom = momics.Momics(path)
+    mom = Momics(path)
     assert mom.features()["label"].__eq__(["bed1", "bed2"]).all()
     assert mom.features()["n"].__eq__([13001, 13005]).all()
     result = runner.invoke(cli.tree.tree, [path])
@@ -127,7 +127,7 @@ def test_remove_track(runner, path):
     assert result.exit_code == 0
     result = runner.invoke(cli.ls.ls, ["--table", "tracks", path])
     assert result.exit_code == 0
-    mom = momics.Momics(path)
+    mom = Momics(path)
     assert mom.tracks()["label"].__eq__(["None", "bw2"]).all()
 
 
@@ -136,9 +136,9 @@ def test_cp_track(runner, path, bw3):
     print(result.output)
     assert result.exit_code == 0
     assert os.path.exists("out.bw")
-    mom = momics.Momics(path)
+    mom = Momics(path)
     bed = pr.from_dict({"Chromosome": ["I", "I"], "Start": [990, 1990], "End": [1010, 2010]})
-    q = multirangequery.MultiRangeQuery(mom, bed).query_tracks()
+    q = momicsquery.MomicsQuery(mom, bed).query_tracks()
 
     # pybigwig version
     res = {"bw2": collections.defaultdict(list)}

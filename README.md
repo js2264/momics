@@ -57,7 +57,7 @@ momics query tracks --file path/to/file.bed path/to/momics_repo
 In Python, you can load and query a momics repository like this:
 
 ```py
-from momics import Momics
+from momics.momics import Momics
 
 # Load a Momics repository
 repo = Momics("path/to/momics_repo")

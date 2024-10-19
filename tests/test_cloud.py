@@ -7,9 +7,9 @@ import pandas as pd
 import pytest
 import tiledb
 
-import momics
+from momics import momics
 from momics import config, logging, utils
-from momics.multirangequery import MultiRangeQuery
+from momics.momicsquery import MomicsQuery
 
 dotenv.load_dotenv()
 
@@ -71,7 +71,7 @@ def test_s3_IO(fa1: str, bw1: str):
     assert mom.tracks().__eq__(out).all().all()
 
     # Query tracks
-    q = MultiRangeQuery(mom, "I:0-10").query_tracks()
+    q = MomicsQuery(mom, "I:0-10").query_tracks()
     assert len(q.coverage) == 1
     assert len(q.coverage["bw1"]["I:0-10"]) == 10
     assert q.to_df()["chrom"].__eq__(pd.Series(["I"] * 10)).all()
@@ -133,7 +133,7 @@ def test_gcs_IO(fa1: str, bw1: str):
     assert mom.tracks().__eq__(out).all().all()
 
     # Query tracks
-    q = MultiRangeQuery(mom, "I:0-10").query_tracks()
+    q = MomicsQuery(mom, "I:0-10").query_tracks()
     assert len(q.coverage) == 1
     assert len(q.coverage["bw1"]["I:0-10"]) == 10
     assert q.to_df()["chrom"].__eq__(pd.Series(["I"] * 10)).all()
@@ -216,7 +216,7 @@ def test_azure_IO(fa1: str, bw1: str):
     assert mom.tracks().__eq__(out).all().all()
 
     # Query tracks
-    q = MultiRangeQuery(mom, "I:0-10").query_tracks()
+    q = MomicsQuery(mom, "I:0-10").query_tracks()
     assert len(q.coverage) == 1
     assert len(q.coverage["bw1"]["I:0-10"]) == 10
     assert q.to_df()["chrom"].__eq__(pd.Series(["I"] * 10)).all()

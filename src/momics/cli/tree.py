@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 import click
 
-import momics
+from momics import momics as m
 
 from . import cli
 
@@ -13,7 +13,7 @@ from . import cli
 def tree(ctx, path):
     """List all the TileDB tables already ingested."""
 
-    mom = momics.Momics(path)
+    mom = m.Momics(path)
     chrs = mom.chroms()["chrom"]
 
     if path.endswith("/"):

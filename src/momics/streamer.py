@@ -5,7 +5,8 @@ import pyranges as pr
 import logging
 
 from .momics import Momics
-from .multirangequery import MultiRangeQuery
+from .logging import logger
+from .momicsquery import MomicsQuery
 
 
 class MomicsStreamer:
@@ -89,7 +90,7 @@ class MomicsStreamer:
         attrs = self.features
         i = len(attrs)
         res = {attr: None for attr in attrs}
-        q = MultiRangeQuery(self.momics, batch_ranges)
+        q = MomicsQuery(self.momics, batch_ranges)
 
         if self.silent:
             logging.disable(logging.WARNING)
@@ -170,3 +171,21 @@ class MomicsStreamer:
     def reset(self):
         """Reset the iterator to allow re-iteration."""
         self.batch_index = 0
+
+    def batch(self, batch_size: int):
+        """
+        Change the batch size for streaming data.
+
+        Args:
+            batch_size (int): The new size for batches.
+        """
+        if batch_size <= 0:
+            raise ValueError("Batch size must be greater than zero.")
+
+        if batch_size > len(self.ranges):
+            batch_size = len(self.ranges)
+
+        self.batch_size = batch_size
+        self.num_batches = (len(self.ranges) + self.batch_size - 1) // self.batch_size
+        self.reset()
+        logger.info(f"Batch size updated to {self.batch_size}. Number of batches is now {self.num_batches}.")

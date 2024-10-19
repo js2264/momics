@@ -3,7 +3,7 @@ import tempfile
 
 import pytest
 
-import momics
+from momics import momics
 from momics.export import export_track, export_sequence, export_features
 
 

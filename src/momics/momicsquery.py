@@ -18,7 +18,7 @@ from .momics import Momics
 from .utils import parse_ucsc_coordinates
 
 
-class MultiRangeQuery:
+class MomicsQuery:
     """A class to query `.momics` repositories.
 
     Attributes
@@ -32,7 +32,7 @@ class MultiRangeQuery:
     """
 
     def __init__(self, momics: Momics, bed: pr.PyRanges):
-        """Initialize the MultiRangeQuery object.
+        """Initialize the MomicsQuery object.
 
         Args:
             momics (Momics): a Momics object
@@ -110,7 +110,7 @@ class MultiRangeQuery:
             logger.error(f"Error processing query batch: {e}")
             raise
 
-    def query_tracks(self, threads: Optional[int] = None, tracks: Optional[list] = None) -> "MultiRangeQuery":
+    def query_tracks(self, threads: Optional[int] = None, tracks: Optional[list] = None) -> "MomicsQuery":
         """Query multiple coverage ranges from a Momics repo.
 
         Args:
@@ -120,7 +120,7 @@ class MultiRangeQuery:
                 which queries all tracks.
 
         Returns:
-            MultiRangeQuery: MultiRangeQuery: An updated MultiRangeQuery object
+            MomicsQuery: MomicsQuery: An updated MomicsQuery object
         """
 
         start0 = time.time()
@@ -217,7 +217,7 @@ class MultiRangeQuery:
             logger.error(f"Error processing query batch: {e}")
             raise
 
-    def query_sequence(self, threads: Optional[int] = None) -> "MultiRangeQuery":
+    def query_sequence(self, threads: Optional[int] = None) -> "MomicsQuery":
         """Query multiple sequence ranges from a Momics repo.
 
         Args:
@@ -225,7 +225,7 @@ class MultiRangeQuery:
                 Defaults to all.
 
         Returns:
-            MultiRangeQuery: An updated MultiRangeQuery object
+            MomicsQuery: An updated MomicsQuery object
         """
 
         start0 = time.time()

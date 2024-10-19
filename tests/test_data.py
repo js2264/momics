@@ -1,7 +1,7 @@
 from typing import Generator
 import pytest
 
-import momics
+from momics import momics
 from momics.streamer import MomicsStreamer
 from momics.dataset import MomicsDataset
 

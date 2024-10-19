@@ -562,7 +562,7 @@ class Momics:
             return features
 
     def bins(self, width, stride, cut_last_bin_out=False) -> pr.PyRanges:
-        """Generate a BedTool of tiled genomic bins
+        """Generate a PyRanges of tiled genomic bins
 
         Args:
             width (_type_): The width of each bin.
@@ -672,11 +672,9 @@ class Momics:
         """Ingest feature sets to the `.momics` repository.
 
         Args:
-            features (dict): Dictionary of feature sets already imported with \
-                pyBedTools.
+            features (dict): Dictionary of feature sets already imported as a PyRanges.
             threads (int, optional): Threads to parallelize I/O. Defaults to 1.
-            max_features (int, optional): Maximum number of feature sets. \
-                Defaults to 9999.
+            max_features (int, optional): Maximum number of feature sets. Defaults to 9999.
             tile (int, optional): Tile size. Defaults to 50000.
             compression (int, optional): Compression level. Defaults to 3.
 

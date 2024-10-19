@@ -3,8 +3,8 @@ import numpy as np
 import pytest
 import pyBigWig
 
-import momics
-from momics.multirangequery import MultiRangeQuery
+from momics import momics
+from momics.momicsquery import MomicsQuery
 
 
 @pytest.mark.order(1)
@@ -14,7 +14,7 @@ def test_match_momics_pybigwig(momics_path: str, bw1):
 
     # momics version
     print(mom.path)
-    q = MultiRangeQuery(mom, bed).query_tracks()
+    q = MomicsQuery(mom, bed).query_tracks()
 
     # pybigwig version
     res = {"bw2": collections.defaultdict(list)}

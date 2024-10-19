@@ -8,7 +8,7 @@ import Bio
 from Bio import SeqIO
 
 from .momics import Momics
-from .multirangequery import MultiRangeQuery
+from .momicsquery import MomicsQuery
 from .utils import _check_feature_name, _check_track_name
 
 
@@ -64,7 +64,7 @@ def export_sequence(momics: Momics, output: Path) -> Momics:
     chroms = momics.chroms()["chrom"]
     with open(output, "a") as output_handle:
         for chrom in chroms:
-            q = MultiRangeQuery(momics, chrom).query_sequence()
+            q = MomicsQuery(momics, chrom).query_sequence()
             seq = q.seq["nucleotide"][next(iter(q.seq["nucleotide"].keys()))]  # type: ignore
             sr = Bio.SeqRecord.SeqRecord(Bio.Seq.Seq(seq), id=chrom, description="")
             SeqIO.write(sr, output_handle, "fasta")
