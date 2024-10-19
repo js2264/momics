@@ -140,9 +140,12 @@ class MultiRangeQuery:
         ).schema
         attrs = [_sch.attr(i).name for i in range(_sch.nattr)]
         if tracks is not None:
-            if not all([track in attrs for track in tracks]):
-                raise ValueError(f"Tracks {tracks} not found in the repository.")
-            attrs = tracks
+            for track in tracks:
+                if track == "nucleotide":
+                    logger.debug("'nucleotide' track is not a coverage track.")
+                elif track not in attrs:
+                    raise ValueError(f"Track {track} not found in the repository.")
+            attrs = [tr for tr in tracks if tr != "nucleotide"]
 
         # Check memory available and warn if it's not enough
         self._check_memory_available(len(attrs))

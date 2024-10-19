@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, Generator, Tuple
 
 import numpy as np
 import pyranges as pr
@@ -36,7 +36,7 @@ class MomicsStreamer:
         batch_size: Optional[int] = None,
         features: Optional[int] = None,
         preprocess_func: Optional[Callable] = None,
-        silent: bool = False,
+        silent: bool = True,
     ) -> None:
         """Initialize the MomicsStreamer object.
 
@@ -56,26 +56,26 @@ class MomicsStreamer:
         self.batch_size = batch_size
         self.num_batches = (len(ranges) + batch_size - 1) // batch_size
         if features is not None:
-            i = 0
             if not isinstance(features, list):
                 features = [features]
+            i = len(features)
             if "nucleotide" in features:
-                features.remove("nucleotide")
-                i += 1
-                _ = momics.seq()
-            if len(features) > i:
-                tr = momics.tracks()
+                i -= 1
+                _ = momics.seq()  # Check that the momics object has a sequence
+            if i > 0:  # Other features besides "nucleotide"
+                tr = momics.tracks()  # Check that the momics object has the tracks
                 for f in features:
+                    if f == "nucleotide":
+                        continue
                     if f not in list(tr["label"]):
                         raise ValueError(f"Features {f} not found in momics repository.")
 
-        if i > 0:
-            features.insert(0, "nucleotide")
         self.features = features
         self.silent = silent
         self.preprocess_func = preprocess_func if preprocess_func else self._default_preprocess
+        self.batch_index = 0
 
-    def query(self, batch_ranges):
+    def query(self, batch_ranges) -> Tuple:
         """
         Query function to fetch data from a `momics` repo based on batch_ranges.
 
@@ -87,6 +87,7 @@ class MomicsStreamer:
         """
 
         attrs = self.features
+        i = len(attrs)
         res = {attr: None for attr in attrs}
         q = MultiRangeQuery(self.momics, batch_ranges)
 
@@ -95,7 +96,7 @@ class MomicsStreamer:
 
         # Fetch seq if needed
         if "nucleotide" in attrs:
-            attrs.remove("nucleotide")
+            i -= 1
             q.query_sequence()
             seqs = list(q.seq["nucleotide"].values())
 
@@ -114,9 +115,10 @@ class MomicsStreamer:
             res["nucleotide"] = X.reshape(-1, sh[1], 4)
 
         # Fetch coverage tracks if needed
-        if len(attrs) > 0:
-            q.query_tracks(tracks=attrs)
-            for attr in attrs:
+        if i > 0:
+            attrs2 = [attr for attr in attrs if attr != "nucleotide"]
+            q.query_tracks(tracks=attrs2)
+            for attr in attrs2:
                 out = np.array(list(q.coverage[attr].values()))
                 sh = out.shape
                 res[attr] = out.reshape(-1, sh[1], 1)
@@ -132,15 +134,39 @@ class MomicsStreamer:
         """
         return (data - np.mean(data, axis=0)) / np.std(data, axis=0)
 
-    def generator(self):
+    def generator(self) -> Generator:
         """
         Generator to yield batches of ranges and queried/preprocessed data.
 
         Yields:
             Tuple[pr.PyRanges, np.ndarray]: batch_ranges and preprocessed_data
         """
+        self.batch_index = 0
         for i in range(0, len(self.ranges), self.batch_size):
             batch_ranges = pr.PyRanges(self.ranges.df.iloc[i : i + self.batch_size])
             queried_data = self.query(batch_ranges)
             # preprocessed_data = self.preprocess(queried_data)
+            self.batch_index += 1
             yield queried_data
+
+    def __iter__(self):
+        return self.generator()
+
+    def __next__(self):
+        """Return the next batch or raise StopIteration."""
+        if self.batch_index < self.num_batches:
+            start = self.batch_index * self.batch_size
+            end = min((self.batch_index + 1) * self.batch_size, len(self.ranges))
+            batch_ranges = pr.PyRanges(self.ranges.df.iloc[start:end])
+            queried_data = self.query(batch_ranges)
+            self.batch_index += 1
+            return queried_data
+        else:
+            raise StopIteration
+
+    def __len__(self):
+        return self.num_batches
+
+    def reset(self):
+        """Reset the iterator to allow re-iteration."""
+        self.batch_index = 0
