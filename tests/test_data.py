@@ -42,7 +42,7 @@ def test_dataset(momics_path: str):
     assert n[0].shape == (10, 10, 1)
     assert n[1].shape == (10, 2, 1)
 
-    rg = MomicsDataset(mom, b, "nucleotide", "CH1", target_size=2, batch_size=10)
+    rg = MomicsDataset(mom, b, "nucleotide", "bw2", target_size=2, batch_size=10)
     n = next(iter(rg))
     assert n[0].shape == (10, 10, 4)
     assert n[1].shape == (10, 2, 1)
