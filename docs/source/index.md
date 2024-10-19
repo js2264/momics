@@ -18,10 +18,12 @@ The `momics` package aims to facilitate:
 Follow `momics` development on [GitHub](https://github.com/js2264/momics).
 
 ```{toctree}
-:caption: Table of content
-:maxdepth: 3
+:caption: Contents
+:maxdepth: 1
 
-user_guide/index
+user_guide/get-started
+user_guide/api
+user_guide/cli
 api/index
 cli/index
 ```

@@ -1,6 +1,10 @@
 # Introduction to `momics` API
 
-## Introduction
+```{danger}
+This package is still under active development, and we make no promises
+about the stability of any specific class, function, etc.
+Pin versions if you're worried about breaking changes!
+```
 
 The `momics` package provides a Python API for creating and interacting with the `momics` data
 model. This API is designed to be simple and intuitive, and is built on top of
@@ -91,13 +95,13 @@ print(mom.tracks())
 
 ## Querying `momics` repositories
 
-The `momics` package provides a dedicated `MultiRangeQuery` class,
+The `momics` package provides a dedicated `MomicsQuery` class,
 to register query ranges, run queries and export results.
 
 ### Registering a query
 
 ```python
-q = momics.MultiRangeQuery(mom, "I:10-1000")
+q = momics.MomicsQuery(mom, "I:10-1000")
 ```
 
 ### Running a query
@@ -126,7 +130,7 @@ q.query_tracks(threads = 4)
 ### Exporting query results
 
 The query results can be coerced into generic bioinformatic data objects and
-exported to output files using dedicated methods of the `MultiRangeQuery` class.
+exported to output files using dedicated methods of the `MomicsQuery` class.
 
 ```python
 # Coerce queried sequences as a SeqRecord object

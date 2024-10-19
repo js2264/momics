@@ -35,7 +35,6 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.ifconfig",
     "sphinx.ext.viewcode",
-    "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
     "sphinx_click.ext",
     "myst_parser",
@@ -45,7 +44,6 @@ myst_enable_extensions = ["colon_fence", "substitution"]
 myst_heading_anchors = 2
 source_suffix = [".rst", ".md"]
 
-autosummary_generate = True
 numpydoc_show_class_members = True
 napoleon_use_rtype = True
 autodoc_typehints = "description"
@@ -60,6 +58,7 @@ master_doc = "index"
 html_static_path = ["_static"]
 html_logo = "_static/logo.svg"
 html_favicon = "_static/logo.svg"
+html_css_files = ["css/custom.css"]
 html_sourcelink_suffix = ""
 html_last_updated_fmt = ""
 htmlhelp_basename = "momicsdoc"
@@ -72,6 +71,7 @@ html_theme = "sphinx_rtd_theme"
 html_theme_options = {
     "use_edit_page_button": True,
     "external_links": "",
+    "logo_only": False,
     "github_url": "https://github.com/js2264/momics/",
     "show_prev_next": False,
     "search_bar_text": "Search the docs ...",
@@ -83,6 +83,8 @@ html_theme_options = {
     "footer_start": ["copyright"],
     "footer_center": ["sphinx-version"],
     "content_footer_items": ["last-updated"],
+    "rightsidebar": "false",
+    "relbarbgcolor": "black",
 }
 html_context = {
     "github_url": "https://github.com/js2264/momics/",
@@ -93,11 +95,11 @@ html_context = {
 }
 html_static_path = ["_static"]
 
-autosummary_generate = True
-
 # -- Options for autoapi -------------------------------------------------------
 autoapi_type = "python"
 autoapi_dirs = ["../../src/momics"]
+autoapi_ignore = ["*/cli*"]
+autoapi_exclude = ["*/cli*"]
 autoapi_options = [
     "members",
     "undoc-members",
