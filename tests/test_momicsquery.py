@@ -1,5 +1,6 @@
 import json
 import multiprocessing
+import os
 import pickle
 import tempfile
 from pathlib import Path
@@ -9,7 +10,7 @@ import pandas as pd
 import pyranges as pr
 import pytest
 
-from momics import momics
+from momics.momics import Momics
 from momics.momicsquery import MomicsQuery
 
 multiprocessing.set_start_method("spawn", force=True)
@@ -17,7 +18,7 @@ multiprocessing.set_start_method("spawn", force=True)
 
 @pytest.mark.order(2)
 def test_momicsquery_tracks(momics_path: str, bed1: str):
-    mom = momics.Momics(momics_path)
+    mom = Momics(momics_path)
     q = MomicsQuery(mom, "I:990-1010").query_tracks()
     assert len(q.coverage) == 4
     assert len(q.coverage["bw2"]["I:990-1010"]) == 20
@@ -45,7 +46,7 @@ def test_momicsquery_tracks(momics_path: str, bed1: str):
 
 @pytest.mark.order(2)
 def test_momicsquery_seq(momics_path: str):
-    mom = momics.Momics(momics_path)
+    mom = Momics(momics_path)
     q = MomicsQuery(mom, "I:0-10").query_sequence()
     assert len(q.seq) == 1
     assert q.seq["nucleotide"]["I:0-10"] == "ATCGATCGAT"
@@ -57,7 +58,7 @@ def test_momicsquery_seq(momics_path: str):
 
 @pytest.mark.order(2)
 def test_momicsquery_seq2(momics_path: str, bed1: str):
-    mom = momics.Momics(momics_path)
+    mom = Momics(momics_path)
     q = MomicsQuery(mom, "I:0-10").query_sequence()
     bed = pr.read_bed(bed1)
     q = MomicsQuery(mom, bed).query_sequence()
@@ -69,7 +70,7 @@ def test_momicsquery_seq2(momics_path: str, bed1: str):
 
 @pytest.mark.order(2)
 def test_momicsquery_seq3(momics_path: str):
-    mom = momics.Momics(momics_path)
+    mom = Momics(momics_path)
     q = MomicsQuery(mom, "I:0-10").query_sequence()
     q = MomicsQuery(mom, "I").query_sequence()
     assert len(q.seq["nucleotide"]["I:0-10000"]) == 10000
@@ -77,7 +78,7 @@ def test_momicsquery_seq3(momics_path: str):
 
 @pytest.mark.order(2)
 def test_momicsquery_seq4(momics_path: str, bed1: str):
-    mom = momics.Momics(momics_path)
+    mom = Momics(momics_path)
     q = MomicsQuery(mom, "I:0-10").query_sequence()
     bed = pr.read_bed(bed1)
     q = MomicsQuery(mom, bed).query_sequence()
@@ -86,7 +87,7 @@ def test_momicsquery_seq4(momics_path: str, bed1: str):
 
 @pytest.mark.order(2)
 def test_momicsquery_seq5(momics_path: str, bed1: str):
-    mom = momics.Momics(momics_path)
+    mom = Momics(momics_path)
     bed = pr.read_bed(bed1)
     print(bed)
     q = MomicsQuery(mom, "I:0-10").query_sequence()
@@ -115,7 +116,7 @@ def temp_npz_file():
 
 @pytest.mark.order(2)
 def test_to_json_npz(momics_path: str, temp_json_file: Path, temp_npz_file: Path):
-    mom = momics.Momics(momics_path)
+    mom = Momics(momics_path)
     q = MomicsQuery(mom, "I:0-10").query_sequence().query_tracks()
 
     q.to_json(temp_json_file)
@@ -133,3 +134,31 @@ def test_to_json_npz(momics_path: str, temp_json_file: Path, temp_npz_file: Path
     assert seq["nucleotide"]["I:0-10"] == "ATCGATCGAT"
     assert list(cov.keys()) == ["bw2", "custom", "bw3", "bw4", "nucleotide"]
     assert list(cov["bw2"].keys()) == ["I:0-10"]
+
+
+@pytest.mark.order(2)
+def test_pileup(momics_path: str):
+    mom = Momics(momics_path)
+    b = mom.bins(3, 1)["I", 6990:7010]
+    q = MomicsQuery(mom, b).query_tracks()
+    x = q.pileup()
+    print(x.keys())
+    assert list(x.keys()) == ["bw2", "custom", "bw3", "bw4"]
+    assert [len(y) for y in x["bw2"].values()] == [10000, 20000, 30000]
+    assert x["bw2"]["I"].shape == (10000,)
+
+    b = mom.bins(3, 1)["I", 6990:7010]
+    x = q.pileup(type="mean")
+    assert x["bw2"]["I"].shape == (10000,)
+    vec = x["bw2"]["I"][6985:7015] - np.array([0] * 3 + [0.06] * 12 + [0.07] * 12 + [0] * 3) < 1e-6
+    assert sum(vec) == 30
+    x = q.pileup(type="sum")
+    assert x["bw2"]["I"].shape == (10000,)
+    res = np.array([0] * 3 + [0.06, 0.12] + [0.18] * 10 + [0.21] * 10 + [0.14, 0.07] + [0] * 3)
+    vec = x["bw2"]["I"][6985:7015] - res < 1e-6
+    assert sum(vec) == 30
+
+    x = q.pileup(prefix="tmp__")
+    print(x)
+    assert len(x) == 4
+    assert [os.path.exists(idx) for idx in iter(x)].count(True) == 4

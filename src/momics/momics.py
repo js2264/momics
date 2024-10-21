@@ -591,6 +591,8 @@ class Momics:
         """
         bins = []
         chroms = self.chroms().set_index("chrom")["length"].to_dict()
+        if chroms == {}:
+            raise ValueError("Please fill out `chroms` table first.")
 
         for chrom, length in chroms.items():
             start = 0

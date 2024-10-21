@@ -3,7 +3,7 @@ import json
 import pickle
 import time
 from pathlib import Path
-from typing import List, Optional, Dict
+from typing import List, Literal, Optional, Dict, Union
 
 import numpy as np
 import pandas as pd
@@ -16,6 +16,7 @@ from Bio.SeqRecord import SeqRecord
 from .logging import logger
 from .momics import Momics
 from .utils import parse_ucsc_coordinates
+from .utils import dict_to_bigwig
 
 
 class MomicsQuery:
@@ -23,7 +24,7 @@ class MomicsQuery:
 
     Attributes
     ----------
-    momics (Momics): a local `.momics` repository.
+    momics (Momics): a local `.momics` repositoryasdcasdc.
     queries (dict): Dict. of pr.PyRanges object.
     coverage (dict): Dictionary of coverage scores extracted from the \
         `.momics` repository, populated after calling `q.query_tracks()`
@@ -35,8 +36,8 @@ class MomicsQuery:
         """Initialize the MomicsQuery object.
 
         Args:
-            momics (Momics): a Momics object
-            bed (pr.PyRanges): pr.PyRanges object
+            momics (Momics): a `Momics` object
+            bed (pr.PyRanges): `pr.PyRanges` object
         """
         if not isinstance(momics, Momics):
             raise ValueError("momics must be a `Momics` object.")
@@ -262,6 +263,84 @@ class MomicsQuery:
         t = time.time() - start0
         logger.info(f"Query completed in {round(t,4)}s.")
         return self
+
+    # For this function, the `type` argument can be either "mean" or "sum"
+    def pileup(self, type: Literal["mean", "sum"] = "mean", prefix: Optional[str] = None) -> Union[dict, None]:
+        """
+        Aggregate query coverages into genome-wide dictionary(ies).
+        If the `coverage` attribute has not been populated yet, the :func:`query_tracks()` method will be called.
+        The coverage over each range is aggregated across all tracks. In the case of
+        overlapping ranges, the coverage is averaged.
+
+        Each value of the output dictionary is a dictionary itself, with the keys being the chromosome names
+        and the values being the coverage score, averaged for overlapping ranges.
+
+        Args:
+            prefix (str, optional): Prefix to the output `.bw` files to create.
+                If provided, queried coverage will be saved for each track in a file
+                named `<prefix>_<track_label>.bw`.
+
+        Returns:
+            A dictionary of genome-wide coverage scores, for each track. If
+            the queried ranges overlap, the coverage is averaged.
+            Note that if the output argument is provided, the results will be
+            saved to a `.bw` file and this function will return the Path to the file.
+
+        See Also:
+            :func:`MomicsQuery.query_tracks()`
+
+        Examples:
+            >>> mom = momics.momics.Momics('path/to/momics')
+            >>> windows = pr.PyRanges(
+            ...     chromosomes = ["I", "I", "I", "I"],
+            ...     starts = [0, 5, 10, 20],
+            ...     ends = [30, 30, 30, 30],
+            ... )
+            >>> q = MomicsQuery(mom, windows)
+            >>> q.query_tracks()
+            >>> q.pileup()
+        """
+        cov = self.coverage
+        if cov is None:
+            self.query_tracks()
+            cov = self.coverage
+
+        attrs = cov.keys()
+        ranges = self.ranges
+        chroms = self.momics.chroms()
+        chrom_sizes = {chrom: size for chrom, size in zip(chroms["chrom"], chroms["length"])}
+        tracks = {attr: dict() for attr in attrs}
+
+        for attr in iter(attrs):
+            attr_cov = cov[attr]
+            track = {chrom: np.zeros(size) for chrom, size in chrom_sizes.items()}
+            overlap_count = {chrom: np.zeros(size) for chrom, size in chrom_sizes.items()}
+
+            for (_, row), (_, row_cov) in zip(ranges.df.iterrows(), attr_cov.items()):
+                chrom = row["Chromosome"]
+                start = row["Start"]
+                end = row["End"]
+                track[chrom][start:end] += row_cov
+                overlap_count[chrom][start:end] += 1
+
+            if type == "mean":
+                for chrom in track:
+                    non_zero_mask = overlap_count[chrom] > 0
+                    track[chrom][non_zero_mask] /= overlap_count[chrom][non_zero_mask]
+
+            tracks[attr] = track
+
+        if prefix is not None:
+            bw_paths = []
+            for attr in attrs:
+                f = Path(f"{prefix}_{attr}.bw")
+                p = dict_to_bigwig(tracks[attr], f)
+                logger.info(f"Saved coverage for {attr} to {p.name}")
+                bw_paths.append(p)
+            return bw_paths
+
+        else:
+            return tracks
 
     def to_df(self) -> pd.DataFrame:
         """Parse self.coverage attribute to a pd.DataFrame
