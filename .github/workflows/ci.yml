@@ -74,6 +74,9 @@ jobs:
         with:
           python-version: 3.12
 
+      - name: Install pandoc (required for doc generation)
+        uses: pandoc/actions/setup@v1
+
       - name: Buid Sphinx doc
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/devel' }}
         run: |

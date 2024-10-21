@@ -8,53 +8,6 @@ import pyBigWig
 import pyfaidx
 
 
-def get_chr_lengths(bw: Union[Path, str]) -> dict:
-    """Parse bigwig header to extract chromosome lengths
-
-    Args:
-        bw (Path): path to a bigwig file
-
-    Returns:
-        dict: Dictionary of chromosome lengths
-    """
-    if isinstance(bw, Path):
-        bw = bw.name
-    with pyBigWig.open(bw) as b:
-        a = b.chroms()
-    b.close()
-    return a
-
-
-def dict_to_bigwig(bw_dict: dict, output: Union[Path, str]) -> Path:
-    """
-    Write a dictionary of coverages to a bigwig file.
-    The dictionary should have chromosome names as keys and per-base coverage as values.
-
-    Args:
-        bw_dict (dict): Dictionary of chromosome coverages
-        output (Path): Path to output bigwig file
-
-    Returns:
-        Path to the output bigwig file
-
-    Examples:
-    >>> bw_dict = {'chr1': np.random.rand(1000), 'chr2': np.random.rand(2000)}
-    >>> dict_to_bigwig(bw_dict, 'output.bw')
-    """
-    if isinstance(output, Path):
-        output = output.name
-
-    bw = pyBigWig.open(output, "w")
-    header = [(chrom, len(coverage)) for chrom, coverage in bw_dict.items()]
-    bw.addHeader(header)
-    for chrom, coverage in bw_dict.items():
-        values0 = np.float32(coverage)
-        bw.addEntries(chrom, 0, values=values0, span=1, step=1)
-    bw.close()
-
-    return Path(output)
-
-
 def _check_fasta_lengths(fasta, chroms) -> None:
     reference_lengths = dict(zip(chroms["chrom"], chroms["length"]))
     if isinstance(fasta, Path):
@@ -102,8 +55,57 @@ def _check_track_name(track, tracks) -> None:
         raise ValueError(f"Provided track name '{track}' does not exist in `tracks` table")
 
 
+def get_chr_lengths(bw: Union[Path, str]) -> dict:
+    """
+    A simple wrapper around pyBigWig to get chromosome lengths from a bigwig file.
+
+    Args:
+        bw (Path): path to a bigwig file
+
+    Returns:
+        dict: Dictionary of chromosome lengths
+    """
+    if isinstance(bw, Path):
+        bw = bw.name
+    with pyBigWig.open(bw) as b:
+        a = b.chroms()
+    b.close()
+    return a
+
+
+def dict_to_bigwig(bw_dict: dict, output: Union[Path, str]) -> Path:
+    """
+    Write a dictionary of coverages to a bigwig file.
+    The dictionary should have chromosome names as keys and per-base coverage as values.
+
+    Args:
+        bw_dict (dict): Dictionary of chromosome coverages
+        output (Path): Path to output bigwig file
+
+    Returns:
+        Path to the output bigwig file
+
+    Examples:
+        >>> bw_dict = {'chr1': np.random.rand(1000), 'chr2': np.random.rand(2000)}
+        >>> dict_to_bigwig(bw_dict, 'output.bw')
+    """
+    if isinstance(output, Path):
+        output = output.name
+
+    bw = pyBigWig.open(output, "w")
+    header = [(chrom, len(coverage)) for chrom, coverage in bw_dict.items()]
+    bw.addHeader(header)
+    for chrom, coverage in bw_dict.items():
+        values0 = np.float32(coverage)
+        bw.addEntries(chrom, 0, values=values0, span=1, step=1)
+    bw.close()
+
+    return Path(output)
+
+
 def parse_ucsc_coordinates(coords: Union[List, str]) -> pr.PyRanges:
-    """Parse UCSC-style coordinates as a pr.PyRanges object.
+    """
+    Parse UCSC-style coordinates as a pr.PyRanges object. The coordinates should be in the format "chrom:start-end".
 
     Args:
         coords (str): A UCSC-style set of coordinates (e.g., "I:11-100").
