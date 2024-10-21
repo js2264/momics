@@ -460,34 +460,45 @@ class Momics:
             chroms = pd.DataFrame(columns=["chrom_index", "chrom", "length"])
         return chroms
 
-    def seq(self) -> pd.DataFrame:
+    def seq(self, label: Optional[str] = None) -> pd.DataFrame:
         """Extract sequence table from a `.momics` repository.
+
+        Args:
+            label (str, optional): Which chromosome to extract. Defaults to None.
 
         Returns:
             pd.DataFrame: A data frame listing one chromosome per row,
             with first/last 10 nts.
         """
-        if self.chroms().empty:
+        chroms = self.chroms()
+        if chroms.empty:
             raise OSError("`chroms` table has not been filled out yet.")
 
         try:
-            tdb = self._build_uri("genome", f"{self.chroms()['chrom'][0]}.tdb")
+            tdb = self._build_uri("genome", f"{chroms['chrom'][0]}.tdb")
             _ = self._get_table(tdb)
             pass
         except FileExistsError as e:
             raise OSError("`seq` table has not been filled out yet.") from e
 
-        chroms = self.chroms()
-        chroms["seq"] = pd.Series()
-        for chrom in chroms["chrom"]:
-            tdb = self._build_uri("genome", f"{chrom}.tdb")
-            chrom_len = chroms[chroms["chrom"] == chrom]["length"].iloc[0]
+        if label is not None:
+            if label not in chroms.chrom.values:
+                raise ValueError(f"Selected attribute does not exist: '{label}'.")
+            tdb = self._build_uri("genome", f"{label}.tdb")
             with tiledb.open(tdb, "r", ctx=self.cfg.ctx) as A:
-                start_nt = "".join(A.df[0:9]["nucleotide"])
-                end_nt = "".join(A.df[(chrom_len - 10) : (chrom_len - 1)]["nucleotide"])
-            chroms.loc[chroms["chrom"] == chrom, "seq"] = start_nt + "..." + end_nt
+                seq = A[:]["nucleotide"][:-1]
+            return "".join(seq)
+        else:
+            chroms["seq"] = pd.Series()
+            for chrom in chroms["chrom"]:
+                tdb = self._build_uri("genome", f"{chrom}.tdb")
+                chrom_len = chroms[chroms["chrom"] == chrom]["length"].iloc[0]
+                with tiledb.open(tdb, "r", ctx=self.cfg.ctx) as A:
+                    start_nt = "".join(A.df[0:9]["nucleotide"])
+                    end_nt = "".join(A.df[(chrom_len - 10) : (chrom_len - 1)]["nucleotide"])
+                chroms.loc[chroms["chrom"] == chrom, "seq"] = start_nt + "..." + end_nt
 
-        return chroms
+            return chroms
 
     def tracks(self, label: Optional[str] = None) -> Union[pd.DataFrame, pr.PyRanges]:
         """Extract table of ingested bigwigs.

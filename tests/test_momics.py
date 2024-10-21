@@ -127,6 +127,13 @@ def test_Momics_ingest_seq(momics_path: str, fa1: str, fa2: str):
 
     print(mom.seq())
 
+    assert mom.seq().shape == (3, 4)
+
+    with pytest.raises(ValueError, match=r"Selected attribute does not exist.*"):
+        mom.seq("csadc")
+    assert isinstance(mom.seq("I"), str)
+    assert len(mom.seq("II")) == 20000
+
 
 @pytest.mark.order(1)
 def test_Momics_remove_tracks(momics_path: str, bw1: str, bw2: str, bed1: str):
