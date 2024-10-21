@@ -38,7 +38,7 @@ def test_dict_to_bigwig():
         "I": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
         "II": [11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
     }
-    utils._dict_to_bigwig(bw_dict, "out.bw")
+    utils.dict_to_bigwig(bw_dict, "out.bw")
     assert os.path.exists("out.bw")
     os.remove("out.bw")
 

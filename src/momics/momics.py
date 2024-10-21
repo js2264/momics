@@ -790,7 +790,7 @@ class Momics:
         # Save the coverage dict as a temporary bigwig file
         # and ingest it using `ingest_tracks`
         tmp_bw = tempfile.NamedTemporaryFile(delete=False)
-        path = utils._dict_to_bigwig(coverage, Path(tmp_bw.name))
+        path = utils.dict_to_bigwig(coverage, Path(tmp_bw.name))
         self.ingest_tracks({track: path.name}, threads=threads)
         os.remove(path.name)
 

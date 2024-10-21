@@ -38,6 +38,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx_click.ext",
     "myst_parser",
+    "nbsphinx",
 ]
 
 myst_enable_extensions = ["colon_fence", "substitution"]
@@ -111,3 +112,17 @@ autoapi_options = [
 autoapi_keep_files = False
 autoapi_root = "api"
 autoapi_member_order = "groupwise"
+
+# --------------------------------------------------------------------------------
+# nbsphinx settings
+
+nbsphinx_prolog = r"""
+.. raw:: html
+
+    <style>
+        .output_area {
+            max-height: 300px; /* Adjust the height based on your preference */
+            overflow-y: auto;
+        }
+    </style>
+"""

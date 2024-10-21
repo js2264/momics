@@ -93,6 +93,7 @@ docs = [
     "pydata-sphinx-theme",
     "sphinx-rtd-theme",
     "myst-parser",
+    "nbsphinx",
 ]
 
 [tool.black]

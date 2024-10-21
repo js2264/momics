@@ -25,8 +25,10 @@ def get_chr_lengths(bw: Union[Path, str]) -> dict:
     return a
 
 
-def _dict_to_bigwig(bw_dict: dict, output: Union[Path, str]) -> Path:
-    """Write a dictionary of coverages to a bigwig file
+def dict_to_bigwig(bw_dict: dict, output: Union[Path, str]) -> Path:
+    """
+    Write a dictionary of coverages to a bigwig file.
+    The dictionary should have chromosome names as keys and per-base coverage as values.
 
     Args:
         bw_dict (dict): Dictionary of chromosome coverages
@@ -34,6 +36,10 @@ def _dict_to_bigwig(bw_dict: dict, output: Union[Path, str]) -> Path:
 
     Returns:
         Path to the output bigwig file
+
+    Examples:
+    >>> bw_dict = {'chr1': np.random.rand(1000), 'chr2': np.random.rand(2000)}
+    >>> dict_to_bigwig(bw_dict, 'output.bw')
     """
     if isinstance(output, Path):
         output = output.name
