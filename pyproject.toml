@@ -94,6 +94,7 @@ docs = [
     "sphinx-rtd-theme",
     "myst-parser",
     "nbsphinx",
+    "lxml[html_clean]",
 ]
 
 [tool.black]
