@@ -1,0 +1,1012 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Managing cloud-hosted momics repositories &mdash; momics</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f1559f00" />
+
+  
+    <link rel="shortcut icon" href="../_static/logo.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=83a61292"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Train neural networks with momics and tensorflow" href="nn-training.html" />
+    <link rel="prev" title="Integrating multi-omics data with momics" href="integrating-multiomics.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            momics
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/intro.html">What is <code class="docutils literal notranslate"><span class="pre">momics</span></code>?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/intro.html#a-file-format-for-efficient-storage-of-multi-omics-data">A file format for efficient storage of multi-omics data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/intro.html#a-large-scale-multi-omics-data-management-framework">A large-scale multi-omics data management framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/intro.html#an-efficient-query-engine-for-multi-omics-data">An efficient query engine for multi-omics data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/intro.html#an-integration-layer-of-multi-omics-data-and-machine-learning">An integration layer of multi-omics data and machine learning</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/concepts.html#id1"></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/get-started.html">Get started with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/get-started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/get-started.html#quick-start">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/get-started.html#going-further">Going further</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/api.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/api.html#creating-momics-repositories">Creating <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/api.html#registering-chromosomes">Registering chromosomes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/api.html#populating-momics-repositories">Populating <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/api.html#querying-momics-repositories">Querying <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/api.html#registering-a-query">Registering a query</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/api.html#running-a-query">Running a query</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/api.html#exporting-query-results">Exporting query results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/api.html#going-further">Going further</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/cli.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> CLI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/cli.html#basic-cli-usage">Basic CLI usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/cli.html#extra-cli-utilities">Extra CLI utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/cli.html#going-further">Going further</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="integrating-multiomics.html">Integrating multi-omics data with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="integrating-multiomics.html#Creating-a-local-momics-repository">Creating a local <code class="docutils literal notranslate"><span class="pre">momics</span></code> repository</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Managing cloud-hosted <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Creating-a-momics-repository-on-an-S3-bucket">Creating a <code class="docutils literal notranslate"><span class="pre">momics</span></code> repository on an S3 bucket</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Adding-data-to-the-repository">Adding data to the repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Querying-data-from-the-repository">Querying data from the repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Extracting-data-from-the-repository">Extracting data from the repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Deleting-a-repository">Deleting a repository</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="nn-training.html">Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="nn-training.html#Connect-to-the-data">Connect to the data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn-training.html#Modify-some-tracks">Modify some tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn-training.html#Define-model">Define model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn-training.html#Fit-the-model">Fit the model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn-training.html#Evaluate-and-save-model">Evaluate and save model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn-training.html#Use-the-model-to-predict-ATAC-seq-coverage">Use the model to predict ATAC-seq coverage</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/momics/index.html">momics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/chromnn/index.html">momics.chromnn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/config/index.html">momics.config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/dataset/index.html">momics.dataset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/logging/index.html">momics.logging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/momics/index.html">momics.momics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/momicsquery/index.html">momics.momicsquery</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/streamer/index.html">momics.streamer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/utils/index.html">momics.utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/version/index.html">momics.version</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/index.html#momics.__format_version__"><code class="docutils literal notranslate"><span class="pre">__format_version__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/index.html#momics.__version__"><code class="docutils literal notranslate"><span class="pre">__version__</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../cli/index.html">CLI Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cli/index.html#contents">Contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../cli/index.html#momics">momics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-binnify">binnify</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-config">config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-cp">cp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-create">create</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-delete">delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-ingest">ingest</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-ls">ls</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-query">query</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-remove">remove</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-tree">tree</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">momics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Managing cloud-hosted <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorials/cloud-repos.ipynb" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <style>
+    .output_area {
+        max-height: 300px; /* Adjust the height based on your preference */
+        overflow-y: auto;
+    }
+</style><section id="Managing-cloud-hosted-momics-repositories">
+<h1>Managing cloud-hosted <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories<a class="headerlink" href="#Managing-cloud-hosted-momics-repositories" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">momics</span></code> provides native support for cloud-hosted repositories. This means that you can use <code class="docutils literal notranslate"><span class="pre">momics</span></code> to create repositories directly on cloud storage services like S3, GCP or Azure buckets. Here, we will see how to create, manage and query cloud-hosted repositories using <code class="docutils literal notranslate"><span class="pre">momics</span></code>.</p>
+<section id="Prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Link to this heading"></a></h2>
+<p>To use cloud-hosted repositories, you need to have the following:</p>
+<ol class="arabic simple">
+<li><p>A cloud storage service account with the necessary permissions to create and manage buckets.</p></li>
+<li><p>The necessary credentials to access the cloud storage service. This could be in the form of a service account key, or a token.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">momics</span></code> package installed in your Python environment.</p></li>
+</ol>
+<p>We will use an S3 bucket for demonstration purposes. You can use the same steps for other cloud storage services as well.</p>
+</section>
+<section id="Creating-a-momics-repository-on-an-S3-bucket">
+<h2>Creating a <code class="docutils literal notranslate"><span class="pre">momics</span></code> repository on an S3 bucket<a class="headerlink" href="#Creating-a-momics-repository-on-an-S3-bucket" title="Link to this heading"></a></h2>
+<p>The first step to create a S3-hosted repository is set up the configuration that <code class="docutils literal notranslate"><span class="pre">momics</span></code> will use. For S3, you need to provide the following information:</p>
+<ol class="arabic simple">
+<li><p>The access key and secret key for the S3 account.</p></li>
+<li><p>The region where the bucket is located.</p></li>
+<li><p>The name of a bucket where the repository will be created. You will need authorization to read from and write to this bucket.</p></li>
+</ol>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from momics import config as mconfig
+import os
+
+s3_access_key_id = os.environ.get(&quot;AWS_ACCESS_KEY_ID&quot;)
+s3_secret_access_key = os.environ.get(&quot;AWS_SECRET_ACCESS_KEY&quot;)
+
+s3_cfg = mconfig.S3Config(region=&quot;eu-west-3&quot;, access_key_id=s3_access_key_id, secret_access_key=s3_secret_access_key)
+momics_cfg = mconfig.MomicsConfig(s3=s3_cfg)
+momics_cfg.cfg
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<table><tr><th>Parameter</th><th>Value</th></tr><tr><td>config.env_var_prefix</td><td>'TILEDB_'</td></tr><tr><td>config.logging_format</td><td>'DEFAULT'</td></tr><tr><td>config.logging_level</td><td>'0'</td></tr><tr><td>filestore.buffer_size</td><td>'104857600'</td></tr><tr><td>rest.capnp_traversal_limit</td><td>'2147483648'</td></tr><tr><td>rest.curl.buffer_size</td><td>'524288'</td></tr><tr><td>rest.curl.retry_errors</td><td>'true'</td></tr><tr><td>rest.curl.verbose</td><td>'false'</td></tr><tr><td>rest.http_compressor</td><td>'any'</td></tr><tr><td>rest.load_enumerations_on_array_open</td><td>'true'</td></tr><tr><td>rest.load_metadata_on_array_open</td><td>'true'</td></tr><tr><td>rest.load_non_empty_domain_on_array_open</td><td>'true'</td></tr><tr><td>rest.payer_namespace</td><td>''</td></tr><tr><td>rest.retry_count</td><td>'25'</td></tr><tr><td>rest.retry_delay_factor</td><td>'1.25'</td></tr><tr><td>rest.retry_http_codes</td><td>'503'</td></tr><tr><td>rest.retry_initial_delay_ms</td><td>'500'</td></tr><tr><td>rest.server_address</td><td>'https://api.tiledb.com'</td></tr><tr><td>rest.server_serialization_format</td><td>'CAPNP'</td></tr><tr><td>rest.use_refactored_array_open</td><td>'true'</td></tr><tr><td>rest.use_refactored_array_open_and_query_submit</td><td>'true'</td></tr><tr><td>sm.allow_separate_attribute_writes</td><td>'false'</td></tr><tr><td>sm.allow_updates_experimental</td><td>'false'</td></tr><tr><td>sm.check_coord_dups</td><td>'true'</td></tr><tr><td>sm.check_coord_oob</td><td>'true'</td></tr><tr><td>sm.check_global_order</td><td>'true'</td></tr><tr><td>sm.compute_concurrency_level</td><td>'20'</td></tr><tr><td>sm.consolidation.amplification</td><td>'1.0'</td></tr><tr><td>sm.consolidation.buffer_size</td><td>'50000000'</td></tr><tr><td>sm.consolidation.max_fragment_size</td><td>'18446744073709551615'</td></tr><tr><td>sm.consolidation.mode</td><td>'fragments'</td></tr><tr><td>sm.consolidation.purge_deleted_cells</td><td>'false'</td></tr><tr><td>sm.consolidation.step_max_frags</td><td>'4294967295'</td></tr><tr><td>sm.consolidation.step_min_frags</td><td>'4294967295'</td></tr><tr><td>sm.consolidation.step_size_ratio</td><td>'0.0'</td></tr><tr><td>sm.consolidation.steps</td><td>'4294967295'</td></tr><tr><td>sm.consolidation.timestamp_end</td><td>'18446744073709551615'</td></tr><tr><td>sm.consolidation.timestamp_start</td><td>'0'</td></tr><tr><td>sm.dedup_coords</td><td>'false'</td></tr><tr><td>sm.enable_signal_handlers</td><td>'true'</td></tr><tr><td>sm.encryption_key</td><td>''</td></tr><tr><td>sm.encryption_type</td><td>'NO_ENCRYPTION'</td></tr><tr><td>sm.enumerations_max_size</td><td>'10485760'</td></tr><tr><td>sm.enumerations_max_total_size</td><td>'52428800'</td></tr><tr><td>sm.fragment_info.preload_mbrs</td><td>'false'</td></tr><tr><td>sm.group.timestamp_end</td><td>'18446744073709551615'</td></tr><tr><td>sm.group.timestamp_start</td><td>'0'</td></tr><tr><td>sm.io_concurrency_level</td><td>'20'</td></tr><tr><td>sm.max_tile_overlap_size</td><td>'314572800'</td></tr><tr><td>sm.mem.consolidation.buffers_weight</td><td>'1'</td></tr><tr><td>sm.mem.consolidation.reader_weight</td><td>'3'</td></tr><tr><td>sm.mem.consolidation.writer_weight</td><td>'2'</td></tr><tr><td>sm.mem.malloc_trim</td><td>'true'</td></tr><tr><td>sm.mem.reader.sparse_global_order.ratio_array_data</td><td>'0.1'</td></tr><tr><td>sm.mem.reader.sparse_global_order.ratio_coords</td><td>'0.5'</td></tr><tr><td>sm.mem.reader.sparse_global_order.ratio_tile_ranges</td><td>'0.1'</td></tr><tr><td>sm.mem.reader.sparse_unordered_with_dups.ratio_array_data</td><td>'0.1'</td></tr><tr><td>sm.mem.reader.sparse_unordered_with_dups.ratio_coords</td><td>'0.5'</td></tr><tr><td>sm.mem.reader.sparse_unordered_with_dups.ratio_tile_ranges</td><td>'0.1'</td></tr><tr><td>sm.mem.tile_upper_memory_limit</td><td>'1073741824'</td></tr><tr><td>sm.mem.total_budget</td><td>'10737418240'</td></tr><tr><td>sm.memory_budget</td><td>'5368709120'</td></tr><tr><td>sm.memory_budget_var</td><td>'10737418240'</td></tr><tr><td>sm.merge_overlapping_ranges_experimental</td><td>'true'</td></tr><tr><td>sm.partial_tile_offsets_loading</td><td>'false'</td></tr><tr><td>sm.query.dense.qc_coords_mode</td><td>'false'</td></tr><tr><td>sm.query.dense.reader</td><td>'refactored'</td></tr><tr><td>sm.query.sparse_global_order.reader</td><td>'refactored'</td></tr><tr><td>sm.query.sparse_unordered_with_dups.reader</td><td>'refactored'</td></tr><tr><td>sm.read_range_oob</td><td>'warn'</td></tr><tr><td>sm.skip_checksum_validation</td><td>'false'</td></tr><tr><td>sm.skip_est_size_partitioning</td><td>'false'</td></tr><tr><td>sm.skip_unary_partitioning_budget_check</td><td>'false'</td></tr><tr><td>sm.vacuum.mode</td><td>'fragments'</td></tr><tr><td>sm.var_offsets.bitsize</td><td>'64'</td></tr><tr><td>sm.var_offsets.extra_element</td><td>'false'</td></tr><tr><td>sm.var_offsets.mode</td><td>'bytes'</td></tr><tr><td>ssl.ca_file</td><td>''</td></tr><tr><td>ssl.ca_path</td><td>''</td></tr><tr><td>ssl.verify</td><td>'true'</td></tr><tr><td>vfs.azure.blob_endpoint</td><td>''</td></tr><tr><td>vfs.azure.block_list_block_size</td><td>'5242880'</td></tr><tr><td>vfs.azure.max_parallel_ops</td><td>'20'</td></tr><tr><td>vfs.azure.max_retries</td><td>'5'</td></tr><tr><td>vfs.azure.max_retry_delay_ms</td><td>'60000'</td></tr><tr><td>vfs.azure.retry_delay_ms</td><td>'800'</td></tr><tr><td>vfs.azure.storage_account_key</td><td>''</td></tr><tr><td>vfs.azure.storage_account_name</td><td>''</td></tr><tr><td>vfs.azure.storage_sas_token</td><td>''</td></tr><tr><td>vfs.azure.use_block_list_upload</td><td>'true'</td></tr><tr><td>vfs.file.posix_directory_permissions</td><td>'755'</td></tr><tr><td>vfs.file.posix_file_permissions</td><td>'644'</td></tr><tr><td>vfs.gcs.endpoint</td><td>''</td></tr><tr><td>vfs.gcs.impersonate_service_account</td><td>''</td></tr><tr><td>vfs.gcs.max_direct_upload_size</td><td>'10737418240'</td></tr><tr><td>vfs.gcs.max_parallel_ops</td><td>'20'</td></tr><tr><td>vfs.gcs.multi_part_size</td><td>'5242880'</td></tr><tr><td>vfs.gcs.project_id</td><td>''</td></tr><tr><td>vfs.gcs.request_timeout_ms</td><td>'3000'</td></tr><tr><td>vfs.gcs.service_account_key</td><td>''</td></tr><tr><td>vfs.gcs.use_multi_part_upload</td><td>'true'</td></tr><tr><td>vfs.gcs.workload_identity_configuration</td><td>''</td></tr><tr><td>vfs.hdfs.kerb_ticket_cache_path</td><td>''</td></tr><tr><td>vfs.hdfs.name_node_uri</td><td>''</td></tr><tr><td>vfs.hdfs.username</td><td>''</td></tr><tr><td>vfs.max_batch_size</td><td>'104857600'</td></tr><tr><td>vfs.min_batch_gap</td><td>'512000'</td></tr><tr><td>vfs.min_batch_size</td><td>'20971520'</td></tr><tr><td>vfs.min_parallel_size</td><td>'10485760'</td></tr><tr><td>vfs.read_ahead_cache_size</td><td>'10485760'</td></tr><tr><td>vfs.read_ahead_size</td><td>'102400'</td></tr><tr><td>vfs.read_logging_mode</td><td>''</td></tr><tr><td>vfs.s3.aws_access_key_id</td><td>**********</td></tr><tr><td>vfs.s3.aws_external_id</td><td>''</td></tr><tr><td>vfs.s3.aws_load_frequency</td><td>''</td></tr><tr><td>vfs.s3.aws_role_arn</td><td>''</td></tr><tr><td>vfs.s3.aws_secret_access_key</td><td>**********</td></tr><tr><td>vfs.s3.aws_session_name</td><td>''</td></tr><tr><td>vfs.s3.aws_session_token</td><td>''</td></tr><tr><td>vfs.s3.bucket_canned_acl</td><td>'NOT_SET'</td></tr><tr><td>vfs.s3.ca_file</td><td>''</td></tr><tr><td>vfs.s3.ca_path</td><td>''</td></tr><tr><td>vfs.s3.config_source</td><td>'auto'</td></tr><tr><td>vfs.s3.connect_max_tries</td><td>'5'</td></tr><tr><td>vfs.s3.connect_scale_factor</td><td>'25'</td></tr><tr><td>vfs.s3.connect_timeout_ms</td><td>'10800'</td></tr><tr><td>vfs.s3.endpoint_override</td><td>''</td></tr><tr><td>vfs.s3.install_sigpipe_handler</td><td>'true'</td></tr><tr><td>vfs.s3.logging_level</td><td>'Off'</td></tr><tr><td>vfs.s3.max_parallel_ops</td><td>'20'</td></tr><tr><td>vfs.s3.multipart_part_size</td><td>'5242880'</td></tr><tr><td>vfs.s3.no_sign_request</td><td>'false'</td></tr><tr><td>vfs.s3.object_canned_acl</td><td>'NOT_SET'</td></tr><tr><td>vfs.s3.proxy_host</td><td>''</td></tr><tr><td>vfs.s3.proxy_password</td><td>''</td></tr><tr><td>vfs.s3.proxy_port</td><td>'0'</td></tr><tr><td>vfs.s3.proxy_scheme</td><td>'http'</td></tr><tr><td>vfs.s3.proxy_username</td><td>''</td></tr><tr><td>vfs.s3.region</td><td>'eu-west-3'</td></tr><tr><td>vfs.s3.request_timeout_ms</td><td>'3000'</td></tr><tr><td>vfs.s3.requester_pays</td><td>'false'</td></tr><tr><td>vfs.s3.scheme</td><td>'https'</td></tr><tr><td>vfs.s3.skip_init</td><td>'false'</td></tr><tr><td>vfs.s3.sse</td><td>''</td></tr><tr><td>vfs.s3.sse_kms_key_id</td><td>''</td></tr><tr><td>vfs.s3.storage_class</td><td>'NOT_SET'</td></tr><tr><td>vfs.s3.use_multipart_upload</td><td>'true'</td></tr><tr><td>vfs.s3.use_virtual_addressing</td><td>'true'</td></tr><tr><td>vfs.s3.verify_ssl</td><td>'true'</td></tr></table></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>&quot;The registered S3 secret access key starts with: &quot; + momics_cfg.cfg.get(&quot;vfs.s3.aws_secret_access_key&quot;)[0:10] + &quot;...&quot;
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;The registered S3 secret access key starts with: aN9K4FIvyB...&#39;
+</pre></div></div>
+</div>
+<p>Now that the S3 configuration is set up, you can create a <code class="docutils literal notranslate"><span class="pre">momics</span></code> repository as you would do locally. The only two differences is that you need to 1) use the <code class="docutils literal notranslate"><span class="pre">s3://&lt;your_bucket&gt;</span></code> protocol and 2) provide the S3 configuration to the <code class="docutils literal notranslate"><span class="pre">Repository</span></code> object.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from momics.momics import Momics
+
+mom = Momics(&quot;s3://momics/my_repo.mom&quot;, config=momics_cfg)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+momics :: INFO :: 2024-10-21 09:07:22,663 :: Created s3://momics/my_repo.mom
+</pre></div></div>
+</div>
+<p>If the repository does not exist, it will be automatically created, and a log message will be displayed. If the repository already exists, it will be opened and you can directly interact with it.</p>
+<p>Now that we created a repository, let’s try and fetch chromosome sizes from it!</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>mom.chroms()
+&quot;Number of chromosomes: &quot; + str(len(mom.chroms()))
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;Number of chromosomes: 0&#39;
+</pre></div></div>
+</div>
+<p>We can see that chromosomes have not been added to the repository yet. This is because we have just created the repository and it is empty. In the next section, we will see how to add data to the repository.</p>
+<p><strong>Note:</strong></p>
+<p>Note that we do not provide the <code class="docutils literal notranslate"><span class="pre">config</span></code> argument to the <code class="docutils literal notranslate"><span class="pre">chroms()</span></code> method. In fact, the config is stored in the variable itself.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>mom.cfg
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;momics.config.MomicsConfig at 0x7f226427e5c0&gt;
+</pre></div></div>
+</div>
+<p>On top of storing the secrets required to access the cloud storage service, the <code class="docutils literal notranslate"><span class="pre">MomicsConfig</span></code> object extends the <code class="docutils literal notranslate"><span class="pre">TileDB</span></code> configuration object. This means that you can leverage additional TileDB configuration functionalities to interact with your repository! A notable example is the TileDB virtual file system (VFS) implementation which allows you to interact with files and directories located on a cloud storage services in a seamless manner.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>mom.cfg.vfs.ls_recursive(mom.path)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;s3://momics/my_repo.mom/__tiledb_group.tdb&#39;,
+ &#39;s3://momics/my_repo.mom/annotations/__tiledb_group.tdb&#39;,
+ &#39;s3://momics/my_repo.mom/coverage/__tiledb_group.tdb&#39;,
+ &#39;s3://momics/my_repo.mom/genome/__tiledb_group.tdb&#39;]
+</pre></div></div>
+</div>
+<p>So far, the repository does not contain any data.</p>
+</section>
+<section id="Adding-data-to-the-repository">
+<h2>Adding data to the repository<a class="headerlink" href="#Adding-data-to-the-repository" title="Link to this heading"></a></h2>
+<p>Just like local repositories, populating a cloud-hosted repository has to start with registering chromosomes.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>## We will get chromosome sizes from a local fasta file.
+from pyfaidx import Fasta
+
+f = Fasta(&quot;/data/momics/S288c.fa&quot;)
+chrom_lengths = {chrom: len(seq) for chrom, seq in zip(f.keys(), f.values())}
+
+mom.ingest_chroms(chrom_lengths, genome_version=&quot;S288c&quot;)
+mom.chroms()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>chrom_index</th>
+      <th>chrom</th>
+      <th>length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>I</td>
+      <td>230218</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>II</td>
+      <td>813184</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>III</td>
+      <td>316620</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>IV</td>
+      <td>1531933</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>V</td>
+      <td>576874</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>5</td>
+      <td>VI</td>
+      <td>270161</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>6</td>
+      <td>VII</td>
+      <td>1090940</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7</td>
+      <td>VIII</td>
+      <td>562643</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8</td>
+      <td>IX</td>
+      <td>439888</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>9</td>
+      <td>X</td>
+      <td>745751</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>10</td>
+      <td>XI</td>
+      <td>666816</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>11</td>
+      <td>XII</td>
+      <td>1078177</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>12</td>
+      <td>XIII</td>
+      <td>924431</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>13</td>
+      <td>XIV</td>
+      <td>784333</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>14</td>
+      <td>XV</td>
+      <td>1091291</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>15</td>
+      <td>XVI</td>
+      <td>948066</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>16</td>
+      <td>Mito</td>
+      <td>85779</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Once the chromosomes are registered, you can ingest data, e.g. genomic sequence or genomic features, to the repository.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>## Ingesting genome reference sequence
+mom.ingest_sequence(&quot;/data/momics/S288c.fa&quot;)
+mom.seq()
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+momics :: INFO :: 2024-10-21 09:08:11,417 :: Genome sequence ingested in 47.2602s.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>chrom_index</th>
+      <th>chrom</th>
+      <th>length</th>
+      <th>seq</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>I</td>
+      <td>230218</td>
+      <td>CCACACCACA...TGTGTGTGGG</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>II</td>
+      <td>813184</td>
+      <td>AAATAGCCCT...GTGGGTGTGT</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>III</td>
+      <td>316620</td>
+      <td>CCCACACACC...GGTGTGTGTG</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>IV</td>
+      <td>1531933</td>
+      <td>ACACCACACC...TAGCTTTTGG</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>V</td>
+      <td>576874</td>
+      <td>CGTCTCCTCC...TTTTTTTTTT</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>5</td>
+      <td>VI</td>
+      <td>270161</td>
+      <td>GATCTCGCAA...TGGTGTGTGG</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>6</td>
+      <td>VII</td>
+      <td>1090940</td>
+      <td>CCACACCCAC...TTTTTTTTTT</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7</td>
+      <td>VIII</td>
+      <td>562643</td>
+      <td>CCCACACACA...GTGTGTGTGG</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8</td>
+      <td>IX</td>
+      <td>439888</td>
+      <td>CACACACACC...GTGTGTGTGT</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>9</td>
+      <td>X</td>
+      <td>745751</td>
+      <td>CCCACACACA...GTGTGGGTGT</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>10</td>
+      <td>XI</td>
+      <td>666816</td>
+      <td>CACCACACCC...GTGTGTGTGT</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>11</td>
+      <td>XII</td>
+      <td>1078177</td>
+      <td>CACACACACA...AGGGCTATTT</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>12</td>
+      <td>XIII</td>
+      <td>924431</td>
+      <td>CCACACACAC...GTGTGTGGGG</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>13</td>
+      <td>XIV</td>
+      <td>784333</td>
+      <td>CCGGCTTTCT...TGGTGTGGGT</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>14</td>
+      <td>XV</td>
+      <td>1091291</td>
+      <td>ACACCACACC...TGTGGTGTGT</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>15</td>
+      <td>XVI</td>
+      <td>948066</td>
+      <td>AAATAGCCCT...CGGTCAGAAA</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>16</td>
+      <td>Mito</td>
+      <td>85779</td>
+      <td>TTCATAATTA...AATATCCATA</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>## Ingesting genome-wide tracks
+mom.ingest_tracks(
+    {
+        &quot;atac&quot;: &quot;/data/momics/S288c_atac.bw&quot;,
+        &quot;rna&quot;: &quot;/data/momics/S288c_rna.bw&quot;,
+        &quot;scc1&quot;: &quot;/data/momics/S288c_scc1.bw&quot;,
+        &quot;mnase&quot;: &quot;/data/momics/S288c_mnase.bw&quot;,
+    }
+)
+mom.tracks()
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+momics :: INFO :: 2024-10-21 09:10:27,371 :: 4 tracks ingested in 132.0506s.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>idx</th>
+      <th>label</th>
+      <th>path</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>atac</td>
+      <td>/data/momics/S288c_atac.bw</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>rna</td>
+      <td>/data/momics/S288c_rna.bw</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>scc1</td>
+      <td>/data/momics/S288c_scc1.bw</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>mnase</td>
+      <td>/data/momics/S288c_mnase.bw</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="Querying-data-from-the-repository">
+<h2>Querying data from the repository<a class="headerlink" href="#Querying-data-from-the-repository" title="Link to this heading"></a></h2>
+<p>Now that we have added data to the repository, we can query specific genomic ranges using <code class="docutils literal notranslate"><span class="pre">MomicsQuery</span></code> objects.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>## We define non-overlapping windows of 10kb over the entire S288c genome
+windows = mom.bins(1000, stride=1000, cut_last_bin_out=True)
+windows
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Chromosome</th>
+      <th>Start</th>
+      <th>End</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>I</td>
+      <td>0</td>
+      <td>1000</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>I</td>
+      <td>1000</td>
+      <td>2000</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>I</td>
+      <td>2000</td>
+      <td>3000</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>I</td>
+      <td>3000</td>
+      <td>4000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>I</td>
+      <td>4000</td>
+      <td>5000</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>12143</th>
+      <td>XVI</td>
+      <td>943000</td>
+      <td>944000</td>
+    </tr>
+    <tr>
+      <th>12144</th>
+      <td>XVI</td>
+      <td>944000</td>
+      <td>945000</td>
+    </tr>
+    <tr>
+      <th>12145</th>
+      <td>XVI</td>
+      <td>945000</td>
+      <td>946000</td>
+    </tr>
+    <tr>
+      <th>12146</th>
+      <td>XVI</td>
+      <td>946000</td>
+      <td>947000</td>
+    </tr>
+    <tr>
+      <th>12147</th>
+      <td>XVI</td>
+      <td>947000</td>
+      <td>948000</td>
+    </tr>
+  </tbody>
+</table>
+<p>12148 rows × 3 columns</p>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>## Next, we build a query object to query specific tracks from the momics object
+from momics.momicsquery import MomicsQuery
+
+q = MomicsQuery(mom, windows)
+q.query_tracks(tracks=[&quot;atac&quot;, &quot;rna&quot;])
+&quot;ATAC coverage over the first range queried: &quot; + str(q.coverage[&quot;atac&quot;][&quot;I:0-1000&quot;][0:5]) + &quot;...&quot;
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+momics :: INFO :: 2024-10-21 09:14:01,919 :: Query completed in 38.6298s.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;ATAC coverage over the first range queried: [2.56415 7.25287 7.25287 7.25287 7.25287]...&#39;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>## We can also query sequences over the windows
+q.query_sequence()
+&quot;Genome sequence over the first range queried: &quot; + str(q.seq[&quot;nucleotide&quot;][&quot;I:0-1000&quot;][0:10]) + &quot;...&quot;
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+momics :: INFO :: 2024-10-21 09:16:24,760 :: Query completed in 36.2156s.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;Genome sequence over the first range queried: CCACACCACA...&#39;
+</pre></div></div>
+</div>
+</section>
+<section id="Extracting-data-from-the-repository">
+<h2>Extracting data from the repository<a class="headerlink" href="#Extracting-data-from-the-repository" title="Link to this heading"></a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">momics</span></code> repository can also be used to store and retrieve data. This data can be extracted from the repository and saved to a local file.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>atac = mom.tracks(label=&quot;atac&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from momics import utils as mutils
+
+path = mutils.dict_to_bigwig(atac, &quot;extracted_atac_track.bw&quot;)
+&quot;File saved to: &quot; + path.name
+&quot;File exists: &quot; + str(os.path.exists(path))
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;File exists: True&#39;
+</pre></div></div>
+</div>
+</section>
+<section id="Deleting-a-repository">
+<h2>Deleting a repository<a class="headerlink" href="#Deleting-a-repository" title="Link to this heading"></a></h2>
+<p>To delete a repository, you can use the <code class="docutils literal notranslate"><span class="pre">remove()</span></code> method on the repository object. This will delete the repository and all its contents. Now that this notebook is complete, we can delete the repository :)</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>mom.remove()
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+momics :: INFO :: 2024-10-21 09:16:50,603 :: Purged s3://momics/my_repo.mom
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+True
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="integrating-multiomics.html" class="btn btn-neutral float-left" title="Integrating multi-omics data with momics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="nn-training.html" class="btn btn-neutral float-right" title="Train neural networks with momics and tensorflow" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-2024, Jacques Serizay.
+      <span class="lastupdated">Last updated on Oct 21, 2024.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

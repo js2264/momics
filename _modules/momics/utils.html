@@ -1,0 +1,442 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>momics.utils &mdash; momics</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f1559f00" />
+
+  
+    <link rel="shortcut icon" href="../../_static/logo.svg"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=83a61292"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            momics
+              <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/intro.html">What is <code class="docutils literal notranslate"><span class="pre">momics</span></code>?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/intro.html#a-file-format-for-efficient-storage-of-multi-omics-data">A file format for efficient storage of multi-omics data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/intro.html#a-large-scale-multi-omics-data-management-framework">A large-scale multi-omics data management framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/intro.html#an-efficient-query-engine-for-multi-omics-data">An efficient query engine for multi-omics data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/intro.html#an-integration-layer-of-multi-omics-data-and-machine-learning">An integration layer of multi-omics data and machine learning</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/concepts.html#id1"></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/get-started.html">Get started with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/get-started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/get-started.html#quick-start">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/get-started.html#going-further">Going further</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/api.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/api.html#creating-momics-repositories">Creating <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/api.html#registering-chromosomes">Registering chromosomes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/api.html#populating-momics-repositories">Populating <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/api.html#querying-momics-repositories">Querying <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/api.html#registering-a-query">Registering a query</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/api.html#running-a-query">Running a query</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/api.html#exporting-query-results">Exporting query results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/api.html#going-further">Going further</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/cli.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> CLI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/cli.html#basic-cli-usage">Basic CLI usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/cli.html#extra-cli-utilities">Extra CLI utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/cli.html#going-further">Going further</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/integrating-multiomics.html">Integrating multi-omics data with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/integrating-multiomics.html#Creating-a-local-momics-repository">Creating a local <code class="docutils literal notranslate"><span class="pre">momics</span></code> repository</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cloud-repos.html">Managing cloud-hosted <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/cloud-repos.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/cloud-repos.html#Creating-a-momics-repository-on-an-S3-bucket">Creating a <code class="docutils literal notranslate"><span class="pre">momics</span></code> repository on an S3 bucket</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/cloud-repos.html#Adding-data-to-the-repository">Adding data to the repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/cloud-repos.html#Querying-data-from-the-repository">Querying data from the repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/cloud-repos.html#Extracting-data-from-the-repository">Extracting data from the repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/cloud-repos.html#Deleting-a-repository">Deleting a repository</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/nn-training.html">Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/nn-training.html#Connect-to-the-data">Connect to the data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/nn-training.html#Modify-some-tracks">Modify some tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/nn-training.html#Define-model">Define model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/nn-training.html#Fit-the-model">Fit the model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/nn-training.html#Evaluate-and-save-model">Evaluate and save model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/nn-training.html#Use-the-model-to-predict-ATAC-seq-coverage">Use the model to predict ATAC-seq coverage</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/momics/index.html">momics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/momics/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/chromnn/index.html">momics.chromnn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/config/index.html">momics.config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/dataset/index.html">momics.dataset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/logging/index.html">momics.logging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/momics/index.html">momics.momics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/momicsquery/index.html">momics.momicsquery</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/streamer/index.html">momics.streamer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/utils/index.html">momics.utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/version/index.html">momics.version</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/momics/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/momics/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/index.html#momics.__format_version__"><code class="docutils literal notranslate"><span class="pre">__format_version__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/index.html#momics.__version__"><code class="docutils literal notranslate"><span class="pre">__version__</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli/index.html">CLI Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../cli/index.html#contents">Contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../cli/index.html#momics">momics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html#momics-binnify">binnify</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html#momics-config">config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html#momics-cp">cp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html#momics-create">create</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html#momics-delete">delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html#momics-ingest">ingest</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html#momics-ls">ls</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html#momics-query">query</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html#momics-remove">remove</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html#momics-tree">tree</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">momics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">momics.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for momics.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pyranges</span> <span class="k">as</span> <span class="nn">pr</span>
+<span class="kn">import</span> <span class="nn">pyBigWig</span>
+<span class="kn">import</span> <span class="nn">pyfaidx</span>
+
+
+<span class="k">def</span> <span class="nf">_check_fasta_lengths</span><span class="p">(</span><span class="n">fasta</span><span class="p">,</span> <span class="n">chroms</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">reference_lengths</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">],</span> <span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;length&quot;</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fasta</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+        <span class="n">fasta</span> <span class="o">=</span> <span class="n">fasta</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">with</span> <span class="n">pyfaidx</span><span class="o">.</span><span class="n">Fasta</span><span class="p">(</span><span class="n">fasta</span><span class="p">)</span> <span class="k">as</span> <span class="n">fa</span><span class="p">:</span>
+        <span class="n">lengths</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">seq</span> <span class="ow">in</span> <span class="n">fa</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="k">if</span> <span class="n">lengths</span> <span class="o">!=</span> <span class="n">reference_lengths</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fa</span><span class="si">}</span><span class="s2"> file do not have identical chromomosome lengths.&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_check_chr_lengths</span><span class="p">(</span><span class="n">bw_files</span><span class="p">,</span> <span class="n">chroms</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">reference_lengths</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">],</span> <span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;length&quot;</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">bw_files</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+            <span class="n">file</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">with</span> <span class="n">pyBigWig</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="k">as</span> <span class="n">bw</span><span class="p">:</span>
+            <span class="n">lengths</span> <span class="o">=</span> <span class="n">bw</span><span class="o">.</span><span class="n">chroms</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">lengths</span> <span class="o">!=</span> <span class="n">reference_lengths</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2"> files do not have identical chromomosome lengths.&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_check_track_names</span><span class="p">(</span><span class="n">bw_files</span><span class="p">,</span> <span class="n">tracks</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">tracks</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">bw_files</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Provided label &#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s2">&#39; already present in `tracks` table&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_check_feature_names</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">sets</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">sets</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">features</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Provided label &#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s2">&#39; already present in `features` table&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_check_feature_name</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">features</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">features</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">feature</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Provided feature name &#39;</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">&#39; does not exist in `features` table&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_check_track_name</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="n">tracks</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">tracks</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">track</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Provided track name &#39;</span><span class="si">{</span><span class="n">track</span><span class="si">}</span><span class="s2">&#39; does not exist in `tracks` table&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_chr_lengths">
+<a class="viewcode-back" href="../../api/momics/utils/index.html#momics.utils.get_chr_lengths">[docs]</a>
+<span class="k">def</span> <span class="nf">get_chr_lengths</span><span class="p">(</span><span class="n">bw</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A simple wrapper around pyBigWig to get chromosome lengths from a bigwig file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        bw (Path): path to a bigwig file</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: Dictionary of chromosome lengths</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bw</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+        <span class="n">bw</span> <span class="o">=</span> <span class="n">bw</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">with</span> <span class="n">pyBigWig</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">bw</span><span class="p">)</span> <span class="k">as</span> <span class="n">b</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">chroms</span><span class="p">()</span>
+    <span class="n">b</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">a</span></div>
+
+
+
+<div class="viewcode-block" id="dict_to_bigwig">
+<a class="viewcode-back" href="../../api/momics/utils/index.html#momics.utils.dict_to_bigwig">[docs]</a>
+<span class="k">def</span> <span class="nf">dict_to_bigwig</span><span class="p">(</span><span class="n">bw_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write a dictionary of coverages to a bigwig file.</span>
+<span class="sd">    The dictionary should have chromosome names as keys and per-base coverage as values.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        bw_dict (dict): Dictionary of chromosome coverages</span>
+<span class="sd">        output (Path): Path to output bigwig file</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Path to the output bigwig file</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; bw_dict = {&#39;chr1&#39;: np.random.rand(1000), &#39;chr2&#39;: np.random.rand(2000)}</span>
+<span class="sd">        &gt;&gt;&gt; dict_to_bigwig(bw_dict, &#39;output.bw&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="n">bw</span> <span class="o">=</span> <span class="n">pyBigWig</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="p">[(</span><span class="n">chrom</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">coverage</span><span class="p">))</span> <span class="k">for</span> <span class="n">chrom</span><span class="p">,</span> <span class="n">coverage</span> <span class="ow">in</span> <span class="n">bw_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+    <span class="n">bw</span><span class="o">.</span><span class="n">addHeader</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">chrom</span><span class="p">,</span> <span class="n">coverage</span> <span class="ow">in</span> <span class="n">bw_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">values0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">coverage</span><span class="p">)</span>
+        <span class="n">bw</span><span class="o">.</span><span class="n">addEntries</span><span class="p">(</span><span class="n">chrom</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">values0</span><span class="p">,</span> <span class="n">span</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">bw</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="parse_ucsc_coordinates">
+<a class="viewcode-back" href="../../api/momics/utils/index.html#momics.utils.parse_ucsc_coordinates">[docs]</a>
+<span class="k">def</span> <span class="nf">parse_ucsc_coordinates</span><span class="p">(</span><span class="n">coords</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pr</span><span class="o">.</span><span class="n">PyRanges</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse UCSC-style coordinates as a pr.PyRanges object. The coordinates should be in the format &quot;chrom:start-end&quot;.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        coords (str): A UCSC-style set of coordinates (e.g., &quot;I:11-100&quot;).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pr.PyRanges: A pr.PyRanges object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="p">[</span><span class="n">coords</span><span class="p">]</span>
+
+    <span class="n">coords_dict</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="n">coords</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">chr_part</span><span class="p">,</span> <span class="n">range_part</span> <span class="o">=</span> <span class="n">coord</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+            <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">range_part</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+            <span class="n">coords_dict</span><span class="p">[</span><span class="s2">&quot;chr&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chr_part</span><span class="p">)</span>
+            <span class="n">coords_dict</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+            <span class="n">coords_dict</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid start/end values in coordinate &#39;</span><span class="si">{</span><span class="n">coord</span><span class="si">}</span><span class="s2">&#39;. &quot;</span> <span class="o">+</span> <span class="s2">&quot;Start and end must be integers.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid format for UCSC-style coordinate &#39;</span><span class="si">{</span><span class="n">coord</span><span class="si">}</span><span class="s2">&#39;. &quot;</span> <span class="o">+</span> <span class="s2">&quot;Expected format: &#39;chrom:start-end&#39;.&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+    <span class="k">return</span> <span class="n">pr</span><span class="o">.</span><span class="n">PyRanges</span><span class="p">(</span><span class="n">chromosomes</span><span class="o">=</span><span class="n">coords_dict</span><span class="p">[</span><span class="s2">&quot;chr&quot;</span><span class="p">],</span> <span class="n">starts</span><span class="o">=</span><span class="n">coords_dict</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">],</span> <span class="n">ends</span><span class="o">=</span><span class="n">coords_dict</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="split_ranges">
+<a class="viewcode-back" href="../../api/momics/utils/index.html#momics.utils.split_ranges">[docs]</a>
+<span class="k">def</span> <span class="nf">split_ranges</span><span class="p">(</span><span class="n">pyranges</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pr</span><span class="o">.</span><span class="n">PyRanges</span><span class="p">,</span> <span class="n">pr</span><span class="o">.</span><span class="n">PyRanges</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Split a PyRanges object into two PyRanges objects based on a ratio.</span>
+<span class="sd">    The first PyRanges object will contain the first `ratio` proportion of the</span>
+<span class="sd">    ranges, and the second PyRanges object will contain the remaining ranges.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pyranges (pr.PyRanges): A PyRanges object.</span>
+<span class="sd">        ratio (float): A float between 0 and 1.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Tuple[pr.PyRanges, pr.PyRanges]: A tuple of two PyRanges objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pyranges</span><span class="o">.</span><span class="n">df</span>
+    <span class="k">if</span> <span class="n">shuffle</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pyranges</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">split_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">*</span> <span class="n">ratio</span><span class="p">)</span>
+    <span class="n">train_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">split_idx</span><span class="p">]</span>
+    <span class="n">test_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">split_idx</span><span class="p">:]</span>
+    <span class="n">train_pyranges</span> <span class="o">=</span> <span class="n">pr</span><span class="o">.</span><span class="n">PyRanges</span><span class="p">(</span><span class="n">train_df</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="n">test_pyranges</span> <span class="o">=</span> <span class="n">pr</span><span class="o">.</span><span class="n">PyRanges</span><span class="p">(</span><span class="n">test_df</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">train_pyranges</span><span class="p">,</span> <span class="n">test_pyranges</span></div>
+
+
+
+<div class="viewcode-block" id="pyranges_to_bw">
+<a class="viewcode-back" href="../../api/momics/utils/index.html#momics.utils.pyranges_to_bw">[docs]</a>
+<span class="k">def</span> <span class="nf">pyranges_to_bw</span><span class="p">(</span><span class="n">pyranges</span><span class="p">:</span> <span class="n">pr</span><span class="o">.</span><span class="n">PyRanges</span><span class="p">,</span> <span class="n">scores</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write a PyRanges object and corresponding scores to a BigWig file.</span>
+<span class="sd">    The PyRanges object must have the same length as the first dimension of the scores array.</span>
+<span class="sd">    The PyRanges object must have ranges of the same width as the second dimension of the scores array.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pyranges (pr.PyRanges): A PyRanges object.</span>
+<span class="sd">        scores (np.ndarray): A 2D NumPy array of scores.</span>
+<span class="sd">        output (str): Path to the output BigWig file.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Abort if output file already exists</span>
+    <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output file &#39;</span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&#39; already exists&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Check that pyranges length is the same as scores dim 0</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pyranges</span><span class="p">)</span> <span class="o">!=</span> <span class="n">scores</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Length of PyRanges object must be the same as scores dimension 0&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Check that all pyranges widths are equal to the scores dim 1</span>
+    <span class="n">widths</span> <span class="o">=</span> <span class="n">pyranges</span><span class="o">.</span><span class="n">End</span> <span class="o">-</span> <span class="n">pyranges</span><span class="o">.</span><span class="n">Start</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">widths</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All ranges must have the same width&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">widths</span><span class="p">))</span> <span class="o">!=</span> <span class="n">scores</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All ranges must have the same width as the second dimension of scores&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Save chrom sizes in header</span>
+    <span class="n">bw</span> <span class="o">=</span> <span class="n">pyBigWig</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="c1"># if there is only one chromosome, get its size and add it to the header</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pyranges</span><span class="o">.</span><span class="n">Chromosome</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">chrom_size</span> <span class="o">=</span> <span class="n">pyranges</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;End&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">bw</span><span class="o">.</span><span class="n">addHeader</span><span class="p">([(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">pyranges</span><span class="o">.</span><span class="n">Chromosome</span><span class="p">)),</span> <span class="n">chrom_size</span><span class="p">)])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">chrom_sizes</span> <span class="o">=</span> <span class="n">pyranges</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;Chromosome&quot;</span><span class="p">,</span> <span class="n">observed</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="s2">&quot;End&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="n">chroms</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chrom_sizes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">sizes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chrom_sizes</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">bw</span><span class="o">.</span><span class="n">addHeader</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">chroms</span><span class="p">,</span> <span class="n">sizes</span><span class="p">)))</span>
+
+    <span class="c1"># Iterate over the PyRanges and write corresponding scores</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pyranges</span><span class="o">.</span><span class="n">df</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">chrom</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Chromosome</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">Start</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">End</span><span class="p">)):</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">positions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span>
+        <span class="n">bw</span><span class="o">.</span><span class="n">addEntries</span><span class="p">([</span><span class="n">chrom</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">),</span> <span class="n">positions</span><span class="p">,</span> <span class="n">ends</span><span class="o">=</span><span class="p">[</span><span class="n">p</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="n">score</span><span class="p">)</span>
+
+    <span class="c1"># Step 4: Close the BigWig file</span>
+    <span class="n">bw</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-2024, Jacques Serizay.
+      <span class="lastupdated">Last updated on Oct 21, 2024.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

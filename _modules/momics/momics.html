@@ -1,0 +1,1212 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>momics.momics &mdash; momics</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=f1559f00" />
+
+  
+    <link rel="shortcut icon" href="../../_static/logo.svg"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=83a61292"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            momics
+              <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/intro.html">What is <code class="docutils literal notranslate"><span class="pre">momics</span></code>?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/intro.html#a-file-format-for-efficient-storage-of-multi-omics-data">A file format for efficient storage of multi-omics data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/intro.html#a-large-scale-multi-omics-data-management-framework">A large-scale multi-omics data management framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/intro.html#an-efficient-query-engine-for-multi-omics-data">An efficient query engine for multi-omics data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/intro.html#an-integration-layer-of-multi-omics-data-and-machine-learning">An integration layer of multi-omics data and machine learning</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/concepts.html#id1"></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/get-started.html">Get started with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/get-started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/get-started.html#quick-start">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/get-started.html#going-further">Going further</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/api.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/api.html#creating-momics-repositories">Creating <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/api.html#registering-chromosomes">Registering chromosomes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/api.html#populating-momics-repositories">Populating <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/api.html#querying-momics-repositories">Querying <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/api.html#registering-a-query">Registering a query</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/api.html#running-a-query">Running a query</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/api.html#exporting-query-results">Exporting query results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/api.html#going-further">Going further</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/cli.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> CLI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/cli.html#basic-cli-usage">Basic CLI usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/cli.html#extra-cli-utilities">Extra CLI utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/cli.html#going-further">Going further</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/integrating-multiomics.html">Integrating multi-omics data with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/integrating-multiomics.html#Creating-a-local-momics-repository">Creating a local <code class="docutils literal notranslate"><span class="pre">momics</span></code> repository</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/cloud-repos.html">Managing cloud-hosted <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/cloud-repos.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/cloud-repos.html#Creating-a-momics-repository-on-an-S3-bucket">Creating a <code class="docutils literal notranslate"><span class="pre">momics</span></code> repository on an S3 bucket</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/cloud-repos.html#Adding-data-to-the-repository">Adding data to the repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/cloud-repos.html#Querying-data-from-the-repository">Querying data from the repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/cloud-repos.html#Extracting-data-from-the-repository">Extracting data from the repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/cloud-repos.html#Deleting-a-repository">Deleting a repository</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/nn-training.html">Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/nn-training.html#Connect-to-the-data">Connect to the data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/nn-training.html#Modify-some-tracks">Modify some tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/nn-training.html#Define-model">Define model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/nn-training.html#Fit-the-model">Fit the model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/nn-training.html#Evaluate-and-save-model">Evaluate and save model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/nn-training.html#Use-the-model-to-predict-ATAC-seq-coverage">Use the model to predict ATAC-seq coverage</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/momics/index.html">momics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/momics/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/chromnn/index.html">momics.chromnn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/config/index.html">momics.config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/dataset/index.html">momics.dataset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/logging/index.html">momics.logging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/momics/index.html">momics.momics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/momicsquery/index.html">momics.momicsquery</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/streamer/index.html">momics.streamer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/utils/index.html">momics.utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/version/index.html">momics.version</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/momics/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/momics/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/index.html#momics.__format_version__"><code class="docutils literal notranslate"><span class="pre">__format_version__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/momics/index.html#momics.__version__"><code class="docutils literal notranslate"><span class="pre">__version__</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli/index.html">CLI Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../cli/index.html#contents">Contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../cli/index.html#momics">momics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html#momics-binnify">binnify</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html#momics-config">config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html#momics-cp">cp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html#momics-create">create</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html#momics-delete">delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html#momics-ingest">ingest</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html#momics-ls">ls</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html#momics-query">query</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html#momics-remove">remove</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html#momics-tree">tree</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">momics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">momics.momics</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for momics.momics</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">concurrent.futures</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span> <span class="nn">Bio</span>
+<span class="kn">from</span> <span class="nn">Bio</span> <span class="kn">import</span> <span class="n">SeqIO</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pyranges</span> <span class="k">as</span> <span class="nn">pr</span>
+<span class="kn">import</span> <span class="nn">pyBigWig</span>
+<span class="kn">import</span> <span class="nn">pyfaidx</span>
+<span class="kn">import</span> <span class="nn">tiledb</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">.config</span> <span class="kn">import</span> <span class="n">MomicsConfig</span>
+<span class="kn">from</span> <span class="nn">.logging</span> <span class="kn">import</span> <span class="n">logger</span>
+
+<span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+
+<span class="n">TILEDB_COMPRESSION</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">TILEDB_CHUNKSIZE</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">TILEDB_POSITION_FILTERS</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">FilterList</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="c1"># tiledb.DoubleDeltaFilter(),</span>
+    <span class="p">],</span>
+    <span class="n">chunksize</span><span class="o">=</span><span class="n">TILEDB_CHUNKSIZE</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">TILEDB_COV_FILTERS</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">FilterList</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="c1"># tiledb.LZ4Filter(level=TILEDB_COMPRESSION),</span>
+        <span class="n">tiledb</span><span class="o">.</span><span class="n">ZstdFilter</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">TILEDB_COMPRESSION</span><span class="p">),</span>
+    <span class="p">],</span>
+    <span class="n">chunksize</span><span class="o">=</span><span class="n">TILEDB_CHUNKSIZE</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">TILEDB_SEQ_FILTERS</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">FilterList</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="c1"># tiledb.LZ4Filter(level=TILEDB_COMPRESSION),</span>
+        <span class="n">tiledb</span><span class="o">.</span><span class="n">ZstdFilter</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">TILEDB_COMPRESSION</span><span class="p">),</span>
+    <span class="p">],</span>
+    <span class="n">chunksize</span><span class="o">=</span><span class="n">TILEDB_CHUNKSIZE</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_set_tiledb_tile</span><span class="p">(</span><span class="n">tile</span><span class="p">,</span> <span class="n">chrom_length</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">chrom_length</span><span class="p">,</span> <span class="n">tile</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">t</span>
+
+
+<div class="viewcode-block" id="Momics">
+<a class="viewcode-back" href="../../api/momics/momics/index.html#momics.momics.Momics">[docs]</a>
+<span class="k">class</span> <span class="nc">Momics</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to manipulate `.momics` repositories.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : str</span>
+<span class="sd">        Path to a `.momics` repository.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MomicsConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the Momics class.</span>
+<span class="sd">        By default, a `.momics` repository is created at the specified path if</span>
+<span class="sd">        it does not already exist.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): Path to a `.momics` repository.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">MomicsConfig</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">config</span>
+
+        <span class="c1">## Check if folder exists. If not, create it.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">vfs</span><span class="o">.</span><span class="n">is_dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">vfs</span><span class="o">.</span><span class="n">create_dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_repository</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_is_cloud_hosted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">False</span><span class="p">]]:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;s3://&quot;</span><span class="p">,</span> <span class="s2">&quot;gcs://&quot;</span><span class="p">,</span> <span class="s2">&quot;azure://&quot;</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;://&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_build_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">subdirs</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_cloud_hosted</span><span class="p">():</span>
+            <span class="k">return</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">),</span> <span class="o">*</span><span class="nb">list</span><span class="p">(</span><span class="n">subdirs</span><span class="p">)])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="o">*</span><span class="n">subdirs</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_create_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">genome_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;genome&quot;</span><span class="p">)</span>
+        <span class="n">coverage_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;coverage&quot;</span><span class="p">)</span>
+        <span class="n">features_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;annotations&quot;</span><span class="p">)</span>
+        <span class="n">tiledb</span><span class="o">.</span><span class="n">group_create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span>
+        <span class="n">tiledb</span><span class="o">.</span><span class="n">group_create</span><span class="p">(</span><span class="n">genome_path</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span>
+        <span class="n">tiledb</span><span class="o">.</span><span class="n">group_create</span><span class="p">(</span><span class="n">coverage_path</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span>
+        <span class="n">tiledb</span><span class="o">.</span><span class="n">group_create</span><span class="p">(</span><span class="n">features_path</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">vfs</span><span class="o">.</span><span class="n">is_dir</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">sparse</span><span class="p">:</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">df</span><span class="p">[:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="mi">0</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">a</span>
+
+    <span class="k">def</span> <span class="nf">_create_chroms_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chr_lengths</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;genome&quot;</span><span class="p">,</span> <span class="s2">&quot;chroms.tdb&quot;</span><span class="p">)</span>
+        <span class="n">dom_genome</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Domain</span><span class="p">(</span>
+            <span class="n">tiledb</span><span class="o">.</span><span class="n">Dim</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;chrom_index&quot;</span><span class="p">,</span>
+                <span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">chr_lengths</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
+                <span class="n">tile</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">chr_lengths</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">attr_chr</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;chrom&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;ascii&quot;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">attr_length</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;length&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">ArraySchema</span><span class="p">(</span>
+            <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span>
+            <span class="n">domain</span><span class="o">=</span><span class="n">dom_genome</span><span class="p">,</span>
+            <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="n">attr_chr</span><span class="p">,</span> <span class="n">attr_length</span><span class="p">],</span>
+            <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">tiledb</span><span class="o">.</span><span class="n">Array</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">tdb</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_create_sequence_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tile</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Create every /genome/{chrom}.tdb</span>
+        <span class="n">chroms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chroms</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">chrom</span> <span class="ow">in</span> <span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">]:</span>
+            <span class="n">chrom_length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chroms</span><span class="p">[</span><span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">chrom</span><span class="p">][</span><span class="s2">&quot;length&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;genome&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s2">.tdb&quot;</span><span class="p">)</span>
+            <span class="n">dom</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Domain</span><span class="p">(</span>
+                <span class="n">tiledb</span><span class="o">.</span><span class="n">Dim</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;position&quot;</span><span class="p">,</span>
+                    <span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">chrom_length</span><span class="p">),</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
+                    <span class="n">tile</span><span class="o">=</span><span class="n">_set_tiledb_tile</span><span class="p">(</span><span class="n">tile</span><span class="p">,</span> <span class="n">chrom_length</span><span class="p">),</span>
+                    <span class="n">filters</span><span class="o">=</span><span class="n">TILEDB_POSITION_FILTERS</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;nucleotide&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="n">TILEDB_SEQ_FILTERS</span><span class="p">)</span>
+            <span class="n">schema</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">ArraySchema</span><span class="p">(</span>
+                <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span>
+                <span class="n">domain</span><span class="o">=</span><span class="n">dom</span><span class="p">,</span>
+                <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="n">attr</span><span class="p">],</span>
+                <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">tiledb</span><span class="o">.</span><span class="n">Array</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">tdb</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_create_track_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_bws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tile</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Create /coverage/tracks.tdb</span>
+        <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;coverage&quot;</span><span class="p">,</span> <span class="s2">&quot;tracks.tdb&quot;</span><span class="p">)</span>
+        <span class="n">dom</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Domain</span><span class="p">(</span>
+            <span class="n">tiledb</span><span class="o">.</span><span class="n">Dim</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;idx&quot;</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_bws</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">tile</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">attr1</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+        <span class="n">attr2</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;path&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">ArraySchema</span><span class="p">(</span><span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">dom</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="n">attr1</span><span class="p">,</span> <span class="n">attr2</span><span class="p">],</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">tiledb</span><span class="o">.</span><span class="n">Array</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">tdb</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+
+        <span class="c1"># Create every /coverage/{chrom}.tdb</span>
+        <span class="n">chroms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chroms</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">chrom</span> <span class="ow">in</span> <span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">]:</span>
+            <span class="n">chrom_length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chroms</span><span class="p">[</span><span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">chrom</span><span class="p">][</span><span class="s2">&quot;length&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;coverage&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s2">.tdb&quot;</span><span class="p">)</span>
+            <span class="n">dom</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Domain</span><span class="p">(</span>
+                <span class="n">tiledb</span><span class="o">.</span><span class="n">Dim</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;position&quot;</span><span class="p">,</span>
+                    <span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">chrom_length</span><span class="p">),</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
+                    <span class="n">tile</span><span class="o">=</span><span class="n">_set_tiledb_tile</span><span class="p">(</span><span class="n">tile</span><span class="p">,</span> <span class="n">chrom_length</span><span class="p">),</span>
+                    <span class="n">filters</span><span class="o">=</span><span class="n">TILEDB_POSITION_FILTERS</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;placeholder&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="n">TILEDB_COV_FILTERS</span><span class="p">)</span>
+            <span class="n">schema</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">ArraySchema</span><span class="p">(</span>
+                <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span>
+                <span class="n">domain</span><span class="o">=</span><span class="n">dom</span><span class="p">,</span>
+                <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="n">attr</span><span class="p">],</span>
+                <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">tiledb</span><span class="o">.</span><span class="n">Array</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">tdb</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_create_features_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_features</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tile</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Create /features/tracks.tdb</span>
+        <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;annotations&quot;</span><span class="p">,</span> <span class="s2">&quot;features.tdb&quot;</span><span class="p">)</span>
+        <span class="n">dom</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Domain</span><span class="p">(</span>
+            <span class="n">tiledb</span><span class="o">.</span><span class="n">Dim</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;idx&quot;</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_features</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">tile</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">ArraySchema</span><span class="p">(</span>
+            <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span>
+            <span class="n">domain</span><span class="o">=</span><span class="n">dom</span><span class="p">,</span>
+            <span class="n">attrs</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">tiledb</span><span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;ascii&quot;</span><span class="p">),</span>
+                <span class="n">tiledb</span><span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
+            <span class="p">],</span>
+            <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">tiledb</span><span class="o">.</span><span class="n">Array</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">tdb</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+
+        <span class="c1"># Create every /features/{chrom}.tdb</span>
+        <span class="n">chroms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chroms</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">chrom</span> <span class="ow">in</span> <span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">]:</span>
+            <span class="n">chrom_length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chroms</span><span class="p">[</span><span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">chrom</span><span class="p">][</span><span class="s2">&quot;length&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;annotations&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s2">.tdb&quot;</span><span class="p">)</span>
+            <span class="n">dom</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Domain</span><span class="p">(</span>
+                <span class="n">tiledb</span><span class="o">.</span><span class="n">Dim</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;idx&quot;</span><span class="p">,</span>
+                    <span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_features</span><span class="p">),</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
+                    <span class="n">tile</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">tiledb</span><span class="o">.</span><span class="n">Dim</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;start&quot;</span><span class="p">,</span>
+                    <span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">chrom_length</span><span class="p">),</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
+                    <span class="n">tile</span><span class="o">=</span><span class="n">_set_tiledb_tile</span><span class="p">(</span><span class="n">tile</span><span class="p">,</span> <span class="n">chrom_length</span><span class="p">),</span>
+                    <span class="n">filters</span><span class="o">=</span><span class="n">TILEDB_POSITION_FILTERS</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">tiledb</span><span class="o">.</span><span class="n">Dim</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;stop&quot;</span><span class="p">,</span>
+                    <span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">chrom_length</span><span class="p">),</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
+                    <span class="n">tile</span><span class="o">=</span><span class="n">_set_tiledb_tile</span><span class="p">(</span><span class="n">tile</span><span class="p">,</span> <span class="n">chrom_length</span><span class="p">),</span>
+                    <span class="n">filters</span><span class="o">=</span><span class="n">TILEDB_POSITION_FILTERS</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">tiledb</span><span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">),</span>
+                <span class="n">tiledb</span><span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;strand&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;ascii&quot;</span><span class="p">),</span>
+                <span class="n">tiledb</span><span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;ascii&quot;</span><span class="p">),</span>
+            <span class="p">]</span>
+            <span class="n">schema</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">ArraySchema</span><span class="p">(</span>
+                <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span>
+                <span class="n">domain</span><span class="o">=</span><span class="n">dom</span><span class="p">,</span>
+                <span class="n">attrs</span><span class="o">=</span><span class="n">attrs</span><span class="p">,</span>
+                <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">tiledb</span><span class="o">.</span><span class="n">Array</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">tdb</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_populate_track_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bws</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;coverage&quot;</span><span class="p">,</span> <span class="s2">&quot;tracks.tdb&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">tdb</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span> <span class="k">as</span> <span class="n">array</span><span class="p">:</span>
+            <span class="n">array</span><span class="p">[</span><span class="n">n</span> <span class="p">:</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">bws</span><span class="p">))]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">bws</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+                <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">bws</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
+            <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">_populate_chroms_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bws</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">threads</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">_add_attribute_to_array</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Check that attribute does not already exist</span>
+            <span class="n">has_attr</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">with</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">has_attr</span><span class="p">(</span><span class="n">attribute_name</span><span class="p">):</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Label </span><span class="si">{</span><span class="n">attribute_name</span><span class="si">}</span><span class="s2"> already exists and will be erased.&quot;</span><span class="p">)</span>
+                    <span class="n">has_attr</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="c1"># Add attribute to array</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">has_attr</span><span class="p">:</span>
+                <span class="n">new_attr</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Attr</span><span class="p">(</span><span class="n">attribute_name</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="n">TILEDB_COV_FILTERS</span><span class="p">)</span>
+                <span class="n">se</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">ArraySchemaEvolution</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span>
+                <span class="n">se</span><span class="o">.</span><span class="n">add_attribute</span><span class="p">(</span><span class="n">new_attr</span><span class="p">)</span>
+                <span class="n">se</span><span class="o">.</span><span class="n">array_evolve</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+
+            <span class="c1"># Check whether `placeholder` attribute still exists</span>
+            <span class="n">erase_placeholder</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">with</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">has_attr</span><span class="p">(</span><span class="s2">&quot;placeholder&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">A</span><span class="o">.</span><span class="n">nattr</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">erase_placeholder</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="c1"># If so, drop it</span>
+            <span class="k">if</span> <span class="n">erase_placeholder</span><span class="p">:</span>
+                <span class="n">se</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">ArraySchemaEvolution</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span>
+                <span class="n">se</span><span class="o">.</span><span class="n">drop_attribute</span><span class="p">(</span><span class="s2">&quot;placeholder&quot;</span><span class="p">)</span>
+                <span class="n">se</span><span class="o">.</span><span class="n">array_evolve</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_process_chrom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chrom</span><span class="p">,</span> <span class="n">chrom_length</span><span class="p">,</span> <span class="n">bws</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;coverage&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s2">.tdb&quot;</span><span class="p">)</span>
+
+            <span class="c1"># If there are already scores in the array, read them</span>
+            <span class="c1"># THIS NEEDS TO BE UPDATED AS SOON AS</span>
+            <span class="c1"># TILEDB ALLOWS PARTIAL ATTRIBUTE WRITING!!</span>
+            <span class="n">cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">cfg</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;sm.compute_concurrency_level&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;sm.io_concurrency_level&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+            <span class="k">with</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">tdb</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">cfg</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
+                <span class="n">sch</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">schema</span>
+                <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">sch</span><span class="o">.</span><span class="n">attr</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sch</span><span class="o">.</span><span class="n">nattr</span><span class="p">)]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">attrs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;placeholder&quot;</span><span class="p">:</span>
+                    <span class="n">orig_scores</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">orig_scores</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">chrom_length</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">bwf</span> <span class="ow">in</span> <span class="n">bws</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="c1"># Add bw label to array attributes</span>
+                <span class="n">_add_attribute_to_array</span><span class="p">(</span><span class="n">tdb</span><span class="p">,</span> <span class="n">bwf</span><span class="p">)</span>
+
+                <span class="c1"># Ingest bigwig scores for this bw and this chrom</span>
+                <span class="k">with</span> <span class="n">pyBigWig</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">bws</span><span class="p">[</span><span class="n">bwf</span><span class="p">])</span> <span class="k">as</span> <span class="n">bw</span><span class="p">:</span>
+                    <span class="n">arr</span> <span class="o">=</span> <span class="n">bw</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">chrom</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">chrom_length</span><span class="p">,</span> <span class="n">numpy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">orig_scores</span><span class="p">[</span><span class="n">bwf</span><span class="p">]</span> <span class="o">=</span> <span class="n">arr</span>
+
+            <span class="c1"># Re-write appended scores to chrom array</span>
+            <span class="k">with</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">tdb</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">cfg</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
+                <span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">chrom_length</span><span class="p">]</span> <span class="o">=</span> <span class="n">orig_scores</span>
+
+            <span class="n">cfg</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;sm.compute_concurrency_level&quot;</span><span class="p">:</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">})</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;sm.io_concurrency_level&quot;</span><span class="p">:</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">})</span>
+
+        <span class="k">def</span> <span class="nf">_log_task_completion</span><span class="p">(</span><span class="n">future</span><span class="p">,</span> <span class="n">chrom</span><span class="p">,</span> <span class="n">ntasks</span><span class="p">,</span> <span class="n">completed_tasks</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">future</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tracks ingestion over </span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s2"> failed with exception: &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">future</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
+                    <span class="n">completed_tasks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;task </span><span class="si">{</span><span class="n">completed_tasks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">ntasks</span><span class="si">}</span><span class="s2"> :: &quot;</span> <span class="sa">f</span><span class="s2">&quot;ingested tracks over </span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">chroms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chroms</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">chrom</span> <span class="ow">in</span> <span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">]:</span>
+            <span class="n">chrom_length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chroms</span><span class="p">[</span><span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">chrom</span><span class="p">][</span><span class="s2">&quot;length&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">chrom</span><span class="p">,</span> <span class="n">chrom_length</span><span class="p">))</span>
+        <span class="n">ntasks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chroms</span><span class="p">)</span>
+        <span class="n">completed_tasks</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">threads</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">threads</span><span class="p">,</span> <span class="n">ntasks</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">threads</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+            <span class="n">futures</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">chrom</span><span class="p">,</span> <span class="n">chrom_length</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+                <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">_process_chrom</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">chrom</span><span class="p">,</span> <span class="n">chrom_length</span><span class="p">,</span> <span class="n">bws</span><span class="p">)</span>
+                <span class="n">future</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">chrom</span><span class="p">:</span> <span class="n">_log_task_completion</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">ntasks</span><span class="p">,</span> <span class="n">completed_tasks</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
+                <span class="n">futures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
+            <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">futures</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_populate_features_chroms_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pr</span><span class="o">.</span><span class="n">PyRanges</span><span class="p">],</span> <span class="n">threads</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">_process_chrom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chrom</span><span class="p">,</span> <span class="n">feats</span><span class="p">,</span> <span class="n">registered_features</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;annotations&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s2">.tdb&quot;</span><span class="p">)</span>
+            <span class="n">cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">cfg</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;sm.compute_concurrency_level&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;sm.io_concurrency_level&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+            <span class="k">for</span> <span class="n">lab</span><span class="p">,</span> <span class="n">inter</span> <span class="ow">in</span> <span class="n">feats</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">dim1</span> <span class="o">=</span> <span class="n">registered_features</span><span class="p">[</span><span class="n">registered_features</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="n">lab</span><span class="p">])][</span><span class="s2">&quot;idx&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">inter</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
+                    <span class="s2">&quot;strand&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;*&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">inter</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">),</span>
+                    <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;.&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">inter</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">),</span>
+                <span class="p">}</span>
+                <span class="k">with</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">tdb</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">cfg</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
+                    <span class="n">A</span><span class="p">[[</span><span class="n">dim1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">inter</span><span class="p">),</span> <span class="n">inter</span><span class="p">[</span><span class="s2">&quot;Start&quot;</span><span class="p">],</span> <span class="n">inter</span><span class="p">[</span><span class="s2">&quot;End&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">d</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;sm.compute_concurrency_level&quot;</span><span class="p">:</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">})</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;sm.io_concurrency_level&quot;</span><span class="p">:</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">})</span>
+
+        <span class="k">def</span> <span class="nf">_log_task_completion</span><span class="p">(</span><span class="n">future</span><span class="p">,</span> <span class="n">chrom</span><span class="p">,</span> <span class="n">ntasks</span><span class="p">,</span> <span class="n">completed_tasks</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">future</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Feature set ingestion over </span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s2"> failed with exception: &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">future</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
+                    <span class="n">completed_tasks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;task </span><span class="si">{</span><span class="n">completed_tasks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">ntasks</span><span class="si">}</span><span class="s2"> :: &quot;</span> <span class="sa">f</span><span class="s2">&quot;ingested features over </span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;annotations&quot;</span><span class="p">,</span> <span class="s2">&quot;features.tdb&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">tdb</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span> <span class="k">as</span> <span class="n">array</span><span class="p">:</span>
+            <span class="n">array</span><span class="p">[</span><span class="n">n</span> <span class="p">:</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">))]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">features</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+                <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">features</span><span class="o">.</span><span class="n">values</span><span class="p">()],</span>
+            <span class="p">}</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">chroms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chroms</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">chrom</span> <span class="ow">in</span> <span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">]:</span>
+            <span class="n">chrom_length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chroms</span><span class="p">[</span><span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">chrom</span><span class="p">][</span><span class="s2">&quot;length&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">chrom</span><span class="p">,</span> <span class="n">chrom_length</span><span class="p">))</span>
+        <span class="n">ntasks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chroms</span><span class="p">)</span>
+        <span class="n">completed_tasks</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">threads</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">threads</span><span class="p">,</span> <span class="n">ntasks</span><span class="p">)</span>
+        <span class="n">registered_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">threads</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+            <span class="n">futures</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">chrom</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+                <span class="n">feats</span> <span class="o">=</span> <span class="p">{</span><span class="n">label</span><span class="p">:</span> <span class="n">inter</span><span class="p">[</span><span class="n">chrom</span><span class="p">]</span><span class="o">.</span><span class="n">df</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">inter</span> <span class="ow">in</span> <span class="n">features</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+                <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+                    <span class="n">_process_chrom</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="p">,</span>
+                    <span class="n">chrom</span><span class="p">,</span>
+                    <span class="n">feats</span><span class="p">,</span>
+                    <span class="n">registered_features</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">future</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">chrom</span><span class="p">:</span> <span class="n">_log_task_completion</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">ntasks</span><span class="p">,</span> <span class="n">completed_tasks</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
+                <span class="n">futures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
+            <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">futures</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_populate_sequence_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fasta</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">threads</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">_process_chrom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chrom</span><span class="p">,</span> <span class="n">chroms</span><span class="p">,</span> <span class="n">fasta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;genome&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s2">.tdb&quot;</span><span class="p">)</span>
+            <span class="n">chrom_length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chroms</span><span class="p">[</span><span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">chrom</span><span class="p">][</span><span class="s2">&quot;length&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">with</span> <span class="n">pyfaidx</span><span class="o">.</span><span class="n">Fasta</span><span class="p">(</span><span class="n">fasta</span><span class="p">)</span> <span class="k">as</span> <span class="n">fa</span><span class="p">:</span>
+                <span class="c1"># get_seq() is 1-based</span>
+                <span class="n">chrom_seq</span> <span class="o">=</span> <span class="n">fa</span><span class="o">.</span><span class="n">get_seq</span><span class="p">(</span><span class="n">chrom</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">chrom_length</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">chrom_seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">chrom_seq</span><span class="o">.</span><span class="n">seq</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">)</span>
+            <span class="n">cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">cfg</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;sm.compute_concurrency_level&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;sm.io_concurrency_level&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+            <span class="k">with</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">tdb</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">cfg</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
+                <span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">chrom_length</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;nucleotide&quot;</span><span class="p">:</span> <span class="n">chrom_seq</span><span class="p">}</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;sm.compute_concurrency_level&quot;</span><span class="p">:</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">})</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;sm.io_concurrency_level&quot;</span><span class="p">:</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">})</span>
+
+        <span class="k">def</span> <span class="nf">_log_task_completion</span><span class="p">(</span><span class="n">future</span><span class="p">,</span> <span class="n">chrom</span><span class="p">,</span> <span class="n">ntasks</span><span class="p">,</span> <span class="n">completed_tasks</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">future</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fasta ingestion over </span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s2"> failed with exception: &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">future</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
+                    <span class="n">completed_tasks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;task </span><span class="si">{</span><span class="n">completed_tasks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">ntasks</span><span class="si">}</span><span class="s2"> :: &quot;</span> <span class="sa">f</span><span class="s2">&quot;ingested fasta over </span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="n">chroms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chroms</span><span class="p">()</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">]</span>
+        <span class="n">ntasks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tasks</span><span class="p">)</span>
+        <span class="n">completed_tasks</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">threads</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">threads</span><span class="p">,</span> <span class="n">ntasks</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">threads</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+            <span class="n">futures</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">chrom</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+                <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">_process_chrom</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">chrom</span><span class="p">,</span> <span class="n">chroms</span><span class="p">,</span> <span class="n">fasta</span><span class="p">)</span>
+                <span class="n">future</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">chrom</span><span class="p">:</span> <span class="n">_log_task_completion</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">ntasks</span><span class="p">,</span> <span class="n">completed_tasks</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
+                <span class="n">futures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
+            <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">futures</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Momics.chroms">
+<a class="viewcode-back" href="../../api/momics/momics/index.html#momics.momics.Momics.chroms">[docs]</a>
+    <span class="k">def</span> <span class="nf">chroms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract chromosome table from a `.momics` repository.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.DataFrame: A data frame listing one chromosome per row</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">chroms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;genome&quot;</span><span class="p">,</span> <span class="s2">&quot;chroms.tdb&quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">FileExistsError</span><span class="p">:</span>
+            <span class="n">chroms</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;chrom_index&quot;</span><span class="p">,</span> <span class="s2">&quot;chrom&quot;</span><span class="p">,</span> <span class="s2">&quot;length&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">chroms</span></div>
+
+
+<div class="viewcode-block" id="Momics.seq">
+<a class="viewcode-back" href="../../api/momics/momics/index.html#momics.momics.Momics.seq">[docs]</a>
+    <span class="k">def</span> <span class="nf">seq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract sequence table from a `.momics` repository.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            label (str, optional): Which chromosome to extract. Defaults to None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.DataFrame: A data frame listing one chromosome per row,</span>
+<span class="sd">            with first/last 10 nts.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">chroms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chroms</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">chroms</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;`chroms` table has not been filled out yet.&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;genome&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">chroms</span><span class="p">[</span><span class="s1">&#39;chrom&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">.tdb&quot;</span><span class="p">)</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_table</span><span class="p">(</span><span class="n">tdb</span><span class="p">)</span>
+            <span class="k">pass</span>
+        <span class="k">except</span> <span class="ne">FileExistsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;`seq` table has not been filled out yet.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+        <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">chroms</span><span class="o">.</span><span class="n">chrom</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected attribute does not exist: &#39;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+            <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;genome&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">.tdb&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">tdb</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
+                <span class="n">seq</span> <span class="o">=</span> <span class="n">A</span><span class="p">[:][</span><span class="s2">&quot;nucleotide&quot;</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;seq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">chrom</span> <span class="ow">in</span> <span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">]:</span>
+                <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;genome&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s2">.tdb&quot;</span><span class="p">)</span>
+                <span class="n">chrom_len</span> <span class="o">=</span> <span class="n">chroms</span><span class="p">[</span><span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">chrom</span><span class="p">][</span><span class="s2">&quot;length&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">with</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">tdb</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
+                    <span class="n">start_nt</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">9</span><span class="p">][</span><span class="s2">&quot;nucleotide&quot;</span><span class="p">])</span>
+                    <span class="n">end_nt</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">df</span><span class="p">[(</span><span class="n">chrom_len</span> <span class="o">-</span> <span class="mi">10</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="n">chrom_len</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)][</span><span class="s2">&quot;nucleotide&quot;</span><span class="p">])</span>
+                <span class="n">chroms</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">chrom</span><span class="p">,</span> <span class="s2">&quot;seq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_nt</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span> <span class="o">+</span> <span class="n">end_nt</span>
+
+            <span class="k">return</span> <span class="n">chroms</span></div>
+
+
+<div class="viewcode-block" id="Momics.tracks">
+<a class="viewcode-back" href="../../api/momics/momics/index.html#momics.momics.Momics.tracks">[docs]</a>
+    <span class="k">def</span> <span class="nf">tracks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pr</span><span class="o">.</span><span class="n">PyRanges</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract table of ingested bigwigs.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.DataFrame: A data frame listing one ingested bigwig file per row</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tr</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Feature set &#39;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&#39; not found.&quot;</span><span class="p">)</span>
+            <span class="n">chroms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chroms</span><span class="p">()</span>
+            <span class="n">cov</span> <span class="o">=</span> <span class="p">{</span><span class="n">chrom</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">chrom</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">chroms</span><span class="o">.</span><span class="n">chrom</span><span class="p">,</span> <span class="n">chroms</span><span class="o">.</span><span class="n">length</span><span class="p">)}</span>
+            <span class="k">for</span> <span class="n">chrom</span> <span class="ow">in</span> <span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">]:</span>
+                <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;coverage&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s2">.tdb&quot;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">tdb</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
+                    <span class="n">cov</span><span class="p">[</span><span class="n">chrom</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="n">label</span><span class="p">])[:][</span><span class="n">label</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">cov</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">tracks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;coverage&quot;</span><span class="p">,</span> <span class="s2">&quot;tracks.tdb&quot;</span><span class="p">))</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">tracks</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Failed to fetch tracks table.&quot;</span><span class="p">)</span>
+                <span class="n">tracks</span> <span class="o">=</span> <span class="n">tracks</span><span class="p">[</span><span class="n">tracks</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">FileExistsError</span><span class="p">:</span>
+                <span class="n">tracks</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;idx&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">tracks</span></div>
+
+
+<div class="viewcode-block" id="Momics.features">
+<a class="viewcode-back" href="../../api/momics/momics/index.html#momics.momics.Momics.features">[docs]</a>
+    <span class="k">def</span> <span class="nf">features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pr</span><span class="o">.</span><span class="n">PyRanges</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract table of ingested features sets.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            - if `label` is None: pd.DataFrame: A data frame listing one ingested feature set per row</span>
+<span class="sd">            - if `label` is not None: pr.PyRanges: A PyRanges object of the specified feature set</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ft</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ft</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Feature set &#39;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&#39; not found.&quot;</span><span class="p">)</span>
+            <span class="n">chroms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chroms</span><span class="p">()</span>
+            <span class="n">ranges</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">chrom</span> <span class="ow">in</span> <span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">]:</span>
+                <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;annotations&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s2">.tdb&quot;</span><span class="p">)</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">ft</span><span class="p">[</span><span class="n">ft</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">label</span><span class="p">][</span><span class="s2">&quot;idx&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">with</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">tdb</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">cond</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;idx==</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">df</span><span class="p">[:]</span>
+                    <span class="n">x</span><span class="o">.</span><span class="n">idx</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">idx</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+                    <span class="n">x</span><span class="o">.</span><span class="n">idx</span> <span class="o">=</span> <span class="n">chrom</span>
+                    <span class="n">ranges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">ranges</span><span class="p">)</span>
+            <span class="n">df2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;Chromosome&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;idx&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;Start&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;End&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;stop&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;strand&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;strand&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">],</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">pr</span><span class="o">.</span><span class="n">PyRanges</span><span class="p">(</span><span class="n">df2</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">res</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;annotations&quot;</span><span class="p">,</span> <span class="s2">&quot;features.tdb&quot;</span><span class="p">))</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">features</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Failed to fetch features table.&quot;</span><span class="p">)</span>
+                <span class="n">features</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="n">features</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">FileExistsError</span><span class="p">:</span>
+                <span class="n">features</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;idx&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">features</span></div>
+
+
+<div class="viewcode-block" id="Momics.bins">
+<a class="viewcode-back" href="../../api/momics/momics/index.html#momics.momics.Momics.bins">[docs]</a>
+    <span class="k">def</span> <span class="nf">bins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="n">cut_last_bin_out</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pr</span><span class="o">.</span><span class="n">PyRanges</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a PyRanges of tiled genomic bins</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            width (_type_): The width of each bin.</span>
+<span class="sd">            stride (_type_): The stride size for tiling.</span>
+<span class="sd">            cut_last_bin_out (bool, optional): Remove the last bin of each \</span>
+<span class="sd">                chromosome. Defaults to False.</span>
+
+<span class="sd">            Remember that PyRanges are 0-based and end-exclusive.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            _type_: pr.PyRanges: a PyRanges object of tiled genomic bins.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">chroms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chroms</span><span class="p">()</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;chrom&quot;</span><span class="p">)[</span><span class="s2">&quot;length&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">chroms</span> <span class="o">==</span> <span class="p">{}:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Please fill out `chroms` table first.&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">chrom</span><span class="p">,</span> <span class="n">length</span> <span class="ow">in</span> <span class="n">chroms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="n">length</span><span class="p">:</span>
+                <span class="n">end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="n">width</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
+                <span class="n">bins</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;chrom&quot;</span><span class="p">:</span> <span class="n">chrom</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">start</span><span class="p">),</span> <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="n">end</span><span class="p">})</span>
+                <span class="n">start</span> <span class="o">+=</span> <span class="n">stride</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cut_last_bin_out</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="n">width</span><span class="p">]</span>
+
+        <span class="n">bt</span> <span class="o">=</span> <span class="n">pr</span><span class="o">.</span><span class="n">PyRanges</span><span class="p">(</span><span class="n">chromosomes</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">],</span> <span class="n">starts</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">],</span> <span class="n">ends</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">bt</span></div>
+
+
+<div class="viewcode-block" id="Momics.ingest_chroms">
+<a class="viewcode-back" href="../../api/momics/momics/index.html#momics.momics.Momics.ingest_chroms">[docs]</a>
+    <span class="k">def</span> <span class="nf">ingest_chroms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chr_lengths</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">genome_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Momics&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add chromosomes (and genome) information the `.momics` repository.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            chr_lengths (dict): Chromosome lengths</span>
+<span class="sd">            genome_version (str, optional): Genome version (default: &quot;&quot;). \</span>
+<span class="sd">                Defaults to &quot;&quot;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Momics: An updated Momics object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">chroms</span><span class="p">()</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`chroms` table has already been filled out.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Create chroms tables schema</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_chroms_schema</span><span class="p">(</span><span class="n">chr_lengths</span><span class="p">)</span>
+
+        <span class="c1"># Populate `chrom` array</span>
+        <span class="nb">chr</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chr_lengths</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chr_lengths</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;genome&quot;</span><span class="p">,</span> <span class="s2">&quot;chroms.tdb&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">tdb</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
+            <span class="n">A</span><span class="p">[</span><span class="mi">0</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="nb">chr</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;chrom&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">chr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;S&quot;</span><span class="p">),</span> <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="n">length</span><span class="p">}</span>
+            <span class="n">A</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;genome_assembly_version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">genome_version</span>
+            <span class="n">A</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Momics.ingest_sequence">
+<a class="viewcode-back" href="../../api/momics/momics/index.html#momics.momics.Momics.ingest_sequence">[docs]</a>
+    <span class="k">def</span> <span class="nf">ingest_sequence</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">fasta</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+        <span class="n">threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">tile</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32000</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Momics&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ingest a fasta file into a Momics repository</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fasta (str): Path to a Fasta file containing the genome reference sequence.</span>
+<span class="sd">            threads (int, optional): Threads to parallelize I/O. Defaults to 1.</span>
+<span class="sd">            tile (int, optional): Tile size for TileDB. Defaults to 50000.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Momics: The updated Momics object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="c1"># Abort if `chroms` have not been filled</span>
+        <span class="n">chroms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chroms</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">chroms</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Please fill out `chroms` table first.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Abort if sequence table already exists</span>
+        <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;genome&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">chroms</span><span class="p">[</span><span class="s1">&#39;chrom&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">.tdb&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">vfs</span><span class="o">.</span><span class="n">is_dir</span><span class="p">(</span><span class="n">tdb</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">cc</span><span class="o">.</span><span class="n">TileDBError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: TileDB &#39;</span><span class="si">{</span><span class="n">tdb</span><span class="si">}</span><span class="s2">&#39; already exists.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Abort if chr lengths in provided fasta do not match those in `chroms`</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">_check_fasta_lengths</span><span class="p">(</span><span class="n">fasta</span><span class="p">,</span> <span class="n">chroms</span><span class="p">)</span>
+
+        <span class="c1"># Create sequence tables schema</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_sequence_schema</span><span class="p">(</span><span class="n">tile</span><span class="p">)</span>
+
+        <span class="c1"># Populate each `/genome/sequence/{chrom}.tdb`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_populate_sequence_table</span><span class="p">(</span><span class="n">fasta</span><span class="p">,</span> <span class="n">threads</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Genome sequence ingested in </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start0</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">s.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Momics.ingest_features">
+<a class="viewcode-back" href="../../api/momics/momics/index.html#momics.momics.Momics.ingest_features">[docs]</a>
+    <span class="k">def</span> <span class="nf">ingest_features</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">features</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">max_features</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">9999</span><span class="p">,</span>
+        <span class="n">tile</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32000</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Momics&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ingest feature sets to the `.momics` repository.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            features (dict): Dictionary of feature sets already imported as a PyRanges.</span>
+<span class="sd">            threads (int, optional): Threads to parallelize I/O. Defaults to 1.</span>
+<span class="sd">            max_features (int, optional): Maximum number of feature sets. Defaults to 9999.</span>
+<span class="sd">            tile (int, optional): Tile size. Defaults to 50000.</span>
+<span class="sd">            compression (int, optional): Compression level. Defaults to 3.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Momics: The updated Momics object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="c1"># Abort if `chroms` have not been filled</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chroms</span><span class="p">()</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Please fill out `chroms` table first.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Abort if features labels already exist</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">_check_feature_names</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">())</span>
+
+        <span class="c1"># If `path/features/features.tdb` (and `{chroms.tdb}`) do not exist, create it</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">()</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_features_schema</span><span class="p">(</span><span class="n">max_features</span><span class="p">,</span> <span class="n">tile</span><span class="p">)</span>
+
+        <span class="c1"># Populate each `path/features/{chrom}.tdb`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_populate_features_chroms_table</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">threads</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">)</span><span class="si">}</span><span class="s2"> feature sets ingested in &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start0</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">s.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Momics.ingest_tracks">
+<a class="viewcode-back" href="../../api/momics/momics/index.html#momics.momics.Momics.ingest_tracks">[docs]</a>
+    <span class="k">def</span> <span class="nf">ingest_tracks</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">bws</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">max_bws</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">9999</span><span class="p">,</span>
+        <span class="n">tile</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32000</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Momics&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ingest bigwig coverage tracks to the `.momics` repository.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            bws (dict): Dictionary of bigwig files</span>
+<span class="sd">            threads (int, optional): Threads to parallelize I/O. Defaults to 1.</span>
+<span class="sd">            max_bws (int, optional): Maximum number of bigwig files. Defaults to 9999.</span>
+<span class="sd">            tile (int, optional): Tile size. Defaults to 50000.</span>
+<span class="sd">            compression (int, optional): Compression level. Defaults to 3.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Momics: The updated Momics object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="c1"># Abort if `chroms` have not been filled</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chroms</span><span class="p">()</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Please fill out `chroms` table first.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Abort if chr lengths in provided bw do not match those in `chroms`</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">_check_chr_lengths</span><span class="p">(</span><span class="n">bws</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chroms</span><span class="p">())</span>
+
+        <span class="c1"># Abort if bw labels already exist</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">_check_track_names</span><span class="p">(</span><span class="n">bws</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">())</span>
+
+        <span class="c1"># If `path/coverage/tracks.tdb` (and `{chroms.tdb}`) do not exist, create it</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">()</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_track_schema</span><span class="p">(</span><span class="n">max_bws</span><span class="p">,</span> <span class="n">tile</span><span class="p">)</span>
+
+        <span class="c1"># Populate each `path/coverage/{chrom}.tdb`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_populate_chroms_table</span><span class="p">(</span><span class="n">bws</span><span class="p">,</span> <span class="n">threads</span><span class="p">)</span>
+
+        <span class="c1"># Populate `path/coverage/tracks.tdb`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_populate_track_table</span><span class="p">(</span><span class="n">bws</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">bws</span><span class="p">)</span><span class="si">}</span><span class="s2"> tracks ingested in </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start0</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">s.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Momics.ingest_track">
+<a class="viewcode-back" href="../../api/momics/momics/index.html#momics.momics.Momics.ingest_track">[docs]</a>
+    <span class="k">def</span> <span class="nf">ingest_track</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">coverage</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">track</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Momics&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ingest a coverage track provided as a dictionary to a `.momics` repository.</span>
+<span class="sd">        This method is useful when you have already computed the coverage track and</span>
+<span class="sd">        have it in memory.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            coverage (dict): Dictionary of coverage tracks. The keys are \</span>
+<span class="sd">                chromosome names and the values are numpy arrays.</span>
+<span class="sd">            track (str): Label to store the track under.</span>
+<span class="sd">            threads (int, optional): Threads to parallelize I/O. Defaults to 1.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Momics: The updated Momics object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">chroms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chroms</span><span class="p">()</span>
+        <span class="n">tracks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">()</span>
+
+        <span class="c1"># Abort if `chroms` have not been filled</span>
+        <span class="k">if</span> <span class="n">chroms</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Please fill out `chroms` table first.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tracks</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Please fill out `tracks` table first.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Abort if chr lengths in provided bw do not match those in `chroms`</span>
+        <span class="n">reference_lengths</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">],</span> <span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;length&quot;</span><span class="p">]))</span>
+        <span class="n">lengths</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">],</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">coverage</span><span class="o">.</span><span class="n">items</span><span class="p">()]))</span>
+        <span class="k">if</span> <span class="n">lengths</span> <span class="o">!=</span> <span class="n">reference_lengths</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">track</span><span class="si">}</span><span class="s2">` coverage track does not chromomosome lengths matching &quot;</span> <span class="sa">f</span><span class="s2">&quot;those of the momics repository.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Abort if bw labels already exist</span>
+        <span class="k">if</span> <span class="n">track</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">tracks</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Provided label &#39;</span><span class="si">{</span><span class="n">track</span><span class="si">}</span><span class="s2">&#39; already present in `tracks` table&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Save the coverage dict as a temporary bigwig file</span>
+        <span class="c1"># and ingest it using `ingest_tracks`</span>
+        <span class="n">tmp_bw</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">dict_to_bigwig</span><span class="p">(</span><span class="n">coverage</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">tmp_bw</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ingest_tracks</span><span class="p">({</span><span class="n">track</span><span class="p">:</span> <span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="p">},</span> <span class="n">threads</span><span class="o">=</span><span class="n">threads</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Momics.remove_track">
+<a class="viewcode-back" href="../../api/momics/momics/index.html#momics.momics.Momics.remove_track">[docs]</a>
+    <span class="k">def</span> <span class="nf">remove_track</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Momics&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove a track from a `.momics` repository.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            track (str): Which track to remove</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Momics: An updated Momics object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Abort if `track` is not listed</span>
+        <span class="n">tracks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">()</span>
+        <span class="n">chroms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chroms</span><span class="p">()</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">_check_track_name</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="n">tracks</span><span class="p">)</span>
+
+        <span class="c1"># Remove entry from each `path/coverage/{chrom}.tdb`</span>
+        <span class="c1"># and from `path/coverage/tracks.tdb`</span>
+        <span class="k">for</span> <span class="n">chrom</span> <span class="ow">in</span> <span class="n">chroms</span><span class="p">[</span><span class="s2">&quot;chrom&quot;</span><span class="p">]:</span>
+            <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;coverage&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s2">.tdb&quot;</span><span class="p">)</span>
+            <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span>
+            <span class="n">se</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">ArraySchemaEvolution</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+            <span class="n">se</span><span class="o">.</span><span class="n">drop_attribute</span><span class="p">(</span><span class="n">track</span><span class="p">)</span>
+            <span class="n">se</span><span class="o">.</span><span class="n">array_evolve</span><span class="p">(</span><span class="n">tdb</span><span class="p">)</span>
+
+        <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;coverage&quot;</span><span class="p">,</span> <span class="s2">&quot;tracks.tdb&quot;</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">tracks</span><span class="p">[</span><span class="s2">&quot;idx&quot;</span><span class="p">][</span><span class="n">tracks</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">track</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">with</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">tdb</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
+            <span class="n">A</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Momics.remove">
+<a class="viewcode-back" href="../../api/momics/momics/index.html#momics.momics.Momics.remove">[docs]</a>
+    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove a `.momics` repository.&quot;&quot;&quot;</span>
+        <span class="n">host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_cloud_hosted</span><span class="p">()</span>
+        <span class="n">vfs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">vfs</span>
+
+        <span class="c1">## Remove local repo</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">host</span><span class="p">:</span>
+            <span class="n">vfs</span><span class="o">.</span><span class="n">remove_dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Purged </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1">## Remove S3 and GCS-hosted repo</span>
+        <span class="k">if</span> <span class="n">host</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;s3&quot;</span><span class="p">,</span> <span class="s2">&quot;gcs&quot;</span><span class="p">]:</span>
+            <span class="n">vfs</span><span class="o">.</span><span class="n">remove_dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Purged </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">host</span> <span class="o">==</span> <span class="s2">&quot;azure&quot;</span><span class="p">:</span>
+
+            <span class="k">def</span> <span class="nf">remove_directory_until_success</span><span class="p">(</span><span class="n">vfs</span><span class="p">,</span> <span class="n">dir_uri</span><span class="p">,</span> <span class="n">max_retries</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">retry_delay</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+                <span class="n">attempts</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">while</span> <span class="n">attempts</span> <span class="o">&lt;</span> <span class="n">max_retries</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">vfs</span><span class="o">.</span><span class="n">remove_dir</span><span class="p">(</span><span class="n">dir_uri</span><span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Purged </span><span class="si">{</span><span class="n">dir_uri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="k">break</span>
+                    <span class="k">except</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">TileDBError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">attempts</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="k">if</span> <span class="n">attempts</span> <span class="o">&lt;</span> <span class="n">max_retries</span><span class="p">:</span>
+                            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">retry_delay</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="n">e</span>
+
+            <span class="n">remove_directory_until_success</span><span class="p">(</span><span class="n">vfs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="Momics.export_track">
+<a class="viewcode-back" href="../../api/momics/momics/index.html#momics.momics.Momics.export_track">[docs]</a>
+    <span class="k">def</span> <span class="nf">export_track</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Momics&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export a track from a `.momics` repository as a `.bw `file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            track (str): Which track to remove</span>
+<span class="sd">            output (Path): Prefix of the output bigwig file</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Momics: An updated Momics object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Abort if `track` is not listed</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">_check_track_name</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">())</span>
+
+        <span class="c1"># Init output file</span>
+        <span class="n">bw</span> <span class="o">=</span> <span class="n">pyBigWig</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">chrom_sizes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chroms</span><span class="p">()[[</span><span class="s2">&quot;chrom&quot;</span><span class="p">,</span> <span class="s2">&quot;length&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">bw</span><span class="o">.</span><span class="n">addHeader</span><span class="p">(</span><span class="n">chrom_sizes</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">chrom</span><span class="p">,</span> <span class="n">chrom_length</span> <span class="ow">in</span> <span class="n">chrom_sizes</span><span class="p">:</span>
+            <span class="n">tdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_uri</span><span class="p">(</span><span class="s2">&quot;coverage&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s2">.tdb&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">tdb</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
+                <span class="n">values0</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="n">track</span><span class="p">])[:][</span><span class="n">track</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">chroms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">chrom</span><span class="p">]</span> <span class="o">*</span> <span class="n">chrom_length</span><span class="p">)</span>
+            <span class="n">starts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">chrom_length</span><span class="p">))</span>
+            <span class="n">ends</span> <span class="o">=</span> <span class="n">starts</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">bw</span><span class="o">.</span><span class="n">addEntries</span><span class="p">(</span><span class="n">chroms</span><span class="p">,</span> <span class="n">starts</span><span class="o">=</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="o">=</span><span class="n">ends</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">values0</span><span class="p">)</span>
+        <span class="n">bw</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Momics.export_sequence">
+<a class="viewcode-back" href="../../api/momics/momics/index.html#momics.momics.Momics.export_sequence">[docs]</a>
+    <span class="k">def</span> <span class="nf">export_sequence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Momics&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export sequence from a `.momics` repository as a `.fa `file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            output (Path): Prefix of the output bigwig file</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Momics: An updated Momics object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Silence logger</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+
+        <span class="c1"># Init output file</span>
+        <span class="n">chroms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chroms</span><span class="p">()[</span><span class="s2">&quot;chrom&quot;</span><span class="p">]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">output_handle</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">chrom</span> <span class="ow">in</span> <span class="n">chroms</span><span class="p">:</span>
+                <span class="n">seq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seq</span><span class="p">(</span><span class="n">chrom</span><span class="p">)</span>
+                <span class="n">sr</span> <span class="o">=</span> <span class="n">Bio</span><span class="o">.</span><span class="n">SeqRecord</span><span class="o">.</span><span class="n">SeqRecord</span><span class="p">(</span><span class="n">Bio</span><span class="o">.</span><span class="n">Seq</span><span class="o">.</span><span class="n">Seq</span><span class="p">(</span><span class="n">seq</span><span class="p">),</span> <span class="nb">id</span><span class="o">=</span><span class="n">chrom</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="n">SeqIO</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sr</span><span class="p">,</span> <span class="n">output_handle</span><span class="p">,</span> <span class="s2">&quot;fasta&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Momics.export_features">
+<a class="viewcode-back" href="../../api/momics/momics/index.html#momics.momics.Momics.export_features">[docs]</a>
+    <span class="k">def</span> <span class="nf">export_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Momics&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export a features set from a `.momics` repository as a `.bed `file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            features (str): Which features to remove</span>
+<span class="sd">            output (Path): Prefix of the output BED file</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Momics: An updated Momics object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Abort if `features` is not listed</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">_check_feature_name</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">())</span>
+
+        <span class="c1"># Init output file</span>
+        <span class="n">bed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+        <span class="n">bed</span><span class="o">.</span><span class="n">to_bed</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-2024, Jacques Serizay.
+      <span class="lastupdated">Last updated on Oct 21, 2024.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
