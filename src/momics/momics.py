@@ -1,4 +1,5 @@
 import concurrent.futures
+import logging
 import os
 import tempfile
 import multiprocessing
@@ -7,6 +8,8 @@ import time
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Literal, Optional, Union
+import Bio
+from Bio import SeqIO
 
 import numpy as np
 import pandas as pd
@@ -871,3 +874,75 @@ class Momics:
             remove_directory_until_success(vfs, self.path)
 
         return True
+
+    def export_track(self, track: str, output: Path) -> "Momics":
+        """Export a track from a `.momics` repository as a `.bw `file.
+
+        Args:
+            track (str): Which track to remove
+            output (Path): Prefix of the output bigwig file
+
+        Returns:
+            Momics: An updated Momics object
+        """
+        # Abort if `track` is not listed
+        utils._check_track_name(track, self.tracks())
+
+        # Init output file
+        bw = pyBigWig.open(output, "w")
+        chrom_sizes = self.chroms()[["chrom", "length"]].apply(tuple, axis=1).tolist()
+        bw.addHeader(chrom_sizes)
+        for chrom, chrom_length in chrom_sizes:
+            tdb = self._build_uri("coverage", f"{chrom}.tdb")
+            with tiledb.open(tdb, "r", ctx=self.cfg.ctx) as A:
+                values0 = A.query(attrs=[track])[:][track][:-1]
+            chroms = np.array([chrom] * chrom_length)
+            starts = np.array(range(chrom_length))
+            ends = starts + 1
+            bw.addEntries(chroms, starts=starts, ends=ends, values=values0)
+        bw.close()
+
+        return self
+
+    def export_sequence(self, output: Path) -> "Momics":
+        """Export sequence from a `.momics` repository as a `.fa `file.
+
+        Args:
+            output (Path): Prefix of the output bigwig file
+
+        Returns:
+            Momics: An updated Momics object
+        """
+        # Silence logger
+        logging.disable(logging.CRITICAL)
+
+        if os.path.exists(output):
+            os.remove(output)
+
+        # Init output file
+        chroms = self.chroms()["chrom"]
+        with open(output, "a") as output_handle:
+            for chrom in chroms:
+                seq = self.seq(chrom)
+                sr = Bio.SeqRecord.SeqRecord(Bio.Seq.Seq(seq), id=chrom, description="")
+                SeqIO.write(sr, output_handle, "fasta")
+
+        return self
+
+    def export_features(self, features: str, output: Path) -> "Momics":
+        """Export a features set from a `.momics` repository as a `.bed `file.
+
+        Args:
+            features (str): Which features to remove
+            output (Path): Prefix of the output BED file
+
+        Returns:
+            Momics: An updated Momics object
+        """
+        # Abort if `features` is not listed
+        utils._check_feature_name(features, self.features())
+
+        # Init output file
+        bed = self.features(features)
+        bed.to_bed(output)
+        return self

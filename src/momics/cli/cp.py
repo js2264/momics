@@ -1,7 +1,7 @@
 import os
 import click
 
-from .. import export, momics
+from .. import momics
 from . import cli
 
 
@@ -50,11 +50,11 @@ def cp(ctx, path, type, label, force, output):
 
     m = momics.Momics(path)
     if type == "sequence":
-        export.export_sequence(m, output)
+        m.export_sequence(output)
     elif type == "track":
-        export.export_track(m, label, output)
+        m.export_track(label, output)
     elif type == "features":
-        export.export_features(m, label, output)
+        m.export_features(label, output)
     else:
         return False
 

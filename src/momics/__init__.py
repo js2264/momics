@@ -14,7 +14,6 @@ from . import momicsquery
 from . import streamer
 from . import config
 from . import utils
-from . import export
 from .version import __format_version__, __version__
 
 __all__ = [
@@ -23,7 +22,6 @@ __all__ = [
     "streamer",
     "config",
     "utils",
-    "export",
     "__format_version__",
     "__version__",
 ]
