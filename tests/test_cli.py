@@ -6,7 +6,7 @@ import pytest
 import os
 import pyBigWig
 import shutil
-import momics.cli as cli
+from momics.cli import cli
 from momics import utils
 from momics.momics import Momics
 from momics import momicsquery

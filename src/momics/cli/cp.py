@@ -1,11 +1,13 @@
 import os
 import click
+import cloup
 
 from .. import momics
-from . import cli
+from .cli import cli
+from .cli import Sections
 
 
-@cli.command()
+@cli.command(section=Sections.io)
 @click.option(
     "--type",
     "-t",
@@ -35,7 +37,7 @@ from . import cli
     default=False,
     show_default=True,
 )
-@click.argument("path", metavar="MOMICS_REPO", required=True)
+@cloup.argument("path", help="Path to a momics repository", metavar="MOMICS_REPO", required=True)
 @click.pass_context
 def cp(ctx, path, type, label, force, output):
     """Copy sequence/track/feature set from a momics repo to a fa/bigwig/bed file."""

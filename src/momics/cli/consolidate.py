@@ -1,12 +1,14 @@
 import logging
 import click
+import cloup
 
 from momics import momics as m
 
-from . import cli
+from .cli import cli
+from .cli import Sections
 
 
-@cli.command()
+@cli.command(section=Sections.management)
 @click.option(
     "--vacuum",
     "-v",
@@ -14,7 +16,7 @@ from . import cli
     is_flag=True,
     required=False,
 )
-@click.argument("path", metavar="MOMICS_REPO", required=True)
+@cloup.argument("path", help="Path to a momics repository", metavar="MOMICS_REPO", required=True)
 @click.pass_context
 def consolidate(ctx, path, vacuum):
     """Consolidate a momics repository.

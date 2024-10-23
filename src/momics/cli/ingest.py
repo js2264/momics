@@ -1,12 +1,14 @@
 import click
+import cloup
 import numpy as np
 import pyranges as pr
 
 from ..momics import Momics
-from . import cli
+from .cli import cli
+from .cli import Sections
 
 
-@cli.group()
+@cli.group(section=Sections.io)
 @click.pass_context
 def ingest(ctx):
     """Ingest a data file to a Momics."""
@@ -26,7 +28,7 @@ def ingest(ctx):
     help="Genome reference (e.g. hg38, sacCer3, ...).",
     default="",
 )
-@click.argument("path", metavar="MOMICS_REPO", required=True)
+@cloup.argument("path", help="Path to a momics repository", metavar="MOMICS_REPO", required=True)
 @click.pass_context
 def chroms(ctx, file, genome, path):
     """Register chromosomes sizes to Momics."""
@@ -51,7 +53,7 @@ def chroms(ctx, file, genome, path):
     multiple=True,
     required=True,
 )
-@click.argument("path", metavar="MOMICS_REPO", required=True)
+@cloup.argument("path", help="Path to a momics repository", metavar="MOMICS_REPO", required=True)
 @click.option(
     "-@",
     "--threads",
@@ -77,7 +79,7 @@ def tracks(ctx, file, path, threads):
     type=click.Path(exists=True),
     required=True,
 )
-@click.argument("path", metavar="MOMICS_REPO", required=True)
+@cloup.argument("path", help="Path to a momics repository", metavar="MOMICS_REPO", required=True)
 @click.option(
     "-@",
     "--threads",
@@ -105,7 +107,7 @@ def seq(ctx, file, path, threads):
     multiple=True,
     required=True,
 )
-@click.argument("path", metavar="MOMICS_REPO", required=True)
+@cloup.argument("path", help="Path to a momics repository", metavar="MOMICS_REPO", required=True)
 @click.option(
     "-@",
     "--threads",

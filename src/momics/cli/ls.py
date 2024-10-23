@@ -1,12 +1,14 @@
 import click
+import cloup
 import numpy as np
 
 from .. import momics
-from . import cli
+from .cli import cli
+from .cli import Sections
 
 
-@cli.command()
-@click.argument("path", metavar="MOMICS_REPO", required=True)
+@cli.command(section=Sections.management)
+@cloup.argument("path", help="Path to a momics repository", metavar="MOMICS_REPO", required=True)
 @click.option(
     "--table",
     "-t",

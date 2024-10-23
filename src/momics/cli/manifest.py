@@ -1,13 +1,15 @@
 import json
 import os
 import click
+import cloup
 
 from momics import momics as m
 
-from . import cli
+from .cli import cli
+from .cli import Sections
 
 
-@cli.command()
+@cli.command(section=Sections.management)
 @click.option(
     "--output",
     "-o",
@@ -23,7 +25,7 @@ from . import cli
     default=False,
     show_default=True,
 )
-@click.argument("path", metavar="MOMICS_REPO", required=True)
+@cloup.argument("path", help="Path to a momics repository", metavar="MOMICS_REPO", required=True)
 @click.pass_context
 def manifest(ctx, path, output, force):
     """Print the manifest of a momics repository."""

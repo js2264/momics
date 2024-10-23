@@ -1,4 +1,5 @@
 import click
+import cloup
 from Bio import SeqIO
 import pyranges as pr
 
@@ -7,7 +8,8 @@ from momics.momicsquery import MomicsQuery
 from .. import momics
 from .. import utils
 from ..logging import logger
-from . import cli
+from .cli import cli
+from .cli import Sections
 
 
 def _validate_exclusive_options(file, coordinates):
@@ -17,10 +19,10 @@ def _validate_exclusive_options(file, coordinates):
         raise click.BadParameter("You must provide one of --file or --coordinates.")
 
 
-@cli.group()
+@cli.group(section=Sections.query)
 @click.pass_context
 def query(ctx):
-    """Query a Momics table"""
+    """Query a Momics repository."""
     pass
 
 
@@ -52,7 +54,7 @@ def query(ctx):
     default=1,
     help="Number of threads to use in parallel operations (default: 1)",
 )
-@click.argument("path", metavar="MOMICS_REPO", required=True)
+@cloup.argument("path", help="Path to a momics repository", metavar="MOMICS_REPO", required=True)
 @click.pass_context
 def tracks(ctx, path, coordinates, file, output: str, threads: int = 1):
     """Extract track coverages over a chromosome interval."""
@@ -103,7 +105,7 @@ def tracks(ctx, path, coordinates, file, output: str, threads: int = 1):
     default=1,
     help="Number of threads to use in parallel operations (default: 1)",
 )
-@click.argument("path", metavar="MOMICS_REPO", required=True)
+@cloup.argument("path", help="Path to a momics repository", metavar="MOMICS_REPO", required=True)
 @click.pass_context
 def seq(ctx, path, coordinates, file, output: str, threads: int = 1):
     """Extract chromosomal sequences over chromosome intervals."""

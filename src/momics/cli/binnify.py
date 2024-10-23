@@ -1,10 +1,12 @@
+import cloup
 import click
 
 from .. import momics
-from . import cli
+from .cli import cli
+from .cli import Sections
 
 
-@cli.command()
+@cli.command(section=Sections.utils)
 @click.option(
     "--width",
     "-w",
@@ -36,7 +38,7 @@ from . import cli
     type=str,
     required=False,
 )
-@click.argument("path", metavar="MOMICS_REPO", required=True)
+@cloup.argument("path", help="Path to a momics repository", metavar="MOMICS_REPO", required=True)
 @click.pass_context
 def binnify(ctx, path, width, step, cut_last_bin_out, output):
     """Binnify chromosomes from a Momics repository."""

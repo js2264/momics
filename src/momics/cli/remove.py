@@ -1,11 +1,13 @@
 import click
+import cloup
 import numpy as np
 
 from .. import momics
-from . import cli
+from .cli import cli
+from .cli import Sections
 
 
-@cli.command()
+@cli.command(section=Sections.io)
 @click.option(
     "--track",
     "-t",
@@ -14,7 +16,7 @@ from . import cli
     multiple=True,
     required=True,
 )
-@click.argument("path", metavar="MOMICS_REPO", required=True)
+@cloup.argument("path", help="Path to a momics repository", metavar="MOMICS_REPO", required=True)
 @click.pass_context
 def remove(ctx, path, track):
     """Remove tracks from a momics repo."""

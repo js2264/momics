@@ -8,11 +8,11 @@ The `momics` package includes command-line tools for creating, querying and mani
 ```shell
 momics -v
 
-# Initiate repo
+# Initiate a momics repository
 momics create testCLI.momics
 
 # Register chromosome lengths
-momics ingest chroms -f ~/genomes/S288c/S288c.chrom.sizes testCLI.momics
+momics ingest chroms -f /data/momics/S288c.chrom.sizes testCLI.momics
 
 # Ingest genome reference sequence
 momics ingest seq -f ~/genomes/S288c/S288c.fa testCLI.momics
@@ -23,8 +23,14 @@ momics ingest tracks -f bw_a=track1.bw -f bw_b=track2.bw -f bw_c=track3.bw testC
 # Ingest genomic features
 momics ingest features -f bed1=regions.bed testCLI.momics
 
-# Print all created tables
+# Print all created tables and arrays
 momics tree testCLI.momics
+
+# Generate a manifest of the repository configuration and timestamps
+momics manifest -o manifest.json testCLI.momics
+
+# Consolidate the repository to optimize storage and performance
+momics consolidate --vacuum testCLI.momics
 
 # Summary of each table
 momics ls --table chroms testCLI.momics

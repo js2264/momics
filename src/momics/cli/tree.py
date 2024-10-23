@@ -1,14 +1,16 @@
 import os
 from pathlib import Path
 import click
+import cloup
 
 from momics import momics as m
 
-from . import cli
+from .cli import cli
+from .cli import Sections
 
 
-@cli.command()
-@click.argument("path", metavar="MOMICS_REPO", required=True)
+@cli.command(section=Sections.management)
+@cloup.argument("path", help="Path to a momics repository", metavar="MOMICS_REPO", required=True)
 @click.pass_context
 def tree(ctx, path):
     """List all the TileDB tables already ingested."""

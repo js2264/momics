@@ -36,6 +36,7 @@ dependencies = [
     "pandas",
     "pyarrow>=1.0",
     "click>=7",
+    "cloup",
     "packaging",
     "psutil",
     "setuptools",

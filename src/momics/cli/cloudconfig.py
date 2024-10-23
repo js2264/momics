@@ -2,8 +2,10 @@ import configparser
 import os
 
 import click
+import cloup
 
-from . import cli
+from .cli import cli
+from .cli import Sections
 
 # Define the config file path
 CONFIG_FILE = os.path.join(os.path.expanduser("~"), ".momics.ini")
@@ -21,10 +23,10 @@ def save_config(config):
         config.write(configfile)
 
 
-@cli.group()
+@cli.group(section=Sections.cloud)
 @click.pass_context
 def config(ctx):
-    """Manage cloud provider configurations"""
+    """Manage cloud provider configurations."""
     pass
 
 
@@ -36,8 +38,8 @@ def cloud_provider_group(name):
         pass
 
     @cloud_provider.command()
-    @click.argument("key")
-    @click.argument("value")
+    @cloup.argument("key", help="Configuration key to set", required=True)
+    @cloup.argument("value", help="Configuration value to set", required=True)
     @click.pass_context
     def set(ctx, key: str, value: str):
         """Set a configuration value"""
@@ -49,7 +51,7 @@ def cloud_provider_group(name):
         click.echo(f"Set {key} to {value} for {name}")
 
     @cloud_provider.command()
-    @click.argument("key")
+    @cloup.argument("key", help="Configuration key to set", required=True)
     @click.pass_context
     def get(ctx, key: str):
         """Get a configuration value"""

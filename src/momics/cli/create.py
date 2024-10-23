@@ -1,11 +1,13 @@
 import click
+import cloup
 
 from .. import momics
-from . import cli
+from .cli import cli
+from .cli import Sections
 
 
-@cli.command()
-@click.argument("path", metavar="MOMICS_REPO", required=True)
+@cli.command(section=Sections.management)
+@cloup.argument("path", help="Path to a momics repository", metavar="MOMICS_REPO", required=True)
 @click.pass_context
 def create(ctx, path):
     """Initiate a Momics repository."""
