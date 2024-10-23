@@ -22,14 +22,13 @@ from .utils import dict_to_bigwig
 class MomicsQuery:
     """A class to query `.momics` repositories.
 
-    Attributes
-    ----------
-    momics (Momics): a local `.momics` repositoryasdcasdc.
-    queries (dict): Dict. of pr.PyRanges object.
-    coverage (dict): Dictionary of coverage scores extracted from the \
-        `.momics` repository, populated after calling `q.query_tracks()`
-    seq (dict): Dictionary of sequences extracted from the `.momics` \
-        repository, populated after calling `q.query_seq()`
+    Attributes:
+        momics (Momics): a local `.momics` repository.
+        queries (pr.PyRanges): `pr.PyRanges` object
+        coverage (dict): Dictionary of coverage scores extracted from the \
+            `.momics` repository, populated after calling `q.query_tracks()`
+        seq (dict): Dictionary of sequences extracted from the `.momics` \
+            repository, populated after calling `q.query_seq()`
     """
 
     def __init__(self, momics: Momics, bed: pr.PyRanges):

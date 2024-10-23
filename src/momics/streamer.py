@@ -17,17 +17,15 @@ class MomicsStreamer:
 
     For a tensorflow DataSet constructor, see `momics.dataset.MomicsDataset`.
 
-    See Also
-    --------
-        `momics.dataset.MomicsDataset`
+    See Also:
+        :class:`momics.dataset.MomicsDataset`
 
-    Attributes
-    ----------
-    momics (Momics): a local `.momics` repository.
-    ranges (dict): pr.PyRanges object.
-    batch_size (int): the batch size
-    features (list): list of track labels to query
-    silent (bool): whether to suppress info messages
+    Attributes:
+        momics (Momics): a local `.momics` repository.
+        ranges (dict): pr.PyRanges object.
+        batch_size (int): the batch size
+        features (list): list of track labels to query
+        silent (bool): whether to suppress info messages
     """
 
     def __init__(

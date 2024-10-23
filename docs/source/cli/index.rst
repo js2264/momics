@@ -97,6 +97,6 @@ Contents
 
 ----
 
-.. click:: momics.cli:cli
+.. click:: momics.cli.cli:cli
   :prog: momics
   :nested: full

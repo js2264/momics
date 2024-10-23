@@ -10,16 +10,11 @@ DEFAULT_CHROMNN_OUTPUT_LAYER = layers.Dense(64, activation="linear")
 class ChromNN:
     """
     This class implements a convolutional neural network for the prediction of
-    chromatin modality from another modality. The model implements a series of
+    chromatin modality from another modality. The model consists of a series of
     convolutional blocks with residual connections and dropout layers.
-
-    Attributes
-    ----------
     """
 
     def __init__(self, input=DEFAULT_CHROMNN_INPUT_LAYER, output=DEFAULT_CHROMNN_OUTPUT_LAYER) -> None:
-        """ """
-
         kernel_init = tf.keras.initializers.VarianceScaling()
 
         # First convolutional block

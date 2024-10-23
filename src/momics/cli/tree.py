@@ -15,24 +15,32 @@ from .cli import Sections
 def tree(ctx, path):
     """List all the TileDB tables already ingested."""
 
-    mom = m.Momics(path)
-    chrs = mom.chroms()["chrom"]
-
     if path.endswith("/"):
         name = Path(os.path.dirname(path)).with_suffix("").name
     else:
         name = Path(path).with_suffix("").name
 
-    vfs = mom.cfg.vfs
-    chroms_uri = mom._build_uri("genome", "chroms") + ".tdb"
-    sequence_uri = mom._build_uri("genome", chrs[0]) + ".tdb"
-    tracks_uri = mom._build_uri("coverage", "tracks") + ".tdb"
-    features_uri = mom._build_uri("annotations", "features") + ".tdb"
+    mom = m.Momics(path)
+    chrs = mom.chroms()["chrom"]
 
-    has_chroms = vfs.is_dir(chroms_uri)
-    has_seq = vfs.is_dir(sequence_uri)
-    has_tracks = vfs.is_dir(tracks_uri)
-    has_features = vfs.is_dir(features_uri)
+    if chrs.empty:
+        has_chroms = False
+        has_seq = False
+        has_tracks = False
+        has_features = False
+
+    else:
+        has_chroms = True
+
+        vfs = mom.cfg.vfs
+        chroms_uri = mom._build_uri("genome", "chroms") + ".tdb"
+        sequence_uri = mom._build_uri("genome", chrs[0]) + ".tdb"
+        tracks_uri = mom._build_uri("coverage", "tracks") + ".tdb"
+        features_uri = mom._build_uri("annotations", "features") + ".tdb"
+
+        has_seq = vfs.is_dir(sequence_uri)
+        has_tracks = vfs.is_dir(tracks_uri)
+        has_features = vfs.is_dir(features_uri)
 
     if has_chroms:
         print("\u2714 Chromosomes registered")

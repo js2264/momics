@@ -8,6 +8,14 @@ import pyBigWig
 import pyfaidx
 
 
+def _repo_exists(path, cfg) -> bool:
+    x = cfg.vfs.is_dir(path)
+    if x:
+        return True
+    else:
+        return False
+
+
 def _check_fasta_lengths(fasta, chroms) -> None:
     reference_lengths = dict(zip(chroms["chrom"], chroms["length"]))
     if isinstance(fasta, Path):

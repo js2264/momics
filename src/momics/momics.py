@@ -59,10 +59,23 @@ class Momics:
     """
     A class to manipulate `.momics` repositories.
 
-    Attributes
-    ----------
-    path : str
-        Path to a `.momics` repository.
+    `.momics` repositories are a TileDB-backed storage system for genomics data.
+    They are structured as follows:
+
+    - `./genome/chroms.tdb` - table for ingested chromosomes;
+    - `./coverage/tracks.tdb` - table for ingested bigwig tracks;
+    - `./annotations/features.tdb` - table for ingested feature sets.
+
+    In each subdirectory, there is also one `.tdb` file per chromosome, which
+    stores the following data:
+
+    - In `./genome/{X}.tdb`: the reference sequence of the chromosome;
+    - In `./coverage/{X}.tdb`: the coverage scores of the chromosome;
+    - In `./annotations/{X}.tdb`: the genomic features of the chromosome.
+
+    Attributes:
+        path (str): Path to a `.momics` repository.
+        cfg (MomicsConfig): Configuration object.
     """
 
     def __init__(
@@ -85,7 +98,7 @@ class Momics:
         self.cfg = config
 
         ## Check if folder exists. If not, create it.
-        if not self.cfg.vfs.is_dir(self.path):
+        if not utils._repo_exists(self.path, self.cfg):
             self.cfg.vfs.create_dir(self.path)
             self._create_repository()
             logger.info(f"Created {self.path}")
@@ -879,7 +892,7 @@ class Momics:
         return True
 
     def export_track(self, track: str, output: Path) -> "Momics":
-        """Export a track from a `.momics` repository as a `.bw `file.
+        """Export a track from a `.momics` repository as a `.bw` file.
 
         Args:
             track (str): Which track to remove
@@ -908,10 +921,10 @@ class Momics:
         return self
 
     def export_sequence(self, output: Path) -> "Momics":
-        """Export sequence from a `.momics` repository as a `.fa `file.
+        """Export sequence from a `.momics` repository as a `.fa` file.
 
         Args:
-            output (Path): Prefix of the output bigwig file
+            output (Path): Prefix of the output fasta file
 
         Returns:
             Momics: An updated Momics object
@@ -933,7 +946,7 @@ class Momics:
         return self
 
     def export_features(self, features: str, output: Path) -> "Momics":
-        """Export a features set from a `.momics` repository as a `.bed `file.
+        """Export a features set from a `.momics` repository as a `.bed` file.
 
         Args:
             features (str): Which features to remove

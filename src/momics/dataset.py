@@ -18,9 +18,8 @@ class MomicsDataset(tf.data.Dataset):
     For a more basic generator to stream a `momics` by batches of ranges,
     see `momics.streamer.MomicsStreamer`.
 
-    See Also
-    --------
-        `momics.streamer.MomicsStreamer`
+    See Also:
+        :class:`momics.streamer.MomicsStreamer`
     """
 
     def __new__(
