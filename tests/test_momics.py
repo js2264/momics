@@ -1,3 +1,4 @@
+import collections
 from pathlib import Path
 import numpy as np
 import pyranges as pr
@@ -163,6 +164,22 @@ def test_Momics_binnify(momics_path: str):
     mom = momics.Momics(momics_path)
     q = mom.bins(width=1000, stride=1000)
     assert q.df.shape == (60, 3)
+
+
+@pytest.mark.order(2)
+def test_Momics_consolidate(momics_path: str):
+    mom = momics.Momics(momics_path)
+    s = mom.size()
+    x = mom.consolidate(vacuum=True)
+    assert x
+    assert mom.size() < s
+
+
+@pytest.mark.order(2)
+def test_Momics_manifest(momics_path: str):
+    mom = momics.Momics(momics_path)
+    man = mom.manifest()
+    assert isinstance(man, collections.defaultdict)
 
 
 @pytest.mark.order(2)

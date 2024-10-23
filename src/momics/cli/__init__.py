@@ -39,6 +39,8 @@ from . import (
     query,
     remove,
     tree,
+    consolidate,
+    manifest,
 )
 
 __all__ = [
@@ -52,4 +54,6 @@ __all__ = [
     "cp",
     "binnify",
     "cloudconfig",
+    "consolidate",
+    "manifest",
 ]

@@ -182,6 +182,22 @@ def test_config(runner):
     assert "aws_access_key_id: ABCD" in result.output
 
 
+def test_consolidate(runner, path):
+    m = Momics(path)
+    s = m.size()
+    result = runner.invoke(cli.consolidate.consolidate, ["--vacuum", path])
+    assert result.exit_code == 0
+    sf = m.size()
+    assert sf < s
+
+
+def test_manifest(runner, path):
+    result = runner.invoke(cli.manifest.manifest, ["--output", "out.json", "-f", path])
+    assert result.exit_code == 0
+    assert os.path.exists("out.json")
+    os.remove("out.json")
+
+
 def test_delete(runner, path):
     result = runner.invoke(cli.delete.delete, ["-y", "oiasudhncoaisuhmdcoiaushcd"])
     assert result.output == "Repository oiasudhncoaisuhmdcoiaushcd does not exist.\n"

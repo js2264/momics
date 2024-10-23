@@ -1,3 +1,4 @@
+import collections
 import concurrent.futures
 import logging
 import os
@@ -130,12 +131,12 @@ class Momics:
             tiledb.Dim(
                 name="chrom_index",
                 domain=(0, len(chr_lengths) - 1),
-                dtype=np.int32,
+                dtype=np.uint32,
                 tile=len(chr_lengths),
             )
         )
         attr_chr = tiledb.Attr(name="chrom", dtype="ascii", var=True)
-        attr_length = tiledb.Attr(name="length", dtype=np.int64)
+        attr_length = tiledb.Attr(name="length", dtype=np.uint32)
         schema = tiledb.ArraySchema(
             ctx=self.cfg.ctx,
             domain=dom_genome,
@@ -154,7 +155,7 @@ class Momics:
                 tiledb.Dim(
                     name="position",
                     domain=(0, chrom_length),
-                    dtype=np.int64,
+                    dtype=np.uint32,
                     tile=_set_tiledb_tile(tile, chrom_length),
                     filters=TILEDB_POSITION_FILTERS,
                 )
@@ -172,7 +173,7 @@ class Momics:
         # Create /coverage/tracks.tdb
         tdb = self._build_uri("coverage", "tracks.tdb")
         dom = tiledb.Domain(
-            tiledb.Dim(name="idx", domain=(0, max_bws), dtype=np.int64, tile=1),
+            tiledb.Dim(name="idx", domain=(0, max_bws), dtype=np.uint32, tile=1),
         )
         attr1 = tiledb.Attr(name="label", dtype="ascii")
         attr2 = tiledb.Attr(name="path", dtype="ascii")
@@ -188,7 +189,7 @@ class Momics:
                 tiledb.Dim(
                     name="position",
                     domain=(0, chrom_length),
-                    dtype=np.int64,
+                    dtype=np.uint32,
                     tile=_set_tiledb_tile(tile, chrom_length),
                     filters=TILEDB_POSITION_FILTERS,
                 )
@@ -234,14 +235,14 @@ class Momics:
                 tiledb.Dim(
                     name="start",
                     domain=(0, chrom_length),
-                    dtype=np.int64,
+                    dtype=np.uint32,
                     tile=_set_tiledb_tile(tile, chrom_length),
                     filters=TILEDB_POSITION_FILTERS,
                 ),
                 tiledb.Dim(
                     name="stop",
                     domain=(0, chrom_length),
-                    dtype=np.int64,
+                    dtype=np.uint32,
                     tile=_set_tiledb_tile(tile, chrom_length),
                     filters=TILEDB_POSITION_FILTERS,
                 ),
@@ -948,3 +949,125 @@ class Momics:
         bed = self.features(features)
         bed.to_bed(output)
         return self
+
+    def manifest(self) -> dict:
+        """
+        Returns the manifest of the Momics repository. The manifest lists the
+        configuration for all the arrays stored in the repository, including
+        their schema, attributes, and metadata.
+        """
+
+        def is_tiledb_array(uri, ctx):
+            try:
+                return tiledb.object_type(uri, ctx) == "array"
+            except tiledb.TileDBError:
+                return False
+
+        def is_tiledb_group(uri, ctx):
+            try:
+                return tiledb.object_type(uri, ctx) == "group"
+            except tiledb.TileDBError:
+                return False
+
+        def get_array_schema(uri, ctx):
+            try:
+                with tiledb.open(uri, ctx=ctx, mode="r") as array:
+                    schema = array.schema
+
+                    d = collections.defaultdict(
+                        None,
+                        {
+                            "uri": uri,
+                            "type": "array",
+                            "shape": schema.shape,
+                            "sparse": schema.sparse,
+                            "chunksize": schema.capacity,
+                            "cell_order": schema.cell_order,
+                            "tile_order": schema.tile_order,
+                        },
+                    )
+
+                    d["dims"] = collections.defaultdict(None)
+                    for dim in schema.domain:
+                        d["dims"][dim.name] = {
+                            "domain": tuple([int(i) for i in dim.domain]),
+                            "dtype": str(dim.dtype),
+                            "tile": int(dim.tile),
+                            "filters": str(dim.filters),
+                        }
+                    d["dims"] = dict(d["dims"])
+
+                    d["attrs"] = collections.defaultdict(None)
+                    attrs = [schema.attr(x) for x in range(schema.nattr)]
+                    for attr in attrs:
+                        d["attrs"][attr.name] = {
+                            "dtype": str(attr.dtype),
+                            "filters": str(attr.filters),
+                        }
+                    d["attrs"] = dict(d["attrs"])
+
+                    d["modification_timestamps"] = {frag.uri: frag.timestamp_range for frag in tiledb.FragmentInfoList(uri)}
+                    d = dict(d)
+
+                return d
+
+            except Exception as e:
+                print(f"Error reading array schema from {uri}: {e}")
+                return None
+
+        def get_group_metadata(uri):
+            try:
+                return {"uri": uri, "type": "group"}
+            except Exception as e:
+                print(f"Error reading group metadata from {uri}: {e}")
+                return None
+
+        def traverse_directory(base_dir, ctx):
+            manifest = collections.defaultdict(None)
+            for pointer in self.cfg.vfs.ls_recursive(base_dir):
+                if is_tiledb_array(pointer, ctx):
+                    array_info = get_array_schema(pointer, ctx)
+                    if array_info:
+                        manifest[pointer] = array_info
+                elif is_tiledb_group(pointer, ctx):
+                    group_info = get_group_metadata(pointer)
+                    if group_info:
+                        manifest[pointer] = group_info
+
+            return manifest
+
+        man = traverse_directory(self.path, self.cfg.ctx)
+        return man
+
+    def consolidate(self, vacuum: bool = True) -> Literal[True]:
+        """
+        Consolidates the fragments of all arrays in the repository.
+
+        Args:
+            vacuum (bool, optional): Vacuum the consolidated array. Defaults to True.
+        """
+        for pointer in self.cfg.vfs.ls_recursive(self.path):
+            try:
+                if tiledb.object_type(pointer) == "array":
+                    logging.debug(f"Consolidating array at: {pointer}")
+                    tiledb.consolidate(pointer)
+                    if vacuum:
+                        tiledb.vacuum(pointer)
+            except tiledb.TileDBError as e:
+                print(f"Error processing {pointer}: {e}")
+
+        return True
+
+    def size(self) -> int:
+        """
+        Returns:
+            int: The size of the repository in bytes.
+        """
+        size = 0
+        for pointer in self.cfg.vfs.ls_recursive(self.path):
+            if self.cfg.vfs.is_file(pointer):
+                try:
+                    size += self.cfg.vfs.file_size(pointer)
+                except tiledb.TileDBError as e:
+                    print(f"Error processing {pointer}: {e}")
+        return size

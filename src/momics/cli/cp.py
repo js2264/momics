@@ -40,13 +40,14 @@ from . import cli
 def cp(ctx, path, type, label, force, output):
     """Copy sequence/track/feature set from a momics repo to a fa/bigwig/bed file."""
 
-    if not force:
-        click.confirm(
-            f"{output} file already exists. \
-            Are you sure you want to overwrite it",
-            abort=True,
-        )
-        os.remove(output)
+    if not force and output:
+        if os.path.exists(output):
+            click.confirm(
+                f"{output} file already exists. \
+                Are you sure you want to overwrite it",
+                abort=True,
+            )
+            os.remove(output)
 
     m = momics.Momics(path)
     if type == "sequence":
