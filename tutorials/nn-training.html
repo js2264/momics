@@ -1,0 +1,1061 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Train neural networks with momics and tensorflow &mdash; momics</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f1559f00" />
+
+  
+    <link rel="shortcut icon" href="../_static/logo.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=83a61292"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API Reference" href="../api/index.html" />
+    <link rel="prev" title="Managing cloud-hosted momics repositories" href="cloud-repos.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            momics
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/intro.html">What is <code class="docutils literal notranslate"><span class="pre">momics</span></code>?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/intro.html#a-file-format-for-efficient-storage-of-multi-omics-data">A file format for efficient storage of multi-omics data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/intro.html#a-large-scale-multi-omics-data-management-framework">A large-scale multi-omics data management framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/intro.html#an-efficient-query-engine-for-multi-omics-data">An efficient query engine for multi-omics data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/intro.html#an-integration-layer-of-multi-omics-data-and-machine-learning">An integration layer of multi-omics data and machine learning</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/concepts.html#id1"></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/get-started.html">Get started with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/get-started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/get-started.html#quick-start">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/get-started.html#going-further">Going further</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/api.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/api.html#creating-momics-repositories">Creating <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/api.html#registering-chromosomes">Registering chromosomes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/api.html#populating-momics-repositories">Populating <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/api.html#querying-momics-repositories">Querying <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/api.html#registering-a-query">Registering a query</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/api.html#running-a-query">Running a query</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/api.html#exporting-query-results">Exporting query results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/api.html#going-further">Going further</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/cli.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> CLI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/cli.html#basic-cli-usage">Basic CLI usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/cli.html#extra-cli-utilities">Extra CLI utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/cli.html#going-further">Going further</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="integrating-multiomics.html">Integrating multi-omics data with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="integrating-multiomics.html#Creating-a-local-momics-repository">Creating a local <code class="docutils literal notranslate"><span class="pre">momics</span></code> repository</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cloud-repos.html">Managing cloud-hosted <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cloud-repos.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cloud-repos.html#Creating-a-momics-repository-on-an-S3-bucket">Creating a <code class="docutils literal notranslate"><span class="pre">momics</span></code> repository on an S3 bucket</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cloud-repos.html#Adding-data-to-the-repository">Adding data to the repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cloud-repos.html#Querying-data-from-the-repository">Querying data from the repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cloud-repos.html#Extracting-data-from-the-repository">Extracting data from the repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cloud-repos.html#Deleting-a-repository">Deleting a repository</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Connect-to-the-data">Connect to the data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Modify-some-tracks">Modify some tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Define-model">Define model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Fit-the-model">Fit the model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Evaluate-and-save-model">Evaluate and save model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Use-the-model-to-predict-ATAC-seq-coverage">Use the model to predict ATAC-seq coverage</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/momics/index.html">momics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/chromnn/index.html">momics.chromnn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/config/index.html">momics.config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/dataset/index.html">momics.dataset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/logging/index.html">momics.logging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/momics/index.html">momics.momics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/query/index.html">momics.query</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/streamer/index.html">momics.streamer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/utils/index.html">momics.utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/version/index.html">momics.version</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/index.html#momics.__format_version__"><code class="docutils literal notranslate"><span class="pre">__format_version__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/momics/index.html#momics.__version__"><code class="docutils literal notranslate"><span class="pre">__version__</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../cli/index.html">CLI Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cli/index.html#contents">Contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../cli/index.html#momics">momics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-binnify">binnify</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-config">config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-consolidate">consolidate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-cp">cp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-create">create</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-delete">delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-ingest">ingest</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-ls">ls</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-manifest">manifest</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-query">query</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-remove">remove</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-tree">tree</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html#momics-version">version</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">momics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorials/nn-training.ipynb" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <style>
+    .output_area {
+        max-height: 300px; /* Adjust the height based on your preference */
+        overflow-y: auto;
+    }
+</style><section id="Train-neural-networks-with-momics-and-tensorflow">
+<h1>Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code><a class="headerlink" href="#Train-neural-networks-with-momics-and-tensorflow" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">momics</span></code> provides several useful resources to train neural networks with <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code>. This notebook demonstrates how to train a simple neural network with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code>.</p>
+<section id="Connect-to-the-data">
+<h2>Connect to the data<a class="headerlink" href="#Connect-to-the-data" title="Link to this heading"></a></h2>
+<p>First, we need to connect to the data. We will reuse the repository from the <a class="reference external" href="integrating-multiomics">previous tutorial</a>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from momics.momics import Momics
+
+## Creating repository
+repo = Momics(&quot;yeast_CNN_data.momics&quot;)
+
+## Check that sequence and some tracks are registered
+repo.seq()
+repo.tracks()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>idx</th>
+      <th>label</th>
+      <th>path</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>ATAC</td>
+      <td>/data/momics/S288c_atac.bw</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>MNase</td>
+      <td>/data/momics/S288c_mnase.bw</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>ATAC_rescaled</td>
+      <td>tmp1ae0oz8z</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>MNase_rescaled</td>
+      <td>tmpxo8t09eu</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="Modify-some-tracks">
+<h2>Modify some tracks<a class="headerlink" href="#Modify-some-tracks" title="Link to this heading"></a></h2>
+<p>We can first pre-process the tracks to normalize them, and save them back to the local repository.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
+
+for track in [&quot;ATAC&quot;, &quot;MNase&quot;]:
+    cov = repo.tracks(track)
+    q99 = np.nanpercentile(np.concatenate(list(cov.values())), 99)
+    for chrom in cov.keys():
+        arr = cov[chrom]
+        arr = np.minimum(arr, q99)
+        arr = (arr - np.nanmin(arr)) / (np.nanmax(arr) - np.nanmin(arr))
+        cov[chrom] = np.nan_to_num(arr, nan=0)
+    repo.ingest_track(cov, track + &quot;_rescaled&quot;)
+
+repo.tracks()
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Define-model">
+<h2>Define model<a class="headerlink" href="#Define-model" title="Link to this heading"></a></h2>
+<p>We will define a simple convolutional neural network with <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code> to predict the target variable <code class="docutils literal notranslate"><span class="pre">ATAC</span></code> from the feature variable <code class="docutils literal notranslate"><span class="pre">MNase</span></code>. This requires to first define <code class="docutils literal notranslate"><span class="pre">MomicsDataset</span></code> objects for a training set, a validation set, and a test set. We will use <code class="docutils literal notranslate"><span class="pre">MNase</span></code> coverage scores over tiling genomic windows (width: 2048, stride: 2048) as feature variables to predict <code class="docutils literal notranslate"><span class="pre">ATAC</span></code> coverage scores over the same tiling genomic windows, but narrowed down to the 16bp around the center of
+the window.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from momics.dataset import MomicsDataset
+import momics.utils as mutils
+
+# Fetch data from the momics repository
+features = &quot;MNase_rescaled&quot;
+features_size = 2048
+target = &quot;ATAC_rescaled&quot;
+target_size = 16
+stride = 2048
+batch_size = 1024
+
+bins = repo.bins(width=features_size, stride=stride, cut_last_bin_out=True)
+bins_split, bins_test = mutils.split_ranges(bins, 0.8, shuffle=False)
+bins_train, bins_val = mutils.split_ranges(bins_split, 0.8, shuffle=True)
+
+train_dataset = MomicsDataset(repo, bins_train, features, target, target_size=target_size, batch_size=batch_size)
+val_dataset = MomicsDataset(repo, bins_val, features, target, target_size=target_size, batch_size=batch_size)
+test_dataset = MomicsDataset(repo, bins_test, features, target, target_size=target_size, batch_size=batch_size)
+
+train_dataset  # noqa: B018
+val_dataset  # noqa: B018
+test_dataset
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-10-21 09:57:51.409942: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:485] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2024-10-21 09:57:51.421282: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:8454] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2024-10-21 09:57:51.424504: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1452] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2024-10-21 09:57:51.432112: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2024-10-21 09:57:52.023569: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1729497472.514830 2552958 cuda_executor.cc:1015] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+I0000 00:00:1729497472.544139 2552958 cuda_executor.cc:1015] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+I0000 00:00:1729497472.544264 2552958 cuda_executor.cc:1015] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+I0000 00:00:1729497472.545077 2552958 cuda_executor.cc:1015] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+I0000 00:00:1729497472.545185 2552958 cuda_executor.cc:1015] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+I0000 00:00:1729497472.545277 2552958 cuda_executor.cc:1015] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+I0000 00:00:1729497472.597774 2552958 cuda_executor.cc:1015] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+I0000 00:00:1729497472.597892 2552958 cuda_executor.cc:1015] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+I0000 00:00:1729497472.597982 2552958 cuda_executor.cc:1015] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+2024-10-21 09:57:52.598052: I tensorflow/core/common_runtime/gpu/gpu_device.cc:2021] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 1628 MB memory:  -&gt; device: 0, name: Quadro P400, pci bus id: 0000:01:00.0, compute capability: 6.1
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;_PrefetchDataset element_spec=(TensorSpec(shape=(None, 2048, 1), dtype=tf.float32, name=None), TensorSpec(shape=(None, 16, 1), dtype=tf.float32, name=None))&gt;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from momics.chromnn import ChromNN
+import tensorflow as tf
+from tensorflow.keras import layers  # type: ignore
+
+model = ChromNN(
+    layers.Input(shape=(features_size, 1)),
+    layers.Dense(target_size, activation=&quot;linear&quot;),
+).model
+
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), loss=&quot;mse&quot;)
+model.summary()
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">Model: "functional"</span>
+</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃<span style="font-weight: bold"> Layer (type)        </span>┃<span style="font-weight: bold"> Output Shape      </span>┃<span style="font-weight: bold">    Param # </span>┃<span style="font-weight: bold"> Connected to      </span>┃
+┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│ input_layer_1       │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">2048</span>, <span style="color: #00af00; text-decoration-color: #00af00">1</span>)   │          <span style="color: #00af00; text-decoration-color: #00af00">0</span> │ -                 │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">InputLayer</span>)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv1d (<span style="color: #0087ff; text-decoration-color: #0087ff">Conv1D</span>)     │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">2048</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)  │        <span style="color: #00af00; text-decoration-color: #00af00">416</span> │ input_layer_1[<span style="color: #00af00; text-decoration-color: #00af00">0</span>]… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ max_pooling1d       │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">256</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)   │          <span style="color: #00af00; text-decoration-color: #00af00">0</span> │ conv1d[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>]      │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">MaxPooling1D</span>)      │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ batch_normalization │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">256</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)   │        <span style="color: #00af00; text-decoration-color: #00af00">128</span> │ max_pooling1d[<span style="color: #00af00; text-decoration-color: #00af00">0</span>]… │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">BatchNormalizatio…</span> │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dropout (<span style="color: #0087ff; text-decoration-color: #0087ff">Dropout</span>)   │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">256</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)   │          <span style="color: #00af00; text-decoration-color: #00af00">0</span> │ batch_normalizat… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv1d_1 (<span style="color: #0087ff; text-decoration-color: #0087ff">Conv1D</span>)   │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">256</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)   │      <span style="color: #00af00; text-decoration-color: #00af00">5,152</span> │ dropout[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>]     │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ max_pooling1d_1     │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">64</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)    │          <span style="color: #00af00; text-decoration-color: #00af00">0</span> │ conv1d_1[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>]    │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">MaxPooling1D</span>)      │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ batch_normalizatio… │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">64</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)    │        <span style="color: #00af00; text-decoration-color: #00af00">128</span> │ max_pooling1d_1[<span style="color: #00af00; text-decoration-color: #00af00">…</span> │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">BatchNormalizatio…</span> │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dropout_1 (<span style="color: #0087ff; text-decoration-color: #0087ff">Dropout</span>) │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">64</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)    │          <span style="color: #00af00; text-decoration-color: #00af00">0</span> │ batch_normalizat… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv1d_2 (<span style="color: #0087ff; text-decoration-color: #0087ff">Conv1D</span>)   │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">64</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)    │      <span style="color: #00af00; text-decoration-color: #00af00">5,152</span> │ dropout_1[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ max_pooling1d_2     │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)    │          <span style="color: #00af00; text-decoration-color: #00af00">0</span> │ conv1d_2[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>]    │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">MaxPooling1D</span>)      │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ batch_normalizatio… │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)    │        <span style="color: #00af00; text-decoration-color: #00af00">128</span> │ max_pooling1d_2[<span style="color: #00af00; text-decoration-color: #00af00">…</span> │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">BatchNormalizatio…</span> │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dropout_2 (<span style="color: #0087ff; text-decoration-color: #0087ff">Dropout</span>) │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)    │          <span style="color: #00af00; text-decoration-color: #00af00">0</span> │ batch_normalizat… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv1d_3 (<span style="color: #0087ff; text-decoration-color: #0087ff">Conv1D</span>)   │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>)    │      <span style="color: #00af00; text-decoration-color: #00af00">2,576</span> │ dropout_2[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ batch_normalizatio… │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>)    │         <span style="color: #00af00; text-decoration-color: #00af00">64</span> │ conv1d_3[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>]    │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">BatchNormalizatio…</span> │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dropout_3 (<span style="color: #0087ff; text-decoration-color: #0087ff">Dropout</span>) │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>)    │          <span style="color: #00af00; text-decoration-color: #00af00">0</span> │ batch_normalizat… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv1d_4 (<span style="color: #0087ff; text-decoration-color: #0087ff">Conv1D</span>)   │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>)    │      <span style="color: #00af00; text-decoration-color: #00af00">1,296</span> │ dropout_3[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ batch_normalizatio… │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>)    │         <span style="color: #00af00; text-decoration-color: #00af00">64</span> │ conv1d_4[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>]    │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">BatchNormalizatio…</span> │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dropout_4 (<span style="color: #0087ff; text-decoration-color: #0087ff">Dropout</span>) │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>)    │          <span style="color: #00af00; text-decoration-color: #00af00">0</span> │ batch_normalizat… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ concatenate         │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)    │          <span style="color: #00af00; text-decoration-color: #00af00">0</span> │ dropout_3[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>],  │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">Concatenate</span>)       │                   │            │ dropout_4[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv1d_5 (<span style="color: #0087ff; text-decoration-color: #0087ff">Conv1D</span>)   │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>)    │      <span style="color: #00af00; text-decoration-color: #00af00">2,576</span> │ concatenate[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>] │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ batch_normalizatio… │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>)    │         <span style="color: #00af00; text-decoration-color: #00af00">64</span> │ conv1d_5[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>]    │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">BatchNormalizatio…</span> │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dropout_5 (<span style="color: #0087ff; text-decoration-color: #0087ff">Dropout</span>) │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>)    │          <span style="color: #00af00; text-decoration-color: #00af00">0</span> │ batch_normalizat… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ concatenate_1       │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>, <span style="color: #00af00; text-decoration-color: #00af00">48</span>)    │          <span style="color: #00af00; text-decoration-color: #00af00">0</span> │ dropout_3[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>],  │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">Concatenate</span>)       │                   │            │ dropout_4[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>],  │
+│                     │                   │            │ dropout_5[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv1d_6 (<span style="color: #0087ff; text-decoration-color: #0087ff">Conv1D</span>)   │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>)    │      <span style="color: #00af00; text-decoration-color: #00af00">3,856</span> │ concatenate_1[<span style="color: #00af00; text-decoration-color: #00af00">0</span>]… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ batch_normalizatio… │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>)    │         <span style="color: #00af00; text-decoration-color: #00af00">64</span> │ conv1d_6[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>]    │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">BatchNormalizatio…</span> │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dropout_6 (<span style="color: #0087ff; text-decoration-color: #0087ff">Dropout</span>) │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>)    │          <span style="color: #00af00; text-decoration-color: #00af00">0</span> │ batch_normalizat… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ concatenate_2       │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>, <span style="color: #00af00; text-decoration-color: #00af00">64</span>)    │          <span style="color: #00af00; text-decoration-color: #00af00">0</span> │ dropout_3[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>],  │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">Concatenate</span>)       │                   │            │ dropout_4[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>],  │
+│                     │                   │            │ dropout_5[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>],  │
+│                     │                   │            │ dropout_6[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ flatten (<span style="color: #0087ff; text-decoration-color: #0087ff">Flatten</span>)   │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">1024</span>)      │          <span style="color: #00af00; text-decoration-color: #00af00">0</span> │ concatenate_2[<span style="color: #00af00; text-decoration-color: #00af00">0</span>]… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dense_1 (<span style="color: #0087ff; text-decoration-color: #0087ff">Dense</span>)     │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>)        │     <span style="color: #00af00; text-decoration-color: #00af00">16,400</span> │ flatten[<span style="color: #00af00; text-decoration-color: #00af00">0</span>][<span style="color: #00af00; text-decoration-color: #00af00">0</span>]     │
+└─────────────────────┴───────────────────┴────────────┴───────────────────┘
+</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold"> Total params: </span><span style="color: #00af00; text-decoration-color: #00af00">38,064</span> (148.69 KB)
+</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold"> Trainable params: </span><span style="color: #00af00; text-decoration-color: #00af00">37,744</span> (147.44 KB)
+</pre></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold"> Non-trainable params: </span><span style="color: #00af00; text-decoration-color: #00af00">320</span> (1.25 KB)
+</pre></div>
+</div>
+</section>
+<section id="Fit-the-model">
+<h2>Fit the model<a class="headerlink" href="#Fit-the-model" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import os
+from pathlib import Path
+from tensorflow.keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint, ReduceLROnPlateau  # type: ignore
+
+os.makedirs(&quot;.chromnn&quot;, exist_ok=True)
+callbacks_list = [
+    CSVLogger(Path(&quot;.chromnn&quot;, &quot;epoch_data.csv&quot;)),
+    ModelCheckpoint(filepath=Path(&quot;.chromnn&quot;, &quot;Checkpoint.keras&quot;).name, monitor=&quot;val_correlate&quot;, save_best_only=True),
+    EarlyStopping(monitor=&quot;val_loss&quot;, patience=10, min_delta=1e-5, restore_best_weights=True),
+    ReduceLROnPlateau(monitor=&quot;val_loss&quot;, factor=0.1, patience=6 // 2, min_lr=0.1 * 0.001),
+]
+model.fit(
+    train_dataset,
+    validation_data=val_dataset,
+    epochs=20,
+    callbacks=callbacks_list,
+    steps_per_epoch=len(bins_train) // batch_size,
+)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Epoch 1/20
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1729497492.875502 2553417 service.cc:146] XLA service 0x7fe100009520 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1729497492.875515 2553417 service.cc:154]   StreamExecutor device (0): Quadro P400, Compute Capability 6.1
+2024-10-21 09:58:12.942499: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:268] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+2024-10-21 09:58:13.279690: I external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:531] Loaded cuDNN version 8907
+2024-10-21 09:58:18.083385: W external/local_tsl/tsl/framework/bfc_allocator.cc:291] Allocator (GPU_0_bfc) ran out of memory trying to allocate 1.70GiB with freed_by_count=0. The caller indicates that this is not a failure, but this may mean that there could be performance gains if more memory were available.
+2024-10-21 09:58:21.314785: E external/local_xla/xla/service/slow_operation_alarm.cc:65] Trying algorithm eng1{k2=2,k3=0} for conv (f32[1,32,1,12]{3,2,1,0}, u8[0]{0}) custom-call(f32[1,1024,1,2059]{3,2,1,0}, f32[32,1024,1,2048]{3,2,1,0}), window={size=1x2048}, dim_labels=bf01_oi01-&gt;bf01, custom_call_target=&#34;__cudnn$convForward&#34;, backend_config={&#34;operation_queue_id&#34;:&#34;0&#34;,&#34;wait_on_operation_queues&#34;:[],&#34;cudnn_conv_backend_config&#34;:{&#34;conv_result_scale&#34;:1,&#34;activation_mode&#34;:&#34;kNone&#34;,&#34;side_input_scale&#34;:0,&#34;leakyrelu_alpha&#34;:0},&#34;force_earliest_schedule&#34;:false} is taking a while...
+2024-10-21 09:58:21.459192: E external/local_xla/xla/service/slow_operation_alarm.cc:133] The operation took 1.144503023s
+Trying algorithm eng1{k2=2,k3=0} for conv (f32[1,32,1,12]{3,2,1,0}, u8[0]{0}) custom-call(f32[1,1024,1,2059]{3,2,1,0}, f32[32,1024,1,2048]{3,2,1,0}), window={size=1x2048}, dim_labels=bf01_oi01-&gt;bf01, custom_call_target=&#34;__cudnn$convForward&#34;, backend_config={&#34;operation_queue_id&#34;:&#34;0&#34;,&#34;wait_on_operation_queues&#34;:[],&#34;cudnn_conv_backend_config&#34;:{&#34;conv_result_scale&#34;:1,&#34;activation_mode&#34;:&#34;kNone&#34;,&#34;side_input_scale&#34;:0,&#34;leakyrelu_alpha&#34;:0},&#34;force_earliest_schedule&#34;:false} is taking a while...
+2024-10-21 09:58:26.161482: W external/local_tsl/tsl/framework/bfc_allocator.cc:291] Allocator (GPU_0_bfc) ran out of memory trying to allocate 2.27GiB with freed_by_count=0. The caller indicates that this is not a failure, but this may mean that there could be performance gains if more memory were available.
+2024-10-21 09:58:30.266315: I external/local_xla/xla/stream_executor/cuda/cuda_asm_compiler.cc:393] ptxas warning : Registers are spilled to local memory in function &#39;loop_add_subtract_fusion_14&#39;, 4 bytes spill stores, 12 bytes spill loads
+ptxas warning : Registers are spilled to local memory in function &#39;loop_add_subtract_fusion_13&#39;, 4 bytes spill stores, 12 bytes spill loads
+
+I0000 00:00:1729497510.306013 2553417 device_compiler.h:188] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">3/3</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 453ms/step - loss: 2.2423
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-10-21 09:58:34.701244: W external/local_tsl/tsl/framework/bfc_allocator.cc:291] Allocator (GPU_0_bfc) ran out of memory trying to allocate 3.90GiB with freed_by_count=0. The caller indicates that this is not a failure, but this may mean that there could be performance gains if more memory were available.
+2024-10-21 09:58:36.423690: W external/local_tsl/tsl/framework/bfc_allocator.cc:291] Allocator (GPU_0_bfc) ran out of memory trying to allocate 1.58GiB with freed_by_count=0. The caller indicates that this is not a failure, but this may mean that there could be performance gains if more memory were available.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">3/3</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">27s</span> 3s/step - loss: 2.2155 - val_loss: 0.0260 - learning_rate: 0.0010
+Epoch 2/20
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-10-21 09:58:36.827083: I tensorflow/core/framework/local_rendezvous.cc:404] Local rendezvous is aborting with status: OUT_OF_RANGE: End of sequence
+         [[{{node IteratorGetNext}}]]
+2024-10-21 09:58:36.827107: I tensorflow/core/framework/local_rendezvous.cc:404] Local rendezvous is aborting with status: OUT_OF_RANGE: End of sequence
+         [[{{node IteratorGetNext}}]]
+         [[IteratorGetNext/_4]]
+2024-10-21 09:58:36.827115: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 5039837812499872075
+2024-10-21 09:58:36.827128: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 18235436505003952707
+/home/rsg/micromamba/envs/momics/lib/python3.10/contextlib.py:153: UserWarning: Your input ran out of data; interrupting training. Make sure that your dataset or generator can generate at least `steps_per_epoch * epochs` batches. You may need to use the `.repeat()` function when building your dataset.
+  self.gen.throw(typ, value, traceback)
+/home/rsg/micromamba/envs/momics/lib/python3.10/site-packages/keras/src/callbacks/model_checkpoint.py:206: UserWarning: Can save best model only with val_correlate available, skipping.
+  self._save_model(epoch=epoch, batch=None, logs=logs)
+2024-10-21 09:58:41.179100: W external/local_tsl/tsl/framework/bfc_allocator.cc:291] Allocator (GPU_0_bfc) ran out of memory trying to allocate 1.20GiB with freed_by_count=0. The caller indicates that this is not a failure, but this may mean that there could be performance gains if more memory were available.
+2024-10-21 09:58:47.463465: W external/local_tsl/tsl/framework/bfc_allocator.cc:291] Allocator (GPU_0_bfc) ran out of memory trying to allocate 1.60GiB with freed_by_count=0. The caller indicates that this is not a failure, but this may mean that there could be performance gains if more memory were available.
+2024-10-21 09:58:51.825537: I external/local_xla/xla/stream_executor/cuda/cuda_asm_compiler.cc:393] ptxas warning : Registers are spilled to local memory in function &#39;loop_add_subtract_fusion_14&#39;, 4 bytes spill stores, 12 bytes spill loads
+ptxas warning : Registers are spilled to local memory in function &#39;loop_add_subtract_fusion_13&#39;, 4 bytes spill stores, 12 bytes spill loads
+
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">1/3</span> <span class="ansi-green-fg">━━━━━━</span><span class="ansi-white-fg">━━━━━━━━━━━━━━</span> <span class="ansi-bold">30s</span> 15s/step - loss: 1.7935
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-10-21 09:58:52.193159: I tensorflow/core/framework/local_rendezvous.cc:404] Local rendezvous is aborting with status: OUT_OF_RANGE: End of sequence
+         [[{{node IteratorGetNext}}]]
+         [[IteratorGetNext/_4]]
+2024-10-21 09:58:52.193190: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 5039837812499872075
+2024-10-21 09:58:52.380865: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 5039837812499872075
+/home/rsg/micromamba/envs/momics/lib/python3.10/contextlib.py:153: UserWarning: Your input ran out of data; interrupting training. Make sure that your dataset or generator can generate at least `steps_per_epoch * epochs` batches. You may need to use the `.repeat()` function when building your dataset.
+  self.gen.throw(typ, value, traceback)
+2024-10-21 09:58:52.380889: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 18235436505003952707
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">3/3</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">16s</span> 117ms/step - loss: 1.7935 - val_loss: 0.0258 - learning_rate: 0.0010
+Epoch 3/20
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/rsg/micromamba/envs/momics/lib/python3.10/site-packages/keras/src/callbacks/model_checkpoint.py:206: UserWarning: Can save best model only with val_correlate available, skipping.
+  self._save_model(epoch=epoch, batch=None, logs=logs)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">3/3</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">2s</span> 546ms/step - loss: 1.5613 - val_loss: 0.0255 - learning_rate: 0.0010
+Epoch 4/20
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-10-21 09:58:54.181994: I tensorflow/core/framework/local_rendezvous.cc:404] Local rendezvous is aborting with status: OUT_OF_RANGE: End of sequence
+         [[{{node IteratorGetNext}}]]
+         [[IteratorGetNext/_4]]
+/home/rsg/micromamba/envs/momics/lib/python3.10/contextlib.py:153: UserWarning: Your input ran out of data; interrupting training. Make sure that your dataset or generator can generate at least `steps_per_epoch * epochs` batches. You may need to use the `.repeat()` function when building your dataset.
+  self.gen.throw(typ, value, traceback)
+2024-10-21 09:58:54.182015: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 5039837812499872075
+2024-10-21 09:58:54.182023: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 18235436505003952707
+/home/rsg/micromamba/envs/momics/lib/python3.10/site-packages/keras/src/callbacks/model_checkpoint.py:206: UserWarning: Can save best model only with val_correlate available, skipping.
+  self._save_model(epoch=epoch, batch=None, logs=logs)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">3/3</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">1s</span> 117ms/step - loss: 1.2968 - val_loss: 0.0256 - learning_rate: 0.0010
+Epoch 5/20
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-10-21 09:58:54.749458: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 5039837812499872075
+/home/rsg/micromamba/envs/momics/lib/python3.10/contextlib.py:153: UserWarning: Your input ran out of data; interrupting training. Make sure that your dataset or generator can generate at least `steps_per_epoch * epochs` batches. You may need to use the `.repeat()` function when building your dataset.
+  self.gen.throw(typ, value, traceback)
+2024-10-21 09:58:54.749481: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 18235436505003952707
+/home/rsg/micromamba/envs/momics/lib/python3.10/site-packages/keras/src/callbacks/model_checkpoint.py:206: UserWarning: Can save best model only with val_correlate available, skipping.
+  self._save_model(epoch=epoch, batch=None, logs=logs)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">3/3</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">2s</span> 487ms/step - loss: 1.1518 - val_loss: 0.0258 - learning_rate: 0.0010
+Epoch 6/20
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/rsg/micromamba/envs/momics/lib/python3.10/contextlib.py:153: UserWarning: Your input ran out of data; interrupting training. Make sure that your dataset or generator can generate at least `steps_per_epoch * epochs` batches. You may need to use the `.repeat()` function when building your dataset.
+  self.gen.throw(typ, value, traceback)
+/home/rsg/micromamba/envs/momics/lib/python3.10/site-packages/keras/src/callbacks/model_checkpoint.py:206: UserWarning: Can save best model only with val_correlate available, skipping.
+  self._save_model(epoch=epoch, batch=None, logs=logs)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">1/3</span> <span class="ansi-green-fg">━━━━━━</span><span class="ansi-white-fg">━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 450ms/step - loss: 0.9550
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-10-21 09:58:56.943969: I tensorflow/core/framework/local_rendezvous.cc:404] Local rendezvous is aborting with status: OUT_OF_RANGE: End of sequence
+         [[{{node IteratorGetNext}}]]
+         [[IteratorGetNext/_4]]
+2024-10-21 09:58:57.124772: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 5039837812499872075
+2024-10-21 09:58:57.124795: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 18235436505003952707
+/home/rsg/micromamba/envs/momics/lib/python3.10/contextlib.py:153: UserWarning: Your input ran out of data; interrupting training. Make sure that your dataset or generator can generate at least `steps_per_epoch * epochs` batches. You may need to use the `.repeat()` function when building your dataset.
+  self.gen.throw(typ, value, traceback)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">3/3</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">1s</span> 111ms/step - loss: 0.9550 - val_loss: 0.0258 - learning_rate: 0.0010
+Epoch 7/20
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/rsg/micromamba/envs/momics/lib/python3.10/site-packages/keras/src/callbacks/model_checkpoint.py:206: UserWarning: Can save best model only with val_correlate available, skipping.
+  self._save_model(epoch=epoch, batch=None, logs=logs)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">3/3</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">2s</span> 495ms/step - loss: 0.9325 - val_loss: 0.0266 - learning_rate: 1.0000e-04
+Epoch 8/20
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-10-21 09:58:58.840624: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 5039837812499872075
+2024-10-21 09:58:58.840647: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 18235436505003952707
+/home/rsg/micromamba/envs/momics/lib/python3.10/contextlib.py:153: UserWarning: Your input ran out of data; interrupting training. Make sure that your dataset or generator can generate at least `steps_per_epoch * epochs` batches. You may need to use the `.repeat()` function when building your dataset.
+  self.gen.throw(typ, value, traceback)
+/home/rsg/micromamba/envs/momics/lib/python3.10/site-packages/keras/src/callbacks/model_checkpoint.py:206: UserWarning: Can save best model only with val_correlate available, skipping.
+  self._save_model(epoch=epoch, batch=None, logs=logs)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">3/3</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">1s</span> 117ms/step - loss: 0.8977 - val_loss: 0.0268 - learning_rate: 1.0000e-04
+Epoch 9/20
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-10-21 09:58:59.506671: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 5039837812499872075
+2024-10-21 09:58:59.506712: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 18235436505003952707
+/home/rsg/micromamba/envs/momics/lib/python3.10/contextlib.py:153: UserWarning: Your input ran out of data; interrupting training. Make sure that your dataset or generator can generate at least `steps_per_epoch * epochs` batches. You may need to use the `.repeat()` function when building your dataset.
+  self.gen.throw(typ, value, traceback)
+/home/rsg/micromamba/envs/momics/lib/python3.10/site-packages/keras/src/callbacks/model_checkpoint.py:206: UserWarning: Can save best model only with val_correlate available, skipping.
+  self._save_model(epoch=epoch, batch=None, logs=logs)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">3/3</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">2s</span> 552ms/step - loss: 0.8974 - val_loss: 0.0275 - learning_rate: 1.0000e-04
+Epoch 10/20
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-10-21 09:59:01.361780: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 18235436505003952707
+/home/rsg/micromamba/envs/momics/lib/python3.10/contextlib.py:153: UserWarning: Your input ran out of data; interrupting training. Make sure that your dataset or generator can generate at least `steps_per_epoch * epochs` batches. You may need to use the `.repeat()` function when building your dataset.
+  self.gen.throw(typ, value, traceback)
+/home/rsg/micromamba/envs/momics/lib/python3.10/site-packages/keras/src/callbacks/model_checkpoint.py:206: UserWarning: Can save best model only with val_correlate available, skipping.
+  self._save_model(epoch=epoch, batch=None, logs=logs)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">1/3</span> <span class="ansi-green-fg">━━━━━━</span><span class="ansi-white-fg">━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 321ms/step - loss: 0.9267
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-10-21 09:59:01.724832: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 5039837812499872075
+2024-10-21 09:59:01.724851: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 18235436505003952707
+2024-10-21 09:59:01.913726: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 5039837812499872075
+2024-10-21 09:59:01.913752: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 18235436505003952707
+/home/rsg/micromamba/envs/momics/lib/python3.10/contextlib.py:153: UserWarning: Your input ran out of data; interrupting training. Make sure that your dataset or generator can generate at least `steps_per_epoch * epochs` batches. You may need to use the `.repeat()` function when building your dataset.
+  self.gen.throw(typ, value, traceback)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">3/3</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">1s</span> 115ms/step - loss: 0.9267 - val_loss: 0.0277 - learning_rate: 1.0000e-04
+Epoch 11/20
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/rsg/micromamba/envs/momics/lib/python3.10/site-packages/keras/src/callbacks/model_checkpoint.py:206: UserWarning: Can save best model only with val_correlate available, skipping.
+  self._save_model(epoch=epoch, batch=None, logs=logs)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">3/3</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">2s</span> 496ms/step - loss: 0.8864 - val_loss: 0.0283 - learning_rate: 1.0000e-04
+Epoch 12/20
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-10-21 09:59:03.627357: I tensorflow/core/framework/local_rendezvous.cc:404] Local rendezvous is aborting with status: OUT_OF_RANGE: End of sequence
+         [[{{node IteratorGetNext}}]]
+         [[IteratorGetNext/_4]]
+2024-10-21 09:59:03.627374: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 5039837812499872075
+2024-10-21 09:59:03.627383: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 18235436505003952707
+/home/rsg/micromamba/envs/momics/lib/python3.10/contextlib.py:153: UserWarning: Your input ran out of data; interrupting training. Make sure that your dataset or generator can generate at least `steps_per_epoch * epochs` batches. You may need to use the `.repeat()` function when building your dataset.
+  self.gen.throw(typ, value, traceback)
+/home/rsg/micromamba/envs/momics/lib/python3.10/site-packages/keras/src/callbacks/model_checkpoint.py:206: UserWarning: Can save best model only with val_correlate available, skipping.
+  self._save_model(epoch=epoch, batch=None, logs=logs)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">3/3</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">1s</span> 111ms/step - loss: 0.8577 - val_loss: 0.0286 - learning_rate: 1.0000e-04
+Epoch 13/20
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-10-21 09:59:04.299576: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 5039837812499872075
+/home/rsg/micromamba/envs/momics/lib/python3.10/contextlib.py:153: UserWarning: Your input ran out of data; interrupting training. Make sure that your dataset or generator can generate at least `steps_per_epoch * epochs` batches. You may need to use the `.repeat()` function when building your dataset.
+  self.gen.throw(typ, value, traceback)
+2024-10-21 09:59:04.299600: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 18235436505003952707
+/home/rsg/micromamba/envs/momics/lib/python3.10/site-packages/keras/src/callbacks/model_checkpoint.py:206: UserWarning: Can save best model only with val_correlate available, skipping.
+  self._save_model(epoch=epoch, batch=None, logs=logs)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">3/3</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">2s</span> 560ms/step - loss: 0.8691 - val_loss: 0.0293 - learning_rate: 1.0000e-04
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-10-21 09:59:06.019402: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 5039837812499872075
+/home/rsg/micromamba/envs/momics/lib/python3.10/contextlib.py:153: UserWarning: Your input ran out of data; interrupting training. Make sure that your dataset or generator can generate at least `steps_per_epoch * epochs` batches. You may need to use the `.repeat()` function when building your dataset.
+  self.gen.throw(typ, value, traceback)
+2024-10-21 09:59:06.019431: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 18235436505003952707
+/home/rsg/micromamba/envs/momics/lib/python3.10/site-packages/keras/src/callbacks/model_checkpoint.py:206: UserWarning: Can save best model only with val_correlate available, skipping.
+  self._save_model(epoch=epoch, batch=None, logs=logs)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;keras.src.callbacks.history.History at 0x7fe3d9412110&gt;
+</pre></div></div>
+</div>
+</section>
+<section id="Evaluate-and-save-model">
+<h2>Evaluate and save model<a class="headerlink" href="#Evaluate-and-save-model" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Evaluate the model
+model.evaluate(test_dataset)
+
+# Save the model
+model.save(&quot;chromnn_model.keras&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+      1/Unknown <span class="ansi-bold">3s</span> 3s/step - loss: 0.0323
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-10-21 09:59:58.373818: W external/local_tsl/tsl/framework/bfc_allocator.cc:291] Allocator (GPU_0_bfc) ran out of memory trying to allocate 4.21GiB with freed_by_count=0. The caller indicates that this is not a failure, but this may mean that there could be performance gains if more memory were available.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">2/2</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">7s</span> 4s/step - loss: 0.0270
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2024-10-21 09:59:59.142341: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 5039837812499872075
+2024-10-21 09:59:59.142361: I tensorflow/core/framework/local_rendezvous.cc:423] Local rendezvous recv item cancelled. Key hash: 18235436505003952707
+/home/rsg/micromamba/envs/momics/lib/python3.10/contextlib.py:153: UserWarning: Your input ran out of data; interrupting training. Make sure that your dataset or generator can generate at least `steps_per_epoch * epochs` batches. You may need to use the `.repeat()` function when building your dataset.
+  self.gen.throw(typ, value, traceback)
+</pre></div></div>
+</div>
+</section>
+<section id="Use-the-model-to-predict-ATAC-seq-coverage">
+<h2>Use the model to predict ATAC-seq coverage<a class="headerlink" href="#Use-the-model-to-predict-ATAC-seq-coverage" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from momics.momicsquery import MomicsQuery
+
+## Define 2048-bp-wide genomic windows, with a stride of 16 bp, and extract MNase data from it.
+bb = repo.bins(width=features_size, stride=16, cut_last_bin_out=True)[&quot;XVI&quot;]
+dat = MomicsQuery(repo, bb).query_tracks(tracks=[&quot;MNase_rescaled&quot;])
+dat = np.array(list(dat.coverage[&quot;MNase_rescaled&quot;].values()))
+dat = np.nan_to_num(dat, nan=0)
+
+## Run predictions
+predictions = model.predict(dat)
+
+## Export predictions as a bigwig
+midpoints = (bb.Start + bb.End) // 2
+bb.Start = (midpoints - target_size / 2).apply(int)
+bb.End = (midpoints + target_size / 2).apply(int)
+bb.to_bed(&quot;predictions_bins.bed&quot;)
+mutils.pyranges_to_bw(bb, predictions, &quot;predictions_cov.bw&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+momics :: INFO :: 2024-10-21 10:02:21,179 :: Query completed in 0.2572s.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">1848/1848</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">8s</span> 3ms/step
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="cloud-repos.html" class="btn btn-neutral float-left" title="Managing cloud-hosted momics repositories" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../api/index.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-2024, Jacques Serizay.
+      <span class="lastupdated">Last updated on Oct 24, 2024.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

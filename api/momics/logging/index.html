@@ -1,0 +1,353 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>momics.logging &mdash; momics</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=f1559f00" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/logo.svg"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=83a61292"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="momics.momics" href="../momics/index.html" />
+    <link rel="prev" title="momics.dataset" href="../dataset/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            momics
+              <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/intro.html">What is <code class="docutils literal notranslate"><span class="pre">momics</span></code>?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/intro.html#a-file-format-for-efficient-storage-of-multi-omics-data">A file format for efficient storage of multi-omics data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/intro.html#a-large-scale-multi-omics-data-management-framework">A large-scale multi-omics data management framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/intro.html#an-efficient-query-engine-for-multi-omics-data">An efficient query engine for multi-omics data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/intro.html#an-integration-layer-of-multi-omics-data-and-machine-learning">An integration layer of multi-omics data and machine learning</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/concepts.html#id1"></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/get-started.html">Get started with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/get-started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/get-started.html#quick-start">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/get-started.html#going-further">Going further</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/api.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/api.html#creating-momics-repositories">Creating <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/api.html#registering-chromosomes">Registering chromosomes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/api.html#populating-momics-repositories">Populating <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/api.html#querying-momics-repositories">Querying <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../user_guide/api.html#registering-a-query">Registering a query</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../user_guide/api.html#running-a-query">Running a query</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../user_guide/api.html#exporting-query-results">Exporting query results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/api.html#going-further">Going further</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/cli.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> CLI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/cli.html#basic-cli-usage">Basic CLI usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/cli.html#extra-cli-utilities">Extra CLI utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/cli.html#going-further">Going further</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/integrating-multiomics.html">Integrating multi-omics data with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/integrating-multiomics.html#Creating-a-local-momics-repository">Creating a local <code class="docutils literal notranslate"><span class="pre">momics</span></code> repository</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/cloud-repos.html">Managing cloud-hosted <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/cloud-repos.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/cloud-repos.html#Creating-a-momics-repository-on-an-S3-bucket">Creating a <code class="docutils literal notranslate"><span class="pre">momics</span></code> repository on an S3 bucket</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/cloud-repos.html#Adding-data-to-the-repository">Adding data to the repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/cloud-repos.html#Querying-data-from-the-repository">Querying data from the repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/cloud-repos.html#Extracting-data-from-the-repository">Extracting data from the repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/cloud-repos.html#Deleting-a-repository">Deleting a repository</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/nn-training.html">Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/nn-training.html#Connect-to-the-data">Connect to the data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/nn-training.html#Modify-some-tracks">Modify some tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/nn-training.html#Define-model">Define model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/nn-training.html#Fit-the-model">Fit the model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/nn-training.html#Evaluate-and-save-model">Evaluate and save model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/nn-training.html#Use-the-model-to-predict-ATAC-seq-coverage">Use the model to predict ATAC-seq coverage</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">momics</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../chromnn/index.html">momics.chromnn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../config/index.html">momics.config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../dataset/index.html">momics.dataset</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">momics.logging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../momics/index.html">momics.momics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../query/index.html">momics.query</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../streamer/index.html">momics.streamer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../utils/index.html">momics.utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../version/index.html">momics.version</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../index.html#momics.__format_version__"><code class="docutils literal notranslate"><span class="pre">__format_version__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../index.html#momics.__version__"><code class="docutils literal notranslate"><span class="pre">__version__</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli/index.html">CLI Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../cli/index.html#contents">Contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../cli/index.html#momics">momics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../cli/index.html#momics-binnify">binnify</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../cli/index.html#momics-config">config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../cli/index.html#momics-consolidate">consolidate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../cli/index.html#momics-cp">cp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../cli/index.html#momics-create">create</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../cli/index.html#momics-delete">delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../cli/index.html#momics-ingest">ingest</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../cli/index.html#momics-ls">ls</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../cli/index.html#momics-manifest">manifest</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../cli/index.html#momics-query">query</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../cli/index.html#momics-remove">remove</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../cli/index.html#momics-tree">tree</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../cli/index.html#momics-version">version</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">momics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">momics</a></li>
+      <li class="breadcrumb-item active">momics.logging</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/api/momics/logging/index.rst" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-momics.logging">
+<span id="momics-logging"></span><h1>momics.logging<a class="headerlink" href="#module-momics.logging" title="Link to this heading"></a></h1>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#momics.logging.formatter" title="momics.logging.formatter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">formatter</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#momics.logging.handler" title="momics.logging.handler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handler</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#momics.logging.log_format" title="momics.logging.log_format"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_format</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#momics.logging.logger" title="momics.logging.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#momics.logging.MomicsFormatter" title="momics.logging.MomicsFormatter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MomicsFormatter</span></code></a></p></td>
+<td><p>Formatter instances are used to convert a LogRecord to text.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="momics.logging.MomicsFormatter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">momics.logging.</span></span><span class="sig-name descname"><span class="pre">MomicsFormatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datefmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/logging.html#MomicsFormatter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.logging.MomicsFormatter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">logging.Formatter</span></code></p>
+<p>Formatter instances are used to convert a LogRecord to text.</p>
+<p>Formatters need to know how a LogRecord is constructed. They are
+responsible for converting a LogRecord to (usually) a string which can
+be interpreted by either a human or an external system. The base Formatter
+allows a formatting string to be specified. If none is supplied, the
+style-dependent default value, “%(message)s”, “{message}”, or
+“${message}”, is used.</p>
+<p>The Formatter can be initialized with a format string which makes use of
+knowledge of the LogRecord attributes - e.g. the default value mentioned
+above makes use of the fact that the user’s message and arguments are pre-
+formatted into a LogRecord’s message attribute. Currently, the useful
+attributes in a LogRecord are described by:</p>
+<p>%(name)s            Name of the logger (logging channel)
+%(levelno)s         Numeric logging level for the message (DEBUG, INFO,</p>
+<blockquote>
+<div><p>WARNING, ERROR, CRITICAL)</p>
+</div></blockquote>
+<dl class="simple">
+<dt>%(levelname)s       Text logging level for the message (“DEBUG”, “INFO”,</dt><dd><p>“WARNING”, “ERROR”, “CRITICAL”)</p>
+</dd>
+<dt>%(pathname)s        Full pathname of the source file where the logging</dt><dd><p>call was issued (if available)</p>
+</dd>
+</dl>
+<p>%(filename)s        Filename portion of pathname
+%(module)s          Module (name portion of filename)
+%(lineno)d          Source line number where the logging call was issued</p>
+<blockquote>
+<div><p>(if available)</p>
+</div></blockquote>
+<p>%(funcName)s        Function name
+%(created)f         Time when the LogRecord was created (time.time()</p>
+<blockquote>
+<div><p>return value)</p>
+</div></blockquote>
+<p>%(asctime)s         Textual time when the LogRecord was created
+%(msecs)d           Millisecond portion of the creation time
+%(relativeCreated)d Time in milliseconds when the LogRecord was created,</p>
+<blockquote>
+<div><p>relative to the time the logging module was loaded
+(typically at application startup time)</p>
+</div></blockquote>
+<p>%(thread)d          Thread ID (if available)
+%(threadName)s      Thread name (if available)
+%(taskName)s        Task name (if available)
+%(process)d         Process ID (if available)
+%(message)s         The result of record.getMessage(), computed just as</p>
+<blockquote>
+<div><p>the record is emitted</p>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.logging.MomicsFormatter.format">
+<span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/logging.html#MomicsFormatter.format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.logging.MomicsFormatter.format" title="Link to this definition"></a></dt>
+<dd><p>Format the specified record as text.</p>
+<p>The record’s attribute dictionary is used as the operand to a
+string formatting operation which yields the returned string.
+Before formatting the dictionary, a couple of preparatory steps
+are carried out. The message attribute of the record is computed
+using LogRecord.getMessage(). If the formatting string uses the
+time (as determined by a call to usesTime(), formatTime() is
+called to format the event time. If there is exception information,
+it is formatted using formatException() and appended to the message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="momics.logging.formatter">
+<span class="sig-prename descclassname"><span class="pre">momics.logging.</span></span><span class="sig-name descname"><span class="pre">formatter</span></span><a class="headerlink" href="#momics.logging.formatter" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="momics.logging.handler">
+<span class="sig-prename descclassname"><span class="pre">momics.logging.</span></span><span class="sig-name descname"><span class="pre">handler</span></span><a class="headerlink" href="#momics.logging.handler" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="momics.logging.log_format">
+<span class="sig-prename descclassname"><span class="pre">momics.logging.</span></span><span class="sig-name descname"><span class="pre">log_format</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'momics</span> <span class="pre">::</span> <span class="pre">%(levelname)s</span> <span class="pre">::</span> <span class="pre">%(asctime)s</span> <span class="pre">::</span> <span class="pre">%(message)s'</span></em><a class="headerlink" href="#momics.logging.log_format" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="momics.logging.logger">
+<span class="sig-prename descclassname"><span class="pre">momics.logging.</span></span><span class="sig-name descname"><span class="pre">logger</span></span><a class="headerlink" href="#momics.logging.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../dataset/index.html" class="btn btn-neutral float-left" title="momics.dataset" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../momics/index.html" class="btn btn-neutral float-right" title="momics.momics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-2024, Jacques Serizay.
+      <span class="lastupdated">Last updated on Oct 24, 2024.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
