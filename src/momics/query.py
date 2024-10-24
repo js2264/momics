@@ -151,7 +151,7 @@ class MomicsQuery:
         self._check_memory_available(len(attrs))
 
         # Split ranges by chromosome
-        ranges_per_chrom = {key: value for (key, value) in self.ranges.items()}
+        ranges_per_chrom = {chrom: self.ranges[chrom] for chrom in chroms}
 
         # Prepare empty dictionary of results {attr1: { ranges1: ., ranges2: .}, ...}
         results = []
@@ -238,7 +238,8 @@ class MomicsQuery:
 
         # Split ranges by chromosome
         attrs = ["nucleotide"]
-        ranges_per_chrom = {key: value for (key, value) in self.ranges.items()}
+        chroms = self.ranges.chromosomes
+        ranges_per_chrom = {chrom: self.ranges[chrom] for chrom in chroms}
 
         # Prepare empty dictionary of results {attr1: { ranges1: ., ranges2: . }, .}
         results = []
