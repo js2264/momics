@@ -26,6 +26,7 @@ from .logging import logger
 lock = threading.Lock()
 
 
+BULK_OVERWRITE = True
 TILEDB_COMPRESSION = 2
 TILEDB_CHUNKSIZE = 10000
 TILEDB_POSITION_FILTERS = tiledb.FilterList(
@@ -315,32 +316,62 @@ class Momics:
 
             tdb = self._build_uri("coverage", f"{chrom}.tdb")
 
-            # If there are already scores in the array, read them
-            # THIS NEEDS TO BE UPDATED AS SOON AS
-            # TILEDB ALLOWS PARTIAL ATTRIBUTE WRITING!!
             cfg = self.cfg.cfg
             cfg.update({"sm.compute_concurrency_level": 1})
             cfg.update({"sm.io_concurrency_level": 1})
-            with tiledb.open(tdb, mode="r", config=cfg) as A:
-                sch = A.schema
-                attrs = [sch.attr(i).name for i in range(0, sch.nattr)]
-                if len(attrs) == 1 and attrs[0] == "placeholder":
-                    orig_scores = {}
-                else:
-                    orig_scores = A[0:chrom_length]
 
-            for bwf in bws.keys():
-                # Add bw label to array attributes
-                _add_attribute_to_array(tdb, bwf)
+            if BULK_OVERWRITE:
+                logging.debug(f"Writing to {tdb} in bulk")
+                #### If there are already scores in the array, do a bulk overwrite:
+                ####    1) read all the existing scores into mem
+                ####    2) Then re-write everything at once
+                with tiledb.open(tdb, mode="r", config=cfg) as A:
+                    sch = A.schema
+                    attrs = [sch.attr(i).name for i in range(0, sch.nattr)]
+                    if len(attrs) == 1 and attrs[0] == "placeholder":
+                        orig_scores = {}
+                    else:
+                        orig_scores = A[0:chrom_length]
 
-                # Ingest bigwig scores for this bw and this chrom
-                with pyBigWig.open(bws[bwf]) as bw:
-                    arr = bw.values(chrom, 0, chrom_length, numpy=True)
-                    orig_scores[bwf] = arr
+                for bwf in bws.keys():
+                    # Add bw label to array attributes
+                    _add_attribute_to_array(tdb, bwf)
 
-            # Re-write appended scores to chrom array
-            with tiledb.open(tdb, mode="w", config=cfg) as A:
-                A[0:chrom_length] = orig_scores
+                    # Ingest bigwig scores for this bw and this chrom
+                    with pyBigWig.open(bws[bwf]) as bw:
+                        arr = bw.values(chrom, 0, chrom_length, numpy=True)
+                        orig_scores[bwf] = arr
+
+                # Re-write appended scores to chrom array
+                with tiledb.open(tdb, mode="w", config=cfg) as A:
+                    A[0:chrom_length] = orig_scores
+
+            else:
+                logging.debug(f"Writing to {tdb} iteratively")
+                #### Alternatively, `attr` argument can be used when
+                #### optening to the array. So one can iterate over each
+                #### attribute, re-open the tdb, write the corresponding data, etc.
+                #### But this somehow takes longer
+                for bwf in bws.keys():
+                    # Add bw label to array attributes
+                    _add_attribute_to_array(tdb, bwf)
+
+                    # Ingest bigwig scores for this bw and this chrom
+                    with pyBigWig.open(bws[bwf]) as bw:
+                        arr = bw.values(chrom, 0, chrom_length, numpy=True)
+
+                    # Write scores to tiledb array
+                    with tiledb.open(tdb, mode="w", config=cfg, attr=bwf) as A:
+                        A[0:chrom_length] = arr
+
+                # Consolidate the modified array
+                tiledb.consolidate(tdb, config=cfg)
+                tiledb.vacuum(tdb, config=cfg)
+
+            ####
+            ####
+            ####
+            ####
 
             cfg.update({"sm.compute_concurrency_level": multiprocessing.cpu_count() - 1})
             cfg.update({"sm.io_concurrency_level": multiprocessing.cpu_count() - 1})

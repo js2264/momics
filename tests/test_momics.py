@@ -72,6 +72,26 @@ def test_Momics_ingest_tracks(momics_path: str, bw1: str, bw2: str):
 
 
 @pytest.mark.order(1)
+def test_Momics_alternative_ingest_tracks(momics_path2: str, bw1: str, bw2: str):
+    mom = momics.Momics(momics_path2)
+    chroms = utils.get_chr_lengths(bw1)
+    momics.BULK_OVERWRITE = False
+    mom.ingest_chroms(chroms)
+    mom.ingest_tracks({"bw1": bw1})
+    mom.ingest_tracks({"bw2": bw1})
+    out = pd.DataFrame(
+        {
+            "idx": [0, 1],
+            "label": ["bw1", "bw2"],
+            "path": [bw1, bw1],
+        }
+    )
+    assert mom.tracks().__eq__(out).all().all()
+    print(mom.tracks())
+    momics.BULK_OVERWRITE = True
+
+
+@pytest.mark.order(1)
 def test_Momics_ingest_track(momics_path: str, bw1: str, bw2: str):
     mom = momics.Momics(momics_path)
     chroms = mom.chroms()

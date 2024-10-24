@@ -29,6 +29,12 @@ def momics_path(tmp_path_factory):
 
 
 @pytest.fixture(scope="session")
+def momics_path2(tmp_path_factory):
+    p = os.path.join(tmp_path_factory.getbasetemp(), "test2.momics")
+    return p
+
+
+@pytest.fixture(scope="session")
 def fa1(tmp_path_factory):
     p = os.path.join(tmp_path_factory.getbasetemp(), "fa1")
     nucleotides = ["A", "T", "C", "G"]
