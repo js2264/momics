@@ -68,7 +68,8 @@ class MomicsStreamer:
                         continue
                     if f not in list(tr["label"]):
                         raise ValueError(f"Features {f} not found in momics repository.")
-
+        else:
+            features = list(momics.tracks()["label"])
         self.features = features
         self.silent = silent
         self.preprocess_func = preprocess_func if preprocess_func else self._default_preprocess
