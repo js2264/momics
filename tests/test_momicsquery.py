@@ -11,7 +11,7 @@ import pyranges as pr
 import pytest
 
 from momics.momics import Momics
-from momics.momicsquery import MomicsQuery
+from momics.query import MomicsQuery
 
 multiprocessing.set_start_method("spawn", force=True)
 

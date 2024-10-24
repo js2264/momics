@@ -4,7 +4,7 @@ import pytest
 import pyBigWig
 
 from momics import momics
-from momics.momicsquery import MomicsQuery
+from momics.query import MomicsQuery
 
 
 @pytest.mark.order(1)

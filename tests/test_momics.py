@@ -8,7 +8,7 @@ import tiledb
 
 from momics import momics
 from momics import utils
-from momics.momicsquery import MomicsQuery
+from momics.query import MomicsQuery
 
 
 @pytest.mark.order(1)

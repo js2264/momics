@@ -9,7 +9,7 @@ import tiledb
 
 from momics import momics
 from momics import config, logging, utils
-from momics.momicsquery import MomicsQuery
+from momics.query import MomicsQuery
 
 dotenv.load_dotenv()
 

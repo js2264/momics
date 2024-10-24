@@ -3,7 +3,7 @@ import cloup
 from Bio import SeqIO
 import pyranges as pr
 
-from momics.momicsquery import MomicsQuery
+from momics.query import MomicsQuery
 
 from .. import momics
 from .. import utils

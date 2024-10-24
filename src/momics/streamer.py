@@ -6,7 +6,7 @@ import logging
 
 from .momics import Momics
 from .logging import logger
-from .momicsquery import MomicsQuery
+from .query import MomicsQuery
 
 
 class MomicsStreamer:

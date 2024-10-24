@@ -9,7 +9,7 @@ import shutil
 from momics.cli import cli
 from momics import utils
 from momics.momics import Momics
-from momics import momicsquery
+from momics import query
 
 
 @pytest.fixture
@@ -138,7 +138,7 @@ def test_cp_track(runner, path, bw3):
     assert os.path.exists("out.bw")
     mom = Momics(path)
     bed = pr.from_dict({"Chromosome": ["I", "I"], "Start": [990, 1990], "End": [1010, 2010]})
-    q = momicsquery.MomicsQuery(mom, bed).query_tracks()
+    q = query.MomicsQuery(mom, bed).query_tracks()
 
     # pybigwig version
     res = {"bw2": collections.defaultdict(list)}
