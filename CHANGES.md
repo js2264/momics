@@ -1,14 +1,21 @@
 ## Unreleased
 
-*Date: On going*
+## [v0.3.0](https://github.com/js2264/momics/releases/tag/0.4.0)
+
+*Date: 2024-10-25*
 
 ### API changes
 
-* All ranges are now 0-based half-open intervals, as in `pyranges` and BED files.
+* `MultiRangeQuery` -> `MomicsQuery`.
+* `manifest` method to output the whole configuration of a `Momics` instance.
+* `consolidate` method to consolidate a `Momics` repository.
+* No submodules are imported in `__init__.py` anymore.
+* All export functions are now `Momics` methods.
 * All ingestion methods for `Momics` now start with `ingest_*`.
 
 ### New features
 
+* `aggregate` submodule to merge dictionaries of partial coverage tracks (over pyranges) into genome-wide tracks.
 * Relatively basic `ChromNN` CNN `TensorFlow` model.
 * `MomicsDataset` class to pass data to `TensorFlow` models.
 * `MomicsStreamer` class to stream data from `Momics` repositories.
@@ -17,14 +24,17 @@
 
 ### Enhancements
 
+* CLI is now partially based on `cloup` to improve user experience.
+* `seq(label = "...)` now returns the sequence for an entire chromosome.
 * `tracks(label = "...)` now returns the genome-wide track.
-* `MultiRangeQuery` queries now rely on `pyranges` for range queries.
-* `MultiRangeQuery` queries can extract only a subset of the tracks.
+* `MomicsQuery` queries now rely on `pyranges` for range queries.
+* `MomicsQuery` queries can extract only a subset of the tracks.
 * `add_track` and `remove` methods for `Momics` class.
-* `to_npz` and `to_json` methods for `MultiRangeQuery` class.
+* `to_npz` and `to_json` methods for `MomicsQuery` class.
 
 ### Maintenance
 
+* Support jupyter notebooks in documentation.
 * Add changelog.
 * Improve docs.
 * Logging system updates.
@@ -33,6 +43,8 @@
 
 ### Bug fixes
 
+* Ensure that queries are done per chromosome, even if provided ranges are stranded.
+* All ranges are now 0-based half-open intervals, as in `pyranges` and BED files.
 * Parallelization for queries only relies on `TileDB` internal system.
 * Filters used in `Momics` tables.
 * Removal of `Azure`-hosted repositories.
