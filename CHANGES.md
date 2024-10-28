@@ -1,6 +1,16 @@
 ## Unreleased
 
-## [v0.3.0](https://github.com/js2264/momics/releases/tag/0.4.0)
+### New features
+
+### Enhancements
+
+* `silent` argument to `query_*` methods
+
+### Bug fixes
+
+* Fix MomicsDataset and generator.
+
+## [v0.4.0](https://github.com/js2264/momics/releases/tag/0.4.0)
 
 *Date: 2024-10-25*
 

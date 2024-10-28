@@ -69,7 +69,7 @@ class MomicsDataset(tf.data.Dataset):
         x_streamer = MomicsStreamer(repo, ranges, batch_size, features=[features], preprocess_func=preprocess_func, silent=silent)
         x_gen = x_streamer.generator
         if features == "nucleotide":
-            out = tf.TensorSpec(shape=(None, features_size, 4), dtype=tf.string)
+            out = tf.TensorSpec(shape=(None, features_size, 4), dtype=tf.int32)
         else:
             out = tf.TensorSpec(shape=(None, features_size, 1), dtype=tf.float32)
 
@@ -80,8 +80,8 @@ class MomicsDataset(tf.data.Dataset):
             repo, ranges_target, batch_size, features=[target], preprocess_func=preprocess_func, silent=silent
         )
         y_gen = y_streamer.generator
-        if features == "nucleotide":
-            out = tf.TensorSpec(shape=(None, target_size, 4), dtype=tf.string)
+        if target == "nucleotide":
+            out = tf.TensorSpec(shape=(None, target_size, 4), dtype=tf.int32)
         else:
             out = tf.TensorSpec(shape=(None, target_size, 1), dtype=tf.float32)
 

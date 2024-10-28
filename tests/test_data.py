@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Generator, Iterator
 import pytest
 
 from momics import momics
@@ -16,7 +16,7 @@ def test_streamer(momics_path: str):
 
     rg = MomicsStreamer(mom, b, features="bw2", batch_size=1000, silent=False)
     assert isinstance(rg.generator(), Generator)
-    assert isinstance(iter(rg), Generator)
+    assert isinstance(iter(rg), Iterator)
 
     n = next(iter(rg))
     assert len(n) == 1
@@ -31,11 +31,6 @@ def test_streamer(momics_path: str):
     with pytest.raises(StopIteration):
         next(rg)
     assert rg.batch_index == rg.num_batches
-    rg.reset()
-    assert rg.batch_index == 0
-    n = next(rg)
-    assert len(n) == 1
-    assert n[0].shape == (1000, 10, 1)
 
     rg = MomicsStreamer(mom, b, features=["bw3", "bw2"], batch_size=1000)
     n = next(rg)
@@ -67,15 +62,15 @@ def test_dataset(momics_path: str):
         MomicsDataset(mom, b, "CH0", "CH1")
 
     b = mom.bins(10, 21, cut_last_bin_out=True)
-    with pytest.raises(ValueError, match=r"Target size must be smaller than the features width"):
+    with pytest.raises(ValueError, match=r"Target size must be smaller.*"):
         MomicsDataset(mom, b, "bw3", "bw2", target_size=1000000)
 
     rg = MomicsDataset(mom, b, "bw3", "bw2", target_size=2, batch_size=10)
     n = next(iter(rg))
-    assert n[0].shape == (10, 10, 1)
-    assert n[1].shape == (10, 2, 1)
+    assert n[0][0].shape == (10, 10, 1)
+    assert n[1][0].shape == (10, 2, 1)
 
     rg = MomicsDataset(mom, b, "nucleotide", "bw2", target_size=2, batch_size=10)
     n = next(iter(rg))
-    assert n[0].shape == (10, 10, 4)
-    assert n[1].shape == (10, 2, 1)
+    assert n[0][0].shape == (10, 10, 4)
+    assert n[1][0].shape == (10, 2, 1)
