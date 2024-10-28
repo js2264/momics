@@ -1,4 +1,4 @@
-from typing import Callable, Generator, Optional
+from typing import Callable, Optional
 
 import pyranges as pr
 import tensorflow as tf
@@ -24,15 +24,13 @@ class MomicsDataset(tf.data.Dataset):
 
     def __new__(
         cls,
-        momics: Momics,
+        repo: Momics,
         ranges: pr.PyRanges,
         features: str,
         target: str,
         target_size: Optional[int] = None,
         batch_size: Optional[int] = None,
         preprocess_func: Optional[Callable] = None,
-        shuffle_buffer_size: int = 10000,
-        prefetch_buffer_size: Optional[int] = tf.data.experimental.AUTOTUNE,
         silent: bool = True,
     ) -> tf.data.Dataset:
         """Create the MomicsDataset object.
@@ -51,49 +49,45 @@ class MomicsDataset(tf.data.Dataset):
         """
 
         # Check that all ranges have the same width
-        df = ranges.df
-        widths = df.End - df.Start
+        widths = ranges.End - ranges.Start
         if len(set(widths)) != 1:
             raise ValueError("All ranges must have the same width")
-        w = int(widths[0])
+        features_size = int(widths.iloc[0])
 
         # Check that the target size is smaller than the features width
-        if target_size is not None and target_size > w:
-            raise ValueError("Target size must be smaller than the features width.")
+        if target_size is None:
+            target_size = features_size
+        if target_size is not None and target_size > features_size:
+            raise ValueError(f"Target size must be smaller than or equal to the feature size {features_size}.")
 
-        # Encapsulate MomicsStreamer logic
-        def generator() -> Generator:
-            streamer = MomicsStreamer(
-                momics, ranges, batch_size, features=[features, target], preprocess_func=preprocess_func, silent=silent
-            )
-            for features_data, out in streamer:
+        ranges_target = ranges.copy()
+        if target_size != features_size:
+            ranges_target.Start = ranges_target.Start + features_size // 2 - target_size // 2
+            ranges_target.End = ranges_target.Start + target_size
 
-                # Adjust the output if target_size is provided
-                if target_size:
-                    center = out.shape[1] // 2
-                    label_data = out[:, int(center - target_size // 2) : int(center + target_size // 2)]
-                else:
-                    label_data = out
+        # Define generator for features data
+        x_streamer = MomicsStreamer(repo, ranges, batch_size, features=[features], preprocess_func=preprocess_func, silent=silent)
+        x_gen = x_streamer.generator
+        if features == "nucleotide":
+            out = tf.TensorSpec(shape=(None, features_size, 4), dtype=tf.string)
+        else:
+            out = tf.TensorSpec(shape=(None, features_size, 1), dtype=tf.float32)
 
-                yield features_data, label_data
+        xtrain_dataset = tf.data.Dataset.from_generator(x_gen, output_signature=(out,))
 
-        # Example output signature (modify based on your actual data shapes)
-        feature_shape = (None, w, 4 if features == "nucleotide" else 1)
-        label_shape = (None, target_size if target_size else w, 4 if target == "nucleotide" else 1)
-
-        dataset = tf.data.Dataset.from_generator(
-            generator,
-            output_signature=(
-                tf.TensorSpec(shape=feature_shape, dtype=tf.float32),
-                tf.TensorSpec(shape=label_shape, dtype=tf.float32),
-            ),
+        # Define generator for target data
+        y_streamer = MomicsStreamer(
+            repo, ranges_target, batch_size, features=[target], preprocess_func=preprocess_func, silent=silent
         )
+        y_gen = y_streamer.generator
+        if features == "nucleotide":
+            out = tf.TensorSpec(shape=(None, target_size, 4), dtype=tf.string)
+        else:
+            out = tf.TensorSpec(shape=(None, target_size, 1), dtype=tf.float32)
 
-        # Add shuffling and prefetching
-        if shuffle_buffer_size > 0:
-            shuffle_buffer_size = min(shuffle_buffer_size, batch_size)
-            dataset = dataset.shuffle(shuffle_buffer_size)
+        ytrain_dataset = tf.data.Dataset.from_generator(y_gen, output_signature=(out,))
 
-        dataset = dataset.prefetch(buffer_size=prefetch_buffer_size)
+        # Combine features and target datasets
+        xy_ds = tf.data.Dataset.zip((xtrain_dataset, ytrain_dataset))
 
-        return dataset
+        return xy_ds
