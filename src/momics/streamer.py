@@ -2,7 +2,6 @@ from typing import Callable, Optional, Generator, Tuple
 
 import numpy as np
 import pyranges as pr
-import logging
 
 from .momics import Momics
 from .logging import logger
@@ -91,9 +90,6 @@ class MomicsStreamer:
         res = {attr: None for attr in attrs}
         q = MomicsQuery(self.momics, batch_ranges)
 
-        if self.silent:
-            logging.disable(logging.WARNING)
-
         # Fetch seq if needed
         if "nucleotide" in attrs:
             i -= 1
@@ -123,9 +119,6 @@ class MomicsStreamer:
                 sh = out.shape
                 res[attr] = out.reshape(-1, sh[1], 1)
 
-        if self.silent:
-            logging.disable(logging.NOTSET)
-
         return tuple(res.values())
 
     def _default_preprocess(self, data):
@@ -134,42 +127,22 @@ class MomicsStreamer:
         """
         return (data - np.mean(data, axis=0)) / np.std(data, axis=0)
 
-    def generator(self) -> Generator:
-        """
-        Generator to yield batches of ranges and queried/preprocessed data.
-
-        Yields:
-            Tuple[pr.PyRanges, np.ndarray]: batch_ranges and preprocessed_data
-        """
-        self.batch_index = 0
-        for i in range(0, len(self.ranges), self.batch_size):
-            batch_ranges = pr.PyRanges(self.ranges.df.iloc[i : i + self.batch_size])
-            queried_data = self.query(batch_ranges)
-            # preprocessed_data = self.preprocess(queried_data)
-            self.batch_index += 1
-            yield queried_data
-
     def __iter__(self):
-        return self.generator()
+        self.batch_index = 0
+        return self
 
     def __next__(self):
         """Return the next batch or raise StopIteration."""
-        if self.batch_index < self.num_batches:
-            start = self.batch_index * self.batch_size
-            end = min((self.batch_index + 1) * self.batch_size, len(self.ranges))
-            batch_ranges = pr.PyRanges(self.ranges.df.iloc[start:end])
-            queried_data = self.query(batch_ranges)
-            self.batch_index += 1
-            return queried_data
-        else:
+        if self.batch_index >= self.num_batches:
             raise StopIteration
+        start = self.batch_index * self.batch_size
+        end = min((self.batch_index + 1) * self.batch_size, len(self.ranges))
+        batch_ranges = pr.PyRanges(self.ranges.df.iloc[start:end])
+        self.batch_index += 1
+        return self.query(batch_ranges)
 
     def __len__(self):
         return self.num_batches
-
-    def reset(self):
-        """Reset the iterator to allow re-iteration."""
-        self.batch_index = 0
 
     def batch(self, batch_size: int):
         """
@@ -186,5 +159,13 @@ class MomicsStreamer:
 
         self.batch_size = batch_size
         self.num_batches = (len(self.ranges) + self.batch_size - 1) // self.batch_size
-        self.reset()
-        logger.info(f"Batch size updated to {self.batch_size}. Number of batches is now {self.num_batches}.")
+        self.batch_index = 0
+        logger.debug(f"Batch size updated to {self.batch_size}. Number of batches is now {self.num_batches}.")
+
+    def generator(self) -> Generator:
+        """
+        Generator to yield batches of data.
+        """
+        for i in range(0, len(self.ranges), self.batch_size):
+            batch_ranges = pr.PyRanges(self.ranges.df.iloc[i : i + self.batch_size])
+            yield self.query(batch_ranges)
