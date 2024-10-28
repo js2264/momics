@@ -109,7 +109,7 @@ class MomicsQuery:
             logger.error(f"Error processing query batch: {e}")
             raise
 
-    def query_tracks(self, threads: Optional[int] = None, tracks: Optional[list] = None) -> "MomicsQuery":
+    def query_tracks(self, threads: Optional[int] = None, tracks: Optional[list] = None, silent: bool = True) -> "MomicsQuery":
         """Query multiple coverage ranges from a Momics repo.
 
         Args:
@@ -117,6 +117,7 @@ class MomicsQuery:
                 Defaults to all.
             tracks (list, optional): List of tracks to query. Defaults to None, \
                 which queries all tracks.
+            silent (bool, optional): Whether to suppress info messages.
 
         Returns:
             MomicsQuery: MomicsQuery: An updated MomicsQuery object
@@ -172,7 +173,8 @@ class MomicsQuery:
 
         self.coverage = combined_results
         t = time.time() - start0
-        logger.info(f"Query completed in {round(t,4)}s.")
+        if not silent:
+            logger.info(f"Query completed in {round(t,4)}s.")
         return self
 
     def _query_seq_per_batch(self, chrom, ranges, attrs, cfg):
@@ -216,12 +218,12 @@ class MomicsQuery:
             logger.error(f"Error processing query batch: {e}")
             raise
 
-    def query_sequence(self, threads: Optional[int] = None) -> "MomicsQuery":
+    def query_sequence(self, threads: Optional[int] = None, silent: bool = True) -> "MomicsQuery":
         """Query multiple sequence ranges from a Momics repo.
 
         Args:
-            threads (int, optional): Number of threads for parallel query. \
-                Defaults to all.
+            threads (int, optional): Number of threads for parallel query. Defaults to all.
+            silent (bool, optional): Whether to suppress info messages.
 
         Returns:
             MomicsQuery: An updated MomicsQuery object
@@ -260,7 +262,8 @@ class MomicsQuery:
 
         self.seq = combined_results
         t = time.time() - start0
-        logger.info(f"Query completed in {round(t,4)}s.")
+        if not silent:
+            logger.info(f"Query completed in {round(t,4)}s.")
         return self
 
     def to_df(self) -> pd.DataFrame:
