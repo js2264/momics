@@ -12,10 +12,10 @@ momics -v
 momics create testCLI.momics
 
 # Register chromosome lengths
-momics ingest chroms -f /data/momics/S288c.chrom.sizes testCLI.momics
+momics ingest chroms -f S288c.chrom.sizes testCLI.momics
 
 # Ingest genome reference sequence
-momics ingest seq -f ~/genomes/S288c/S288c.fa testCLI.momics
+momics ingest seq -f S288c.fa testCLI.momics
 
 # Ingest genomic coverage tracks
 momics ingest tracks -f bw_a=track1.bw -f bw_b=track2.bw -f bw_c=track3.bw testCLI.momics

@@ -71,20 +71,20 @@ from . import (
 )
 
 __all__ = [
-    "create",
-    "ingest",
-    "ls",
-    "tree",
-    "query",
-    "remove",
-    "delete",
-    "cp",
+    "__version__",
     "binnify",
     "cloudconfig",
     "consolidate",
+    "cp",
+    "create",
+    "delete",
+    "ingest",
+    "ls",
     "manifest",
+    "query",
+    "remove",
+    "tree",
     "version",
-    "__version__",
 ]
 
 if __name__ == "__main__":

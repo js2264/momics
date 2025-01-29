@@ -17,11 +17,11 @@ from . import utils
 from .version import __format_version__, __version__
 
 __all__ = [
+    "__format_version__",
+    "__version__",
+    "config",
     "momics",
     "query",
     "streamer",
-    "config",
     "utils",
-    "__format_version__",
-    "__version__",
 ]

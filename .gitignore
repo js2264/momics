@@ -68,3 +68,5 @@ bench/
 *.keras
 *.fa
 *.fa.fai
+manifest.json
+regions.bed
