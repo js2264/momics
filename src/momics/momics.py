@@ -708,7 +708,7 @@ class Momics:
         # Abort if sequence table already exists
         tdb = self._build_uri("genome", f"{chroms['chrom'][0]}.tdb")
         if self.cfg.vfs.is_dir(tdb):
-            raise tiledb.cc.TileDBError(f"Error: TileDB '{tdb}' already exists.")
+            raise tiledb.libtiledb.TileDBError(f"Error: TileDB '{tdb}' already exists.")
 
         # Abort if chr lengths in provided fasta do not match those in `chroms`
         utils._check_fasta_lengths(fasta, chroms)

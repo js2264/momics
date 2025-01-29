@@ -219,7 +219,7 @@ class MomicsConfig:
                         "configuration settings for cloud access."
                     )
 
-        self.ctx = tiledb.cc.Context(self.cfg)
+        self.ctx = tiledb.libtiledb.Context(self.cfg)
         self.vfs = tiledb.VFS(config=self.cfg, ctx=self.ctx)
 
     def _create_manual_tiledb_config(self, config: Union[S3Config, GCSConfig, AzureConfig]) -> tiledb.Config:

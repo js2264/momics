@@ -143,7 +143,7 @@ def test_Momics_ingest_seq(momics_path: str, fa1: str, fa2: str):
 
     mom.ingest_sequence(fa1, tile=10000)
 
-    with pytest.raises(tiledb.cc.TileDBError, match=r"already exists"):
+    with pytest.raises(tiledb.libtiledb.TileDBError, match=r"already exists"):
         mom.ingest_sequence(fa2)
 
     print(mom.seq())
