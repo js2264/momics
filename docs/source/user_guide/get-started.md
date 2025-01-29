@@ -8,7 +8,7 @@ Pin versions if you're worried about breaking changes!
 
 ## Installation
 
-With python `3.8` and higher, you can install `momics`  from [PyPI](https://pypi.org/project/momics) using `pip`.
+With python `3.9` and higher, you can install `momics`  from [PyPI](https://pypi.org/project/momics) using `pip`.
 
 ```shell
 pip install momics

@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "momics"
 version = "0.4.0"
 description = "A package to create and manage genome-related TileDB arrays"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = {text = "CC BY-NC 4.0"}
 readme = "README.md"
 authors = [
@@ -162,7 +162,7 @@ docs = "sphinx-autobuild docs docs/_build/html"
 features = ["dev"]
 
 [[tool.hatch.envs.test.matrix]]
-python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
+python = ["3.9", "3.10", "3.11", "3.12"]
 
 [tool.tox]
 legacy_tox_ini = """
