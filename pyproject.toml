@@ -41,23 +41,7 @@ dependencies = [
     "psutil",
     "setuptools",
     "typing-extensions",
-    "tensorflow[and-cuda]",
 ]
-
-[project.urls]
-homepage = "https://js2264.github.io/momics"
-documentation = "https://js2264.github.io/momics"
-repository = "https://github.com/js2264/momics"
-changelog = "https://github.com/js2264/momics/blob/devel/CHANGES.md"
-
-[project.scripts]
-momics = "momics.cli:cli"
-
-[tool.hatch.version]
-path = "src/momics/version.py"
-
-[tool.hatch.metadata]
-allow-direct-references = true
 
 [project.optional-dependencies]
 all = [
@@ -65,6 +49,12 @@ all = [
     "dask[array,dataframe]",
     "matplotlib",
     "psutil",
+]
+and-tf = [
+    "tensorflow",
+]
+and-tf-cuda = [
+    "tensorflow[and-cuda]",
 ]
 test = [
     "coverage[toml]",
@@ -74,11 +64,6 @@ test = [
     "pytest-cov",
     "pytest-order",
     "ruff",
-]
-dev = [
-    "momics[all,test]",
-    "pre-commit",
-    "twine"
 ]
 docs = [
     'autodoc',
@@ -97,6 +82,31 @@ docs = [
     "nbsphinx",
     "lxml[html_clean]",
 ]
+dev = [
+    "momics[all,test]",
+    "pre-commit",
+    "pylint",
+    "mypy",
+    "black",
+    "ruff",
+    "twine",
+    "ipython"
+]
+
+[project.urls]
+homepage = "https://js2264.github.io/momics"
+documentation = "https://js2264.github.io/momics"
+repository = "https://github.com/js2264/momics"
+changelog = "https://github.com/js2264/momics/blob/devel/CHANGES.md"
+
+[project.scripts]
+momics = "momics.cli:cli"
+
+[tool.hatch.version]
+path = "src/momics/version.py"
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [tool.black]
 line-length = 130
