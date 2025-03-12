@@ -4,7 +4,8 @@
 
 ### Enhancements
 
-* `silent` argument to `query_*` methods
+* `silent` argument to `query_*` methods.
+* CLI `query` returns meaningful ERROR if no seq/tracks are found.
 
 ### Bug fixes
 

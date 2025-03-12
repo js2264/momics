@@ -64,6 +64,11 @@ def tracks(ctx, path, coordinates, file, output: str, threads: int = 1):
 
     mom = momics.Momics(path)
 
+    # Exit with error if the momics repository does not contain sequence data
+    if len(mom.tracks()) == 0:
+        logger.error("The momics repository does not contain tracks data.")
+        exit(1)
+
     if coordinates is not None:
         bed = utils.parse_ucsc_coordinates(coordinates)
     else:
@@ -114,6 +119,13 @@ def seq(ctx, path, coordinates, file, output: str, threads: int = 1):
     _validate_exclusive_options(file, coordinates)
 
     mom = momics.Momics(path)
+
+    # Exit with error if the momics repository does not contain sequence data
+    try:
+        mom.seq()
+    except OSError:
+        logger.error("The momics repository does not contain sequence data.")
+        exit(1)
 
     if coordinates is not None:
         bed = utils.parse_ucsc_coordinates(coordinates)

@@ -59,6 +59,12 @@ def test_ingest_chroms(runner, path, bw3):
     assert len(result.output.strip().split("\n")) == 8
 
 
+def test_query_tracks_before_created(runner, path):
+    result = runner.invoke(cli.cli, ["query", "tracks", "-c", "I:0-10", path])
+    print(result.output)
+    assert result.exit_code == 1
+
+
 def test_ingest_tracks(runner, path, bw3):
     result = runner.invoke(cli.ingest.ingest, ["tracks", "--file", f"bw1={bw3}", "-f", f"bw2={bw3}", path])
     assert result.exit_code == 0
@@ -68,6 +74,11 @@ def test_ingest_tracks(runner, path, bw3):
     assert mom.tracks()["label"].__eq__(["bw1", "bw2"]).all()
     result = runner.invoke(cli.tree.tree, [path])
     assert len(result.output.strip().split("\n")) == 13
+
+
+def test_query_sequence_before_created(runner, path):
+    result = runner.invoke(cli.cli, ["query", "seq", "-c", "I:0-10", path])
+    assert result.exit_code == 1
 
 
 def test_ingest_sequence(runner, path, fa3):
