@@ -32,7 +32,6 @@ class ChromNN:
 
         x = layers.Flatten()(x)
         x = output(x)
-        x = tf.keras.layers.Reshape((1, 1))(x)
 
         self.model = tf.keras.Model(input, x)
 
