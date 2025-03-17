@@ -32,7 +32,7 @@ class MomicsStreamer:
         momics: Momics,
         ranges: pr.PyRanges,
         batch_size: Optional[int] = None,
-        features: Optional[int] = None,
+        features: Optional[list] = None,
         preprocess_func: Optional[Callable] = None,
         silent: bool = True,
     ) -> None:
@@ -87,14 +87,17 @@ class MomicsStreamer:
 
         attrs = self.features
         i = len(attrs)
-        res = {attr: None for attr in attrs}
+        res: dict = {attr: None for attr in attrs}
         q = MomicsQuery(self.momics, batch_ranges)
 
         # Fetch seq if needed
         if "nucleotide" in attrs:
             i -= 1
             q.query_sequence()
-            seqs = list(q.seq["nucleotide"].values())
+            if q.seq is not None:
+                seqs = list(q.seq["nucleotide"].values())
+            else:
+                raise ValueError("No sequence data found in the momics repository.")
 
             # One-hot-encode the sequences lists in seqs
             def one_hot_encode(seq) -> np.ndarray:
@@ -115,7 +118,11 @@ class MomicsStreamer:
             attrs2 = [attr for attr in attrs if attr != "nucleotide"]
             q.query_tracks(tracks=attrs2)
             for attr in attrs2:
-                out = np.array(list(q.coverage[attr].values()))
+                if q.coverage is not None:
+                    out = np.array(list(q.coverage[attr].values()))
+                else:
+                    raise ValueError(f"{attr} track data found in the momics repository.")
+
                 sh = out.shape
                 res[attr] = out.reshape(-1, sh[1], 1)
 

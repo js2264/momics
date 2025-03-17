@@ -36,15 +36,13 @@ class MomicsDataset(tf.data.Dataset):
         """Create the MomicsDataset object.
 
         Args:
-            momics (Momics): a Momics object
+            repo (Momics): a Momics object
             ranges (pr.PyRanges): pr.PyRanges object
             features (str): the name of the track to use for input data
-            target_size (int): To which width should the target be centered
             target (str): the name of the track to use for output data
+            target_size (int): To which width should the target be centered
             batch_size (int): the batch size
             preprocess_func (Callable): a function to preprocess the queried data
-            shuffle_buffer_size (int): the size of the shuffle buffer. Pass 0 to disable shuffling
-            prefetch_buffer_size (int): the size of the prefetch buffer
             silent (bool): whether to suppress info messages
         """
 

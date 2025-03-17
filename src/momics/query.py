@@ -3,7 +3,7 @@ import json
 import pickle
 import time
 from pathlib import Path
-from typing import List, Optional, Dict
+from typing import List, Optional
 
 import numpy as np
 import pandas as pd
@@ -30,7 +30,7 @@ class MomicsQuery:
             repository, populated after calling `q.query_seq()`
     """
 
-    def __init__(self, momics: Momics, bed: pr.PyRanges):
+    def __init__(self, momics: Momics, bed: pr.PyRanges) -> None:
         """Initialize the MomicsQuery object.
 
         Args:
@@ -54,8 +54,8 @@ class MomicsQuery:
                 raise ValueError("bed must be a `pr.PyRanges` object.")
 
         self.ranges = bed
-        self.coverage: Optional[Dict] = None
-        self.seq: Optional[Dict] = None
+        self.coverage: Optional[dict] = None
+        self.seq: Optional[dict] = None
 
     def _check_memory_available(self, n):
         estimated_required_memory = 4 * n * sum(self.ranges.End - self.ranges.Start) * 1.2
