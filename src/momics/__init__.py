@@ -14,7 +14,6 @@ from . import query
 from . import streamer
 from . import config
 from . import utils
-from . import dataset
 from .version import __format_version__, __version__
 
 __all__ = [
@@ -25,5 +24,4 @@ __all__ = [
     "query",
     "streamer",
     "utils",
-    "dataset",
 ]
