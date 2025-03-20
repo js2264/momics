@@ -1,0 +1,37 @@
+---
+title: Integrating multi-omics data with `momics`
+cache: true
+---
+
+`momics` excels at managing multi-omics data. It allows you to store and retrieve data from a variety of sources. Here, we will see how to create, manage and query local repositories using `momics`.
+
+## Creating a local `momics` repository
+
+```{python}
+from momics.momics import Momics
+
+## Creating repository
+Momics("yeast_CNN_data.momics").remove()  # Purging existing files
+repo = Momics("yeast_CNN_data.momics")  # Creating a brand new repository
+
+## Registering chromosome sizes
+## We will get chromosome sizes from a local fasta file.
+from pyfaidx import Fasta
+
+f = Fasta("/home/jaseriza/repos/momics/data/S288c.fa")
+chrom_lengths = {chrom: len(seq) for chrom, seq in zip(f.keys(), f.values())}
+
+repo.ingest_chroms(chrom_lengths, genome_version="S288c")
+repo.chroms()
+
+## Registering sequence
+repo.ingest_sequence(f.filename)
+
+## Registering genomic tracks
+repo.ingest_tracks(
+    {
+        "ATAC": "/home/jaseriza/repos/momics/data/S288c_atac.bw",
+        "MNase": "/home/jaseriza/repos/momics/data/S288c_mnase.bw",
+    }
+)
+```
