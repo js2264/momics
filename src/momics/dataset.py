@@ -71,7 +71,7 @@ class MomicsDataset(tf.data.Dataset):
         else:
             out = tf.TensorSpec(shape=(None, features_size, 1), dtype=tf.float32)
 
-        xtrain_dataset = tf.data.Dataset.from_generator(x_gen, output_signature=(out,))
+        x_dataset = tf.data.Dataset.from_generator(x_gen, output_signature=(out,))
 
         # Define generator for target data
         y_streamer = MomicsStreamer(
@@ -83,9 +83,9 @@ class MomicsDataset(tf.data.Dataset):
         else:
             out = tf.TensorSpec(shape=(None, target_size, 1), dtype=tf.float32)
 
-        ytrain_dataset = tf.data.Dataset.from_generator(y_gen, output_signature=(out,))
+        y_dataset = tf.data.Dataset.from_generator(y_gen, output_signature=(out,))
 
         # Combine features and target datasets
-        xy_ds = tf.data.Dataset.zip((xtrain_dataset, ytrain_dataset))
+        xy_ds = tf.data.Dataset.zip((x_dataset, y_dataset))
 
         return xy_ds

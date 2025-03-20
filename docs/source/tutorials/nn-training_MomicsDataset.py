@@ -8,30 +8,31 @@ from tensorflow.keras.callbacks import CSVLogger, EarlyStopping, ReduceLROnPlate
 from momics.aggregate import aggregate
 from momics import utils as mutils
 from momics.chromnn import ChromNN
+from momics.dataset import MomicsDataset
 
 # Fetch data from the momics repository
 repo = Momics("yeast_CNN_data.momics")
 features = "MNase_rescaled"
-features_size = 2048
+features_size = 4097 + 1
 target = "ATAC_rescaled"
-target_size = 1
-stride = 1024
-batch_size = 100
+target_size = 24
+stride = 48
+batch_size = 2000
 bins = repo.bins(width=features_size, stride=stride, cut_last_bin_out=True)
 bins = bins.subset(lambda x: x.Chromosome != "XVI")
-bins_split, bins_test = mutils.split_ranges(bins, 0.9)
-bins_train, bins_val = mutils.split_ranges(bins_split, 0.9)
+bins_split, bins_test = mutils.split_ranges(bins, 0.8, shuffle=True)
+bins_train, bins_val = mutils.split_ranges(bins_split, 0.8, shuffle=True)
 
 # ---------------------------------
 
 # Create datasets
 train_dataset = (
-    momics.dataset.MomicsDataset(repo, bins_train, features, target, target_size=target_size, batch_size=batch_size, silent=True)
+    MomicsDataset(repo, bins_train, features, target, target_size=target_size, batch_size=batch_size, silent=True)
     .shuffle(10)
-    .prefetch(1)
+    .prefetch(2)
     .repeat()
 )
-val_dataset = momics.dataset.MomicsDataset(
+val_dataset = MomicsDataset(
     repo, bins_val, features, target, target_size=target_size, batch_size=batch_size, silent=True
 ).repeat()
 
@@ -39,7 +40,7 @@ val_dataset = momics.dataset.MomicsDataset(
 
 # Define CNN
 input = layers.Input(shape=(features_size, 1))
-output = layers.Dense(1, activation="linear")
+output = layers.Dense(target_size, activation="linear")
 model = ChromNN(input, output).model
 model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), loss="mse")
 model.summary()
@@ -57,24 +58,24 @@ callbacks_list = [
 
 model.fit(
     train_dataset,
-    callbacks=callbacks_list,
-    epochs=30,
-    steps_per_epoch=len(bins_train) // batch_size,
     validation_data=val_dataset,
+    epochs=30,
+    callbacks=callbacks_list,
+    steps_per_epoch=len(bins_train) // batch_size,
     validation_steps=len(bins_val) // batch_size,
 )
 
 # ---------------------------
 
 # Model evaluation
-test_dataset = momics.dataset.MomicsDataset(repo, bins_train, features, target, target_size=target_size, batch_size=batch_size)
+test_dataset = MomicsDataset(repo, bins_train, features, target, target_size=target_size, batch_size=batch_size)
 model.evaluate(test_dataset)
 model.save("simple_chromnn.keras")
 
 # ---------------------------
 
 # Model prediction
-bb = repo.bins(width=features_size, stride=1, cut_last_bin_out=True)["XVI", 0:300000]
+bb = repo.bins(width=features_size, stride=8, cut_last_bin_out=True)["XVI"]
 dat = momics.query.MomicsQuery(repo, bb).query_tracks(tracks=["MNase_rescaled"]).coverage["MNase_rescaled"]
 dat = np.array(list(dat.values()))
 
@@ -86,8 +87,8 @@ chrom_sizes = {chrom: length for chrom, length in zip(repo.chroms().chrom, repo.
 keys = [f"{chrom}:{start}-{end}" for chrom, start, end in zip(bb2.Chromosome, bb2.Start, bb2.End)]
 
 predictions = model.predict(dat)
-res = {"atac": {k: None for k in keys}}
+res = {"atac3": {k: None for k in keys}}
 for i, key in enumerate(keys):
-    res["atac"][key] = predictions[i]
+    res["atac3"][key] = predictions[i]
 
 res = aggregate(res, bb2, chrom_sizes, type="mean", prefix="prediction")
