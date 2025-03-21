@@ -102,7 +102,7 @@ repository = "https://github.com/js2264/momics"
 changelog = "https://github.com/js2264/momics/blob/devel/CHANGES.md"
 
 [project.scripts]
-momics = "momics.cli:cli"
+momics = "momics.cli:cli.cli"
 
 [tool.hatch.version]
 path = "src/momics/version.py"
