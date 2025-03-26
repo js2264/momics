@@ -32,6 +32,7 @@ class MomicsDataset(tf.data.Dataset):
         batch_size: Optional[int] = None,
         preprocess_func: Optional[Callable] = None,
         silent: bool = True,
+        cache: bool = False,
     ) -> tf.data.Dataset:
         """Create the MomicsDataset object.
 
@@ -44,6 +45,7 @@ class MomicsDataset(tf.data.Dataset):
             batch_size (int): the batch size
             preprocess_func (Callable): a function to preprocess the queried data
             silent (bool): whether to suppress info messages
+            cache (bool): whether to cache the dataset
         """
 
         # Check that all ranges have the same width
@@ -88,4 +90,11 @@ class MomicsDataset(tf.data.Dataset):
         # Combine features and target datasets
         xy_ds = tf.data.Dataset.zip((x_dataset, y_dataset))
 
+        # Add caching option
+        if cache:
+            xy_ds = xy_ds.cache()
+
         return xy_ds
+
+    def __len__(self):
+        return super().__len__()
