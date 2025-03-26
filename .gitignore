@@ -65,6 +65,7 @@ perfs_benchmark.log
 .env
 bench/
 .chromnn
+.basenji
 *.keras
 *.fa
 *.fa.fai
