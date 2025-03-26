@@ -620,7 +620,7 @@ class Momics:
                 features = pd.DataFrame(columns=["idx", "label", "n"])
             return features
 
-    def bins(self, width, stride, cut_last_bin_out=False) -> pr.PyRanges:
+    def bins(self, width: int, stride: Optional[int] = None, cut_last_bin_out=False) -> pr.PyRanges:
         """Generate a PyRanges of tiled genomic bins
 
         Args:
@@ -638,6 +638,9 @@ class Momics:
         chroms = self.chroms().set_index("chrom")["length"].to_dict()
         if chroms == {}:
             raise ValueError("Please fill out `chroms` table first.")
+
+        if stride is None:
+            stride = width
 
         for chrom, length in chroms.items():
             start = 0
