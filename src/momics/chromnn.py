@@ -46,10 +46,10 @@ class ChromNN:
         self.model = tf.keras.Model(input, x)
 
 
-class Basenji:
+class Basenji:  # pragma: no cover
     """
     This class is a loose adaptation of the Basenji convolutional neural network
-    for the prediction of epigenomic data from DNA sequence ().
+    for the prediction of epigenomic data from DNA sequence (Kelley et al. 2018).
     """
 
     def __init__(self, input=DEFAULT_CHROMNN_INPUT_LAYER, output=DEFAULT_CHROMNN_OUTPUT_LAYER) -> None:
