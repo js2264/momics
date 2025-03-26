@@ -219,3 +219,23 @@ def pyranges_to_bw(pyranges: pr.PyRanges, scores: np.ndarray, output: str) -> No
 
     # Step 4: Close the BigWig file
     bw.close()
+
+
+def one_hot_encode(seq) -> np.ndarray:
+    """
+    One-hot encode a DNA sequence.
+
+    Args:
+        seq (str): A DNA sequence.
+
+    Returns:
+        np.ndarray: A one-hot encoded array.
+    """
+
+    seq = seq.upper()
+    encoding_map = {"A": [1, 0, 0, 0], "T": [0, 1, 0, 0], "C": [0, 0, 1, 0], "G": [0, 0, 0, 1]}
+    oha = np.zeros((len(seq), 4), dtype=int)
+    for i, nucleotide in enumerate(seq):
+        oha[i] = encoding_map[nucleotide]
+
+    return oha

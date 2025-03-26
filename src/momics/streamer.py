@@ -3,6 +3,7 @@ from typing import Callable, Optional, Generator, Tuple
 import numpy as np
 import pyranges as pr
 
+from . import utils as mutils
 from .momics import Momics
 from .logging import logger
 from .query import MomicsQuery
@@ -99,17 +100,7 @@ class MomicsStreamer:
             else:
                 raise ValueError("No sequence data found in the momics repository.")
 
-            # One-hot-encode the sequences lists in seqs
-            def one_hot_encode(seq) -> np.ndarray:
-                seq = seq.upper()
-                encoding_map = {"A": [1, 0, 0, 0], "T": [0, 1, 0, 0], "C": [0, 0, 1, 0], "G": [0, 0, 0, 1]}
-                oha = np.zeros((len(seq), 4), dtype=int)
-                for i, nucleotide in enumerate(seq):
-                    oha[i] = encoding_map[nucleotide]
-
-                return oha
-
-            X = np.array([one_hot_encode(seq) for seq in seqs])
+            X = np.array([mutils.one_hot_encode(seq) for seq in seqs])
             sh = X.shape
             res["nucleotide"] = X.reshape(-1, sh[1], 4)
 
