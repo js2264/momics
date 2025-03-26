@@ -49,5 +49,5 @@ cli/index
 :caption: Changelog
 :maxdepth: 1
 
-changes
+CHANGES
 ```
