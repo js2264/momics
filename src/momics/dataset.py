@@ -18,6 +18,17 @@ class MomicsDataset(tf.data.Dataset):
     For a more basic generator to stream a `momics` by batches of ranges,
     see `momics.streamer.MomicsStreamer`.
 
+    Args:
+        repo (Momics): a Momics object
+        ranges (pr.PyRanges): pr.PyRanges object
+        features (str): the name of the track to use for input data (can also be "nucleotide")
+        target (str): the name of the track to use for output data
+        target_size (int): To which width should the target be centered
+        batch_size (int): the batch size
+        preprocess_func (Callable): a function to preprocess the queried data
+        silent (bool): whether to suppress info messages
+        cache (bool): whether to cache the dataset
+
     See Also:
         :class:`momics.streamer.MomicsStreamer`
     """

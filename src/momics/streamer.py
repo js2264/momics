@@ -41,7 +41,7 @@ class MomicsStreamer:
 
         Args:
             momics (Momics): a Momics object
-            ranges (dict): pr.PyRanges object.
+            ranges (dict): pr.PyRanges object
             batch_size (int): the batch size
             features (list): list of track labels to query
             preprocess_func (Callable): a function to preprocess the queried data
@@ -50,10 +50,15 @@ class MomicsStreamer:
 
         self.momics = momics
         self.ranges = ranges
+
+        # Set the batch size
         if batch_size is None:
             batch_size = len(ranges)
+
         self.batch_size = batch_size
         self.num_batches = (len(ranges) + batch_size - 1) // batch_size
+
+        # Check features
         if features is not None:
             if not isinstance(features, list):
                 features = [features]
@@ -72,7 +77,7 @@ class MomicsStreamer:
             features = list(momics.tracks()["label"])
         self.features = features
         self.silent = silent
-        self.preprocess_func = preprocess_func if preprocess_func else self._default_preprocess
+        self.preprocess_func = preprocess_func if preprocess_func else self._no_preprocess
         self.batch_index = 0
 
     def query(self, batch_ranges) -> Tuple:
@@ -119,11 +124,17 @@ class MomicsStreamer:
 
         return tuple(res.values())
 
-    def _default_preprocess(self, data):
+    def _zscore(self, data):
         """
-        Default preprocessing function that normalizes data.
+        Z-score preprocessing function to normalize data
         """
         return (data - np.mean(data, axis=0)) / np.std(data, axis=0)
+
+    def _no_preprocess(self, data):
+        """
+        No preprocessing function
+        """
+        return data
 
     def __iter__(self):
         self.batch_index = 0
