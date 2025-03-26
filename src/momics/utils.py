@@ -164,8 +164,8 @@ def split_ranges(pyranges, ratio=0.8, shuffle=True) -> Tuple[pr.PyRanges, pr.PyR
     split_idx = int(len(df) * ratio)
     train_df = df.iloc[:split_idx]
     test_df = df.iloc[split_idx:]
-    train_pyranges = pr.PyRanges(train_df).sort()
-    test_pyranges = pr.PyRanges(test_df).sort()
+    train_pyranges = pr.PyRanges(train_df)
+    test_pyranges = pr.PyRanges(test_df)
     return train_pyranges, test_pyranges
 
 
