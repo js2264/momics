@@ -81,8 +81,6 @@ docs = [
     "myst-parser",
     "nbsphinx",
     "lxml[html_clean]",
-    "quarto",
-    "jupyter-cache"
 ]
 dev = [
     "momics[all,test]",

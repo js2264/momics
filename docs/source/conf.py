@@ -128,12 +128,13 @@ autoapi_member_order = "groupwise"
 # --------------------------------------------------------------------------------
 # nbsphinx settings
 
+nbsphinx_execute = "never"
 nbsphinx_prolog = r"""
 .. raw:: html
 
     <style>
         .output_area {
-            max-height: 300px; /* Adjust the height based on your preference */
+            max-height: 300px;
             overflow-y: auto;
         }
     </style>
