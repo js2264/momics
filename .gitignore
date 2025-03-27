@@ -72,3 +72,4 @@ bench/
 manifest.json
 regions.bed
 .jupyter_cache
+NOTES.md
