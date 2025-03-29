@@ -38,7 +38,7 @@ class MomicsDataset(tf.data.Dataset):
         repo: Momics,
         ranges: pr.PyRanges,
         features: str,
-        target: str,
+        target: Optional[str] = None,
         target_size: Optional[int] = None,
         batch_size: Optional[int] = None,
         preprocess_func: Optional[Callable] = None,
@@ -51,7 +51,7 @@ class MomicsDataset(tf.data.Dataset):
             repo (Momics): a Momics object
             ranges (pr.PyRanges): pr.PyRanges object
             features (str): the name of the track to use for input data
-            target (str): the name of the track to use for output data
+            target (Optional[str]): the name of the track to use for output data (optional)
             target_size (int): To which width should the target be centered
             batch_size (int): the batch size
             preprocess_func (Callable): a function to preprocess the queried data
@@ -87,25 +87,32 @@ class MomicsDataset(tf.data.Dataset):
         x_dataset = tf.data.Dataset.from_generator(x_gen, output_signature=(out,))
 
         # Define generator for target data
-        y_streamer = MomicsStreamer(
-            repo, ranges_target, batch_size, features=[target], preprocess_func=preprocess_func, silent=silent
-        )
-        y_gen = y_streamer.generator
-        if target == "nucleotide":
-            out = tf.TensorSpec(shape=(None, target_size, 4), dtype=tf.int32)
+        if target is not None:
+            y_streamer = MomicsStreamer(
+                repo, ranges_target, batch_size, features=[target], preprocess_func=preprocess_func, silent=silent
+            )
+            y_gen = y_streamer.generator
+            if target == "nucleotide":
+                out = tf.TensorSpec(shape=(None, target_size, 4), dtype=tf.int32)
+            else:
+                out = tf.TensorSpec(shape=(None, target_size, 1), dtype=tf.float32)
+
+            y_dataset = tf.data.Dataset.from_generator(y_gen, output_signature=(out,))
+
+            # Combine features and target datasets
+            xy_ds = tf.data.Dataset.zip((x_dataset, y_dataset))
+
         else:
-            out = tf.TensorSpec(shape=(None, target_size, 1), dtype=tf.float32)
-
-        y_dataset = tf.data.Dataset.from_generator(y_gen, output_signature=(out,))
-
-        # Combine features and target datasets
-        xy_ds = tf.data.Dataset.zip((x_dataset, y_dataset))
+            xy_ds = x_dataset
 
         # Add caching option
         if cache:
             xy_ds = xy_ds.cache()
 
-        return xy_ds
+        # Calculate the number of batches in the dataset
+        if batch_size is not None:
+            n_samples = len(ranges)
+            n_batches = (n_samples + batch_size - 1) // batch_size
+            xy_ds = xy_ds.apply(tf.data.experimental.assert_cardinality(n_batches))
 
-    def __len__(self):
-        return super().__len__()
+        return xy_ds
