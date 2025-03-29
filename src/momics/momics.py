@@ -496,16 +496,25 @@ class Momics:
                 futures.append(future)
             concurrent.futures.wait(futures)
 
-    def chroms(self) -> pd.DataFrame:
+    def chroms(self, as_dict: bool = False) -> pd.DataFrame:
         """Extract chromosome table from a `.momics` repository.
 
+        Args:
+            as_dict (bool, optional): Whether to return chromosomes as a dictionary. Defaults to False.
+
         Returns:
-            pd.DataFrame: A data frame listing one chromosome per row
+            Union[pd.DataFrame, Dict[str, int]]:
+                - If as_dict=False: A data frame listing one chromosome per row
+                - If as_dict=True: A dictionary with chromosome names as keys and lengths as values
         """
         try:
             chroms = self._get_table(self._build_uri("genome", "chroms.tdb"))
+            if as_dict:
+                chroms = dict(zip(chroms["chrom"], chroms["length"]))  # type: ignore
+
         except FileExistsError:
             chroms = pd.DataFrame(columns=["chrom_index", "chrom", "length"])
+
         return chroms
 
     def seq(self, label: Optional[str] = None) -> pd.DataFrame:
