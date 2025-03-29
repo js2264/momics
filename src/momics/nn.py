@@ -9,36 +9,60 @@ DEFAULT_NN_OUTPUT_LAYER = layers.Dense(1, activation="linear")
 
 class ChromNN:
     """
-    This class implements a convolutional neural network for the prediction of
+    This class implements a configurable convolutional neural network for the prediction of
     chromatin modality from another modality. The model consists of a series of
     convolutional blocks with residual connections and dropout layers.
+
+    Args:
+        input: Input layer
+        output: Output layer
+        filters: List of filter counts for each conv layer (default: [64, 16, 8])
+        kernel_sizes: List of kernel sizes for each conv layer (default: [3, 8, 80])
+        pool_sizes: List of pooling sizes for each layer (default: [2, 2, 2])
+        dropout_rates: List of dropout rates for each layer (default: [0.2, 0.2, 0])
+        activation: Activation function to use
     """
 
-    def __init__(self, input=DEFAULT_NN_INPUT_LAYER, output=DEFAULT_NN_OUTPUT_LAYER) -> None:
-        #
-        x = layers.Conv1D(32, kernel_size=5, padding="same", activation="relu", kernel_initializer=kernel_init)(input)
-        x = layers.MaxPool1D(pool_size=2, padding="same")(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
+    def __init__(
+        self,
+        input=DEFAULT_NN_INPUT_LAYER,
+        output=DEFAULT_NN_OUTPUT_LAYER,
+        filters=None,
+        kernel_sizes=None,
+        pool_sizes=None,
+        dropout_rates=None,
+        activation="relu",
+    ) -> None:
 
-        x = layers.Conv1D(32, kernel_size=5, padding="same", activation="relu", kernel_initializer=kernel_init)(x)
-        x = layers.MaxPool1D(pool_size=2, padding="same")(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
+        if filters is None:
+            filters = [64, 16, 8]
+        if kernel_sizes is None:
+            kernel_sizes = [3, 8, 80]
+        if pool_sizes is None:
+            pool_sizes = [2, 2, 2]
+        if dropout_rates is None:
+            dropout_rates = [0.2, 0.2, 0]
+        n_layers = len(filters)
 
-        x = layers.Conv1D(32, kernel_size=5, padding="same", activation="relu", kernel_initializer=kernel_init)(x)
-        x = layers.MaxPool1D(pool_size=2, padding="same")(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
+        # If dropout_rates is a single value, expand it to a list
+        if isinstance(dropout_rates, (int, float)):
+            dropout_rates = [dropout_rates] * n_layers
 
-        x = layers.Conv1D(32, kernel_size=3, padding="same", activation="relu", kernel_initializer=kernel_init)(x)
-        x = layers.MaxPool1D(pool_size=2, padding="same")(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
+        # Ensure all parameter lists have the same length
+        assert len(dropout_rates) == n_layers, "dropout_rates must have same length as filters"
+        assert len(kernel_sizes) == n_layers, "kernel_sizes must have same length as filters"
+        assert len(pool_sizes) == n_layers, "pool_sizes must have same length as filters"
 
-        x = layers.Conv1D(32, kernel_size=1, padding="same", activation="relu", kernel_initializer=kernel_init)(x)
-        x = layers.MaxPool1D(pool_size=2, padding="same")(x)
-        x = layers.BatchNormalization()(x)
+        x = input
+        for i in range(n_layers):
+            x = layers.Conv1D(
+                filters[i], kernel_size=kernel_sizes[i], padding="same", activation=activation, kernel_initializer=kernel_init
+            )(x)
+            x = layers.MaxPool1D(pool_size=pool_sizes[i], padding="same")(x)
+            x = layers.BatchNormalization()(x)
+
+            if dropout_rates[i] > 0:
+                x = layers.Dropout(dropout_rates[i])(x)
 
         x = layers.Flatten()(x)
         x = output(x)
