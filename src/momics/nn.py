@@ -205,44 +205,36 @@ class SeqCovNN:  # pragma: no cover
         self.model = tf.keras.Model(input, x)
 
 
-class NucNN:
+def mae_cor(y_true, y_pred, alpha=0.5):
     """
-    This class implements a convolutional neural network for nucleosome prediction.
-    The model consists of three convolutional layers with respectively 64, 16 and 8 kernels
-    of shape (3x4), (8x64) and (80x16). A max pooling layer of size 2 and a ReLu
-    activation function is applied after each of these three convolutions. Batch normalization
-    and dropout of 0.2 is applied after each convolution with stride 1.
+    Custom loss function combining MAE and correlation.
 
-    The model takes inputs of shape (2048, 4), the last dimension representing the four
-    nucleotides, and outputs a single value corresponding to the nucleosome profile
-    in the middle of the input sequence.
+    This loss is well-suited for nucleosome positioning tasks where both the
+    absolute magnitude (MAE) and pattern of peaks (correlation) are important.
+
+    Args:
+        y_true: Ground truth values
+        y_pred: Predicted values
+        alpha: Weight for MAE component (1-alpha is weight for correlation)
+               Range 0-1, where 0 is pure correlation loss and 1 is pure MAE
+
+    Returns:
+        MAE and correlation combined loss value
     """
 
-    def __init__(self, input=DEFAULT_NN_INPUT_LAYER, output=DEFAULT_NN_OUTPUT_LAYER) -> None:
+    def correlation_coefficient(y_true, y_pred):
+        y_true = tf.reshape(y_true, [tf.shape(y_true)[0], -1])
+        y_pred = tf.reshape(y_pred, [tf.shape(y_pred)[0], -1])
+        x_mean = tf.reduce_mean(y_true, axis=1, keepdims=True)
+        y_mean = tf.reduce_mean(y_pred, axis=1, keepdims=True)
+        cov_xy = tf.reduce_mean((y_true - x_mean) * (y_pred - y_mean), axis=1)
+        std_x = tf.sqrt(tf.reduce_mean(tf.square(y_true - x_mean), axis=1))
+        std_y = tf.sqrt(tf.reduce_mean(tf.square(y_pred - y_mean), axis=1))
+        corr = cov_xy / (std_x * std_y + tf.keras.backend.epsilon())
+        return tf.reduce_mean(corr)
 
-        # First convolutional layer with 64 kernels of shape (3,4)
-        x = layers.Conv1D(64, kernel_size=3, padding="same")(input)
-        x = layers.ReLU()(x)
-        x = layers.MaxPool1D(pool_size=2)(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
+    cor_loss = 1.0 - correlation_coefficient(y_true, y_pred)
+    mae = tf.reduce_mean(tf.abs(y_true - y_pred))
 
-        # Second convolutional layer with 16 kernels of shape (8,64)
-        x = layers.Conv1D(16, kernel_size=8, padding="same")(x)
-        x = layers.ReLU()(x)
-        x = layers.MaxPool1D(pool_size=2)(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
-
-        # Third convolutional layer with 8 kernels of shape (80,16)
-        x = layers.Conv1D(8, kernel_size=80, padding="same")(x)
-        x = layers.ReLU()(x)
-        x = layers.MaxPool1D(pool_size=2)(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
-
-        # Flatten and output
-        x = layers.Flatten()(x)
-        x = output(x)
-
-        self.model = tf.keras.Model(input, x)
+    # Combine losses with weighting
+    return alpha * mae + (1.0 - alpha) * cor_loss
