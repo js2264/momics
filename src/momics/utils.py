@@ -221,21 +221,53 @@ def pyranges_to_bw(pyranges: pr.PyRanges, scores: np.ndarray, output: str) -> No
     bw.close()
 
 
-def one_hot_encode(seq) -> np.ndarray:
+def one_hot_encode(sequences, handle_non_standard=False, dtype=np.int8) -> np.ndarray:
     """
-    One-hot encode a DNA sequence.
+    Efficiently one-hot encode DNA sequences.
 
     Args:
-        seq (str): A DNA sequence.
+        sequences (Union[str, List[str]]): A single DNA sequence or list of DNA sequences
+        handle_non_standard (bool): If True, non-standard nucleotides (not A,T,G,C) will be
+                                   encoded as [0,0,0,0]. If False, will raise a KeyError.
+        dtype: NumPy data type for the output array (default: np.int8 to save memory)
 
     Returns:
-        np.ndarray: A one-hot encoded array.
+        np.ndarray: A one-hot encoded array of shape (len(sequences), seq_length, 4) for multiple
+                  sequences or (seq_length, 4) for a single sequence
     """
+    # Handle single sequence
+    single_input = isinstance(sequences, str)
+    if single_input:
+        sequences = [sequences]
 
-    seq = seq.upper()
-    encoding_map = {"A": [1, 0, 0, 0], "T": [0, 1, 0, 0], "C": [0, 0, 1, 0], "G": [0, 0, 0, 1]}
-    oha = np.zeros((len(seq), 4), dtype=int)
-    for i, nucleotide in enumerate(seq):
-        oha[i] = encoding_map[nucleotide]
+    # Convert all sequences to uppercase
+    sequences = [seq.upper() for seq in sequences]
 
-    return oha
+    # Get max sequence length for the output array
+    max_len = max(len(seq) for seq in sequences)
+
+    # Initialize output array
+    output = np.zeros((len(sequences), max_len, 4), dtype=dtype)
+
+    # Define the mapping for standard nucleotides
+    mapping = {"A": 0, "T": 1, "C": 2, "G": 3}
+
+    # Process each sequence using NumPy vectorization
+    for i, seq in enumerate(sequences):
+        seq_len = len(seq)
+
+        if handle_non_standard:
+            # Process each nucleotide, skipping non-standard ones
+            for j, nt in enumerate(seq):
+                if nt in mapping:
+                    output[i, j, mapping[nt]] = 1
+        else:
+            # Process only standard nucleotides, faster but can raise KeyError
+            indices = np.array([mapping[nt] for nt in seq])
+            output[i, np.arange(seq_len), indices] = 1
+
+    # Return single sequence format if input was a single sequence
+    if single_input:
+        return output[0, : len(sequences[0])]
+
+    return output
