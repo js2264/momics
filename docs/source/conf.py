@@ -78,8 +78,8 @@ htmlhelp_basename = "momicsdoc"
 html_last_updated_fmt = "%b %d, %Y"
 html_title = "momics"
 
-html_theme = "sphinx_rtd_theme"
-# html_theme = "furo"
+# html_theme = "sphinx_rtd_theme"
+html_theme = "furo"
 # html_theme = "pydata_sphinx_theme"
 html_theme_options = {
     # "use_edit_page_button": True,
