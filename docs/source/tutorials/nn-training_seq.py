@@ -7,7 +7,7 @@ from pathlib import Path  # type: ignore
 from tensorflow.keras.callbacks import CSVLogger, EarlyStopping, ReduceLROnPlateau  # type: ignore
 from momics.aggregate import aggregate
 from momics import utils as mutils
-from momics.chromnn import Basenji
+from momics.nn import Basenji
 
 # Fetch data from the momics repository
 repo = Momics("yeast_CNN_data.momics")
@@ -16,7 +16,7 @@ features = "seq"
 features_size = 4096 + 1
 target = "atac_rescaled"
 stride = 256
-target_size = 48
+target_size = 1
 batch_size = 500
 bins = repo.bins(width=features_size, stride=stride, cut_last_bin_out=True)
 bins = bins.subset(lambda x: x.Chromosome != "XVI")
@@ -110,6 +110,13 @@ res = aggregate(res, bb2, chrom_sizes, type="mean", prefix="prediction")
 #######################################################################
 #######################################################################
 #######################################################################
+#######################################################################
+#######################################################################
+#######################################################################
+#######################################################################
+#######################################################################
+#######################################################################
+#######################################################################
 
 ##### USING MOMICS DATASET
 
@@ -123,7 +130,7 @@ from pathlib import Path  # type: ignore
 from tensorflow.keras.callbacks import CSVLogger, EarlyStopping, ReduceLROnPlateau  # type: ignore
 from momics.aggregate import aggregate
 from momics import utils as mutils
-from momics import chromnn
+from momics import nn
 from momics.dataset import MomicsDataset
 
 # Fetch data from the momics repository
@@ -139,12 +146,12 @@ bins = bins.subset(lambda x: x.Chromosome != "XVI")
 bins_split, bins_test = mutils.split_ranges(bins, 0.8, shuffle=False)
 bins_train, bins_val = mutils.split_ranges(bins_split, 0.8, shuffle=False)
 
-target_size = 128
-batch_size = 2000
+target_size = 1
+batch_size = 1000
 train_dataset = (
     MomicsDataset(repo, bins_train, features, target, target_size=target_size, batch_size=batch_size)
     # .shuffle(10)
-    .prefetch(2).repeat()
+    .prefetch(20).repeat()
 )
 val_dataset = MomicsDataset(repo, bins_val, features, target, target_size=target_size, batch_size=batch_size).repeat()
 test_dataset = MomicsDataset(repo, bins_test, features, target, target_size=target_size, batch_size=batch_size)
@@ -152,10 +159,10 @@ test_dataset = MomicsDataset(repo, bins_test, features, target, target_size=targ
 # ---------------------------------
 
 # Define CNN
-importlib.reload(chromnn)
+importlib.reload(nn)
 input = layers.Input(shape=(features_size, 4 if features == "nucleotide" else 1))
 output = layers.Dense(target_size, activation="linear")
-model = chromnn.NucNN(input, output).model
+model = nn.NucNN(input, output).model
 model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), loss="mse")
 model.summary()
 
@@ -181,7 +188,7 @@ model.fit(
 # ---------------------------
 
 # Model prediction
-bb = repo.bins(width=features_size, stride=12, cut_last_bin_out=True)["XVI", 0:300000]
+bb = repo.bins(width=features_size, stride=1, cut_last_bin_out=True)["XVI", 250000:300000]
 dat = momics.query.MomicsQuery(repo, bb).query_sequence().seq["nucleotide"]
 dat = np.array(list(dat.values()))
 dat = np.array([mutils.one_hot_encode(seq) for seq in dat])
@@ -194,8 +201,8 @@ bb2.End = bb2.Start + target_size
 chrom_sizes = {chrom: length for chrom, length in zip(repo.chroms().chrom, repo.chroms().length)}
 keys = [f"{chrom}:{start}-{end}" for chrom, start, end in zip(bb2.Chromosome, bb2.Start, bb2.End)]
 
-res = {f"mnase-from-seq_f{features_size}_s{stride}_t{target_size}": {k: None for k in keys}}
+res = {f"mnase2-from-seq_f{features_size}_s{stride}_t{target_size}": {k: None for k in keys}}
 for i, key in enumerate(keys):
-    res[f"mnase-from-seq_f{features_size}_s{stride}_t{target_size}"][key] = predictions[i]
+    res[f"mnase2-from-seq_f{features_size}_s{stride}_t{target_size}"][key] = predictions[i]
 
 res = aggregate(res, bb2, chrom_sizes, type="mean", prefix="prediction")

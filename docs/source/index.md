@@ -33,8 +33,8 @@ user_guide/cli
 :maxdepth: 1
 
 tutorials/integrating-multiomics
+tutorials/nn-training-cov2cov
 tutorials/cloud-repos
-tutorials/nn-training
 ```
 
 ```{toctree}

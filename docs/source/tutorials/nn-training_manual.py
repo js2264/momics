@@ -7,7 +7,7 @@ from pathlib import Path  # type: ignore
 from tensorflow.keras.callbacks import CSVLogger, EarlyStopping, ReduceLROnPlateau  # type: ignore
 from momics.aggregate import aggregate
 from momics import utils as mutils
-from momics.chromnn import ChromNN
+from momics.nn import ChromNN
 
 # Fetch data from the momics repository
 repo = Momics("yeast_CNN_data.momics")
