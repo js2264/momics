@@ -3,8 +3,8 @@ from tensorflow.keras import layers  # type: ignore
 
 kernel_init = tf.keras.initializers.VarianceScaling()
 
-DEFAULT_CHROMNN_INPUT_LAYER = layers.Input(shape=(2049, 1))
-DEFAULT_CHROMNN_OUTPUT_LAYER = layers.Dense(1, activation="linear")
+DEFAULT_NN_INPUT_LAYER = layers.Input(shape=(2049, 1))
+DEFAULT_NN_OUTPUT_LAYER = layers.Dense(1, activation="linear")
 
 
 class ChromNN:
@@ -14,7 +14,7 @@ class ChromNN:
     convolutional blocks with residual connections and dropout layers.
     """
 
-    def __init__(self, input=DEFAULT_CHROMNN_INPUT_LAYER, output=DEFAULT_CHROMNN_OUTPUT_LAYER) -> None:
+    def __init__(self, input=DEFAULT_NN_INPUT_LAYER, output=DEFAULT_NN_OUTPUT_LAYER) -> None:
         #
         x = layers.Conv1D(32, kernel_size=5, padding="same", activation="relu", kernel_initializer=kernel_init)(input)
         x = layers.MaxPool1D(pool_size=2, padding="same")(x)
@@ -52,7 +52,7 @@ class Basenji:  # pragma: no cover
     for the prediction of epigenomic data from DNA sequence (Kelley et al. 2018).
     """
 
-    def __init__(self, input=DEFAULT_CHROMNN_INPUT_LAYER, output=DEFAULT_CHROMNN_OUTPUT_LAYER) -> None:
+    def __init__(self, input=DEFAULT_NN_INPUT_LAYER, output=DEFAULT_NN_OUTPUT_LAYER) -> None:
 
         # First PooledConvLayer
         x = layers.Conv1D(64, 12, padding="same")(input)
@@ -111,7 +111,7 @@ class Basenji:  # pragma: no cover
 class SeqCovNN:  # pragma: no cover
     """ """
 
-    def __init__(self, seq_input, cov_input, output=DEFAULT_CHROMNN_OUTPUT_LAYER) -> None:
+    def __init__(self, seq_input, cov_input, output=DEFAULT_NN_OUTPUT_LAYER) -> None:
 
         # seq_input = layers.Input(shape=(seq_length, 4), name='sequence_input')
         # cov_input = layers.Input(shape=(seq_length, 1), name='cov_input')
@@ -194,24 +194,24 @@ class NucNN:
     in the middle of the input sequence.
     """
 
-    def __init__(self, input=DEFAULT_CHROMNN_INPUT_LAYER, output=DEFAULT_CHROMNN_OUTPUT_LAYER) -> None:
+    def __init__(self, input=DEFAULT_NN_INPUT_LAYER, output=DEFAULT_NN_OUTPUT_LAYER) -> None:
 
-        # First convolutional layer with 64 kernels of shape (3,1,4)
-        x = layers.Conv1D(64, kernel_size=3, strides=1, padding="same")(input)
+        # First convolutional layer with 64 kernels of shape (3,4)
+        x = layers.Conv1D(64, kernel_size=3, padding="same")(input)
         x = layers.ReLU()(x)
         x = layers.MaxPool1D(pool_size=2)(x)
         x = layers.BatchNormalization()(x)
         x = layers.Dropout(0.2)(x)
 
-        # Second convolutional layer with 16 kernels of shape (8,1,64)
-        x = layers.Conv1D(16, kernel_size=8, strides=1, padding="same")(x)
+        # Second convolutional layer with 16 kernels of shape (8,64)
+        x = layers.Conv1D(16, kernel_size=8, padding="same")(x)
         x = layers.ReLU()(x)
         x = layers.MaxPool1D(pool_size=2)(x)
         x = layers.BatchNormalization()(x)
         x = layers.Dropout(0.2)(x)
 
-        # Third convolutional layer with 8 kernels of shape (80,1,16)
-        x = layers.Conv1D(8, kernel_size=80, strides=1, padding="same")(x)
+        # Third convolutional layer with 8 kernels of shape (80,16)
+        x = layers.Conv1D(8, kernel_size=80, padding="same")(x)
         x = layers.ReLU()(x)
         x = layers.MaxPool1D(pool_size=2)(x)
         x = layers.BatchNormalization()(x)

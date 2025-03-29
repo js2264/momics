@@ -28,6 +28,7 @@ MANIFEST
 .venv/
 venv/
 .idea/
+.devcontainer/
 
 # OS-generated files
 .DS_Store

@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 from momics import momics
 from momics import query
-from momics.chromnn import ChromNN
+from momics.nn import ChromNN
 from tensorflow.keras import layers  # type: ignore
 from momics.aggregate import aggregate
 
