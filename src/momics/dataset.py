@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
 
 import pyranges as pr
 import tensorflow as tf
@@ -12,8 +12,8 @@ class MomicsDataset(tf.data.Dataset):
         cls,
         repo: Momics,
         ranges: pr.PyRanges,
-        features: list | str,
-        target: Optional[list | str] = None,
+        features: Union[list, str],
+        target: Optional[Union[list, str]] = None,
         target_size: Optional[int] = None,
         batch_size: Optional[int] = None,
         preprocess_func: Optional[Callable] = None,

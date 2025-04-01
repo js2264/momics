@@ -1,4 +1,4 @@
-from typing import Callable, Optional, Generator, Tuple
+from typing import Callable, Optional, Generator, Tuple, Union
 
 import numpy as np
 import pyranges as pr
@@ -33,7 +33,7 @@ class MomicsStreamer:
         momics: Momics,
         ranges: pr.PyRanges,
         batch_size: Optional[int] = None,
-        features: Optional[list | str] = None,
+        features: Optional[Union[list, str]] = None,
         preprocess_func: Optional[Callable] = None,
         silent: bool = True,
     ) -> None:
