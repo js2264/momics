@@ -74,3 +74,32 @@ def test_dataset(momics_path: str):
     n = next(iter(rg))
     assert n[0][0].shape == (10, 10, 4)
     assert n[1][0].shape == (10, 2, 1)
+    with pytest.raises(IndexError, match=r"tuple index out of range"):
+        _ = n[0][1].shape
+    with pytest.raises(IndexError, match=r"tuple index out of range"):
+        _ = n[1][1].shape
+
+    # Only features, list of features
+    rg = MomicsDataset(mom, b, ["nucleotide", "bw2"], target_size=2, batch_size=10)
+    n = next(iter(rg))
+    assert n[0][0].shape == (10, 10, 4)
+    assert n[1][0].shape == (10, 10, 1)
+    with pytest.raises(IndexError, match=r"tuple index out of range"):
+        _ = n[2][0].shape
+
+    # List of features and single target
+    rg = MomicsDataset(mom, b, ["nucleotide", "bw2"], target="bw3", target_size=2, batch_size=10)
+    n = next(iter(rg))
+    assert n[0][0][0].shape == (10, 10, 4)
+    assert n[0][1][0].shape == (10, 10, 1)
+    assert n[1][0].shape == (10, 2, 1)
+    with pytest.raises(IndexError, match=r"tuple index out of range"):
+        _ = n[1][1].shape
+
+    # List of features and list of targets
+    rg = MomicsDataset(mom, b, ["nucleotide", "bw2"], target=["bw3", "bw2"], target_size=2, batch_size=10)
+    n = next(iter(rg))
+    assert n[0][0][0].shape == (10, 10, 4)
+    assert n[0][1][0].shape == (10, 10, 1)
+    assert n[1][0][0].shape == (10, 2, 1)
+    assert n[1][1][0].shape == (10, 2, 1)

@@ -33,7 +33,7 @@ class MomicsStreamer:
         momics: Momics,
         ranges: pr.PyRanges,
         batch_size: Optional[int] = None,
-        features: Optional[list] = None,
+        features: Optional[list | str] = None,
         preprocess_func: Optional[Callable] = None,
         silent: bool = True,
     ) -> None:
@@ -60,7 +60,7 @@ class MomicsStreamer:
 
         # Check features
         if features is not None:
-            if not isinstance(features, list):
+            if isinstance(features, str):
                 features = [features]
             i = len(features)
             if "nucleotide" in features:
