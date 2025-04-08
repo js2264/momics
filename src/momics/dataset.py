@@ -21,44 +21,87 @@ class MomicsDataset(tf.data.Dataset):
         cache: bool = False,
     ) -> tf.data.Dataset:
         """
-        This class is implemented to train deep learning models, where the
-        input data (features) is a track or a sequence and the labeled data (target)
-        is another track. The data loader will iterate over the ranges in batches
-        and extract the features and target for each range. It is a subclass of
-        `tf.data.DataSet` and can be used as a generator for a `tf.keras.Model`.
+        Create a TensorFlow dataset for training deep learning models on genomic data.
 
-        For a more basic generator to stream a `momics` by batches of ranges,
-        see `momics.streamer.MomicsStreamer`.
+        This dataset generator is designed for training deep learning models on genomic data,
+        supporting multiple input features (tracks or nucleotide sequences) and multiple
+        output targets. It can be used to train models with any number of labels and heads.
 
-        Args:
-            repo (Momics): a Momics object
-            ranges (pr.PyRanges): pr.PyRanges object
-            features (str): the name of the track to use for input data (can also be "nucleotide")
-            target (str): the name of the track to use for output data
-            target_size (int): To which width should the target be centered
-            batch_size (int): the batch size
-            preprocess_func (Callable): a function to preprocess the queried data
-            silent (bool): whether to suppress info messages
-            cache (bool): whether to cache the dataset
+        The dataset automatically handles batching, centering of target regions, and
+        preprocessing of input data. It seamlessly integrates with TensorFlow's training
+        pipelines as it is a subclass of `tf.data.Dataset`.
 
-        Returns:
-            tf.data.Dataset: a TensorFlow dataset object. The object is a generator
-            that yields batches of data.
+        Parameters
+        ----------
+        repo : Momics
+            A Momics repository object containing the genomic data
+        ranges : pr.PyRanges
+            PyRanges object specifying the genomic regions to extract data from.
+            All ranges must have the same width.
+        features : Union[list, str]
+            Track name(s) to use as input features. Can be a single string or a list of strings.
+            Use "nucleotide" to include genomic sequence data.
+        target : Optional[Union[list, str]], default=None
+            Track name(s) to use as prediction targets. Can be a single string or a list of strings.
+            If None, the dataset will only yield feature data.
+        target_size : Optional[int], default=None
+            Width to which the target should be centered. If None, uses the same size as features.
+            Must be less than or equal to the feature size.
+        batch_size : Optional[int], default=None
+            Number of samples per batch. If None, the entire dataset is returned as one batch.
+        preprocess_func : Optional[Callable], default=None
+            Function to preprocess the queried data before yielding.
+            Should accept the raw data and return the processed data.
+        silent : bool, default=True
+            Whether to suppress information messages during dataset creation.
+        cache : bool, default=False
+            Whether to cache the dataset in memory after the first iteration.
 
-            The yielded data is a nested tuple ((features1, features2, ...), (target1, target2, ...))
-            where features1, features2, ... are the features of the input data and
-            target1, target2, ... are the targets of the output data:
+        Returns
+        -------
+        tf.data.Dataset
+            A TensorFlow dataset that yields batches of data in the following format:
 
-            - The shape of the yielded input data is (batch_size, features_size, 4) for nucleotide data and
-            (batch_size, features_size, 1) for other data.
-            - The shape of the yielded output data is (batch_size, target_size, 4) for nucleotide data and
-            (batch_size, target_size, 1) for other data.
-            - If target is None, the yielded data is a tuple of (features1, features2, ...).
+            - With targets: ({feature_dict}, {target_dict})
+              Where {feature_dict} and {target_dict} are dictionaries mapping track names to data arrays
+            - Without targets: {feature_dict}
+              Where {feature_dict} is a dictionary mapping track names to data arrays
 
-        See Also:
-            :class:`momics.streamer.MomicsStreamer`
+            Data shapes:
+            - Nucleotide data: (batch_size, sequence_length, 4) with dtype=tf.int32
+            - Track data: (batch_size, sequence_length, 1) with dtype=tf.float32
+
+        Examples
+        --------
+        ```python
+        # Create a dataset with one feature and one target
+        dataset = MomicsDataset(
+            repo=my_repo,
+            ranges=my_ranges,
+            features="ATAC-seq",
+            target="ChIP-seq",
+            batch_size=32
+        )
+
+        # Create a dataset with multiple features and targets
+        dataset = MomicsDataset(
+            repo=my_repo,
+            ranges=my_ranges,
+            features=["ATAC-seq", "nucleotide", "methylation"],
+            target=["ChIP-seq", "expression"],
+            batch_size=32,
+            target_size=128,
+            cache=True
+        )
+
+        # Use with Keras model
+        model.fit(dataset, epochs=10)
+        ```
+
+        See Also
+        --------
+        momics.streamer.MomicsStreamer : For a more basic generator to stream data by batches
         """
-
         # Check that all ranges have the same width
         widths = ranges.End - ranges.Start
         if len(set(widths)) != 1:
@@ -71,54 +114,93 @@ class MomicsDataset(tf.data.Dataset):
         if target_size is not None and target_size > features_size:
             raise ValueError(f"Target size must be smaller than or equal to the feature size {features_size}.")
 
+        # Adjust the target ranges to center of features
         ranges_target = ranges.copy()
         if target_size != features_size:
             ranges_target.Start = ranges_target.Start + features_size // 2 - target_size // 2
             ranges_target.End = ranges_target.Start + target_size
 
-        # Define generator for features data
-        xds = []
+        # Check if features/targets are lists of strings
         if isinstance(features, str):
             features = [features]
-        for ft in features:
-            x_streamer = MomicsStreamer(repo, ranges, batch_size, features=[ft], preprocess_func=preprocess_func, silent=silent)
-            x_gen = x_streamer.generator
-            if ft == "nucleotide":
-                out = tf.TensorSpec(shape=(None, features_size, 4), dtype=tf.int32)
-            else:
-                out = tf.TensorSpec(shape=(None, features_size, 1), dtype=tf.float32)
-            xds.append(tf.data.Dataset.from_generator(x_gen, output_signature=(out,)))
-        if len(xds) == 1:
-            x_dataset = xds[0]
-        else:
-            x_dataset = tf.data.Dataset.zip(tuple(xds))
+        if isinstance(target, str):
+            target = [target]
 
-        # Define generator for target data
+        # Define list of streamers for features data
+        xstreamers = {}
+        for ft in features:
+            xstreamers[ft] = MomicsStreamer(
+                repo, ranges, batch_size, features=[ft], preprocess_func=preprocess_func, silent=silent
+            )
+
+        # Define list of streamers for target data
+        ystreamers = {}
         if target is not None:
-            if isinstance(target, str):
-                target = [target]
-            yds = []
             for tg in target:
-                y_streamer = MomicsStreamer(
+                ystreamers[tg] = MomicsStreamer(
                     repo, ranges_target, batch_size, features=[tg], preprocess_func=preprocess_func, silent=silent
                 )
-                y_gen = y_streamer.generator
-                if tg == "nucleotide":
-                    out = tf.TensorSpec(shape=(None, target_size, 4), dtype=tf.int32)
-                else:
-                    out = tf.TensorSpec(shape=(None, target_size, 1), dtype=tf.float32)
 
-                yds.append(tf.data.Dataset.from_generator(y_gen, output_signature=(out,)))
-
-            if len(yds) == 1:
-                y_dataset = yds[0]
+        # Callable for combined generator
+        def combined_generator():
+            """Generate combined features and targets."""
+            feature_generators = {ft: xstreamers[ft].generator() for ft in features}
+            if target is not None:
+                target_generators = {tg: ystreamers[tg].generator() for tg in target}
             else:
-                y_dataset = tf.data.Dataset.zip(tuple(yds))
+                target_generators = {}
 
-            xy_ds = tf.data.Dataset.zip((x_dataset, y_dataset))
+            primary_feature = features[0]
+            primary_gen = feature_generators[primary_feature]
 
+            for x_batch in primary_gen:
+                feature_batches = {}
+                target_batches = {}
+
+                feature_batches[primary_feature] = x_batch[primary_feature]  # Store primary feature data
+                for ft in features:
+                    if ft == primary_feature:
+                        continue  # Skip primary feature (already processed)
+
+                    feature_batch = next(feature_generators[ft])
+                    feature_batches[ft] = feature_batch[ft]
+
+                if target is not None:
+                    for tg in target:
+                        target_batch = next(target_generators[tg])
+                        target_batches[tg] = target_batch[tg]
+
+                yield (feature_batches, target_batches)
+
+        # Define output signatures
+        xsigs = {
+            ft: tf.TensorSpec(
+                shape=(None, features_size, 4) if ft == "nucleotide" else (None, features_size, 1),
+                dtype=tf.int32 if ft == "nucleotide" else tf.float32,
+                name=ft,
+            )
+            for ft in features
+        }
+        if target is not None:
+            ysigs = {
+                tg: tf.TensorSpec(
+                    shape=(None, target_size, 4) if tg == "nucleotide" else (None, target_size, 1),
+                    dtype=tf.int32 if tg == "nucleotide" else tf.float32,
+                    name=tg,
+                )
+                for tg in target
+            }
         else:
-            xy_ds = x_dataset
+            ysigs = {}
+
+        out_sigs = (xsigs, ysigs)
+
+        # Create the final dataset from the generator
+        xy_ds = tf.data.Dataset.from_generator(combined_generator, output_signature=out_sigs)
+
+        # Replace xy_ds if target is None
+        if target is None:
+            xy_ds = xy_ds.map(lambda x, _: x)
 
         # Add caching option
         if cache:
