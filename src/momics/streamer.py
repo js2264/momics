@@ -1,4 +1,4 @@
-from typing import Callable, Optional, Generator, Tuple, Union
+from typing import Callable, Optional, Generator, Union
 
 import numpy as np
 import pyranges as pr
@@ -11,9 +11,13 @@ from .query import MomicsQuery
 
 class MomicsStreamer:
     """
-    This class is implemented to efficiently query a `momics` repository by batches
-    and extract any coverage data from it. The data streamer will iterate over ranges in batches
-    and iteratively query a `momics`.
+    This class is implemented to efficiently query a `momics` repository for a set of features by batch,
+    and extract data from it. The data streamer will iterate over ranges in batches
+    and iteratively query a `momics`. The streamer can also be used to preprocess the data before returning it.
+
+    When iterating over the streamer by batch, each iteration will return a dictionary with the queried data.
+    The keys of the dictionary are the queried features and the values are numpy arrays
+    containing the data over the corresponding ranges.
 
     For a tensorflow DataSet constructor, see `momics.dataset.MomicsDataset`.
 
@@ -26,6 +30,21 @@ class MomicsStreamer:
         batch_size (int): the batch size
         features (list): list of track labels to query
         silent (bool): whether to suppress info messages
+
+    Example:
+        >>> from momics import streamer as mms
+        >>> from momics import momics as mmm
+        >>> from pyranges import PyRanges
+        >>>
+        >>> # Create a MomicsStreamer object
+        >>> repo = mmm.Momics("yeast.momics")
+        >>> ranges = repo.bins(1000)
+        >>> stream = mms.MomicsStreamer(repo, ranges, batch_size=1000, features=["nucleotide", "atac"])
+        >>>
+        >>> # Iterate over the streamer
+        >>> for batch in stream:
+        >>>     # Process the batch
+        >>>     print(batch)
     """
 
     def __init__(
@@ -80,7 +99,7 @@ class MomicsStreamer:
         self.preprocess_func = preprocess_func if preprocess_func else self._no_preprocess
         self.batch_index = 0
 
-    def query(self, batch_ranges) -> Tuple:
+    def query(self, batch_ranges) -> dict:
         """
         Query function to fetch data from a `momics` repo based on batch_ranges.
 
@@ -122,7 +141,7 @@ class MomicsStreamer:
                 sh = out.shape
                 res[attr] = out.reshape(-1, sh[1], 1)
 
-        return tuple(res.values())
+        return res
 
     def _zscore(self, data):
         """
