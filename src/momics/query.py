@@ -21,13 +21,33 @@ from .utils import parse_ucsc_coordinates
 class MomicsQuery:
     """A class to query `.momics` repositories.
 
+    A `MomicsQuery` object can be used to query coverage and sequence data from a \
+        `.momics` repository. It is initialized with a `Momics` object and a \
+        `pr.PyRanges` object. The `query_tracks()` and `query_sequence()` methods \
+        can be used to query coverage and sequence data, respectively. These methods \
+        populate the `coverage` and `seq` attributes of the `MomicsQuery` object.
+
     Attributes:
         momics (Momics): a local `.momics` repository.
         queries (pr.PyRanges): `pr.PyRanges` object
         coverage (dict): Dictionary of coverage scores extracted from the \
-            `.momics` repository, populated after calling `q.query_tracks()`
+            `.momics` repository, populated after calling `q.query_tracks()`. \
+            Dictionary keys are the names of the tracks, and values are dictionaries \
+            of ranges and scores. For example, `q.coverage["bw1"]["chr1:0-100"]` \
+            returns the scores for the range `chr1:0-100` in the track `bw1`. \
+            The scores are stored as a list of numpy arrays, where each array \
+            corresponds to the scores for a single range.
         seq (dict): Dictionary of sequences extracted from the `.momics` \
-            repository, populated after calling `q.query_seq()`
+            repository, populated after calling `q.query_seq()`. The structure of
+            the `seq` dictionary is similar to that of the `coverage` dictionary, \
+            but the values are strings of nucleotide sequences instead of lists of \
+            numpy arrays. For example, `q.seq["nucleotide"]["chr1:0-100"]` returns \
+            the nucleotide sequence for the range `chr1:0-100`. The sequences are \
+            stored as strings, where each string corresponds to the sequence for a \
+            single range.
+
+    Returns:
+        MomicsQuery: A `MomicsQuery` object.
     """
 
     def __init__(self, momics: Momics, bed: pr.PyRanges) -> None:
