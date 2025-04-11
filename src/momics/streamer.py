@@ -133,11 +133,7 @@ class MomicsStreamer:
             attrs2 = [attr for attr in attrs if attr != "nucleotide"]
             q.query_tracks(tracks=attrs2)
             for attr in attrs2:
-                if q.coverage is not None:
-                    out = np.array(list(q.coverage[attr].values()))
-                else:
-                    raise ValueError(f"{attr} track data found in the momics repository.")
-
+                out = np.array(list(q.coverage[attr].values()))  # type: ignore
                 sh = out.shape
                 res[attr] = out.reshape(-1, sh[1], 1)
 

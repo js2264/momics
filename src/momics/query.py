@@ -83,7 +83,7 @@ class MomicsQuery:
         avail_mem = psutil.virtual_memory().available
         amem = round(avail_mem / 1e9, 2)
         if estimated_required_memory > avail_mem:
-            logger.warning(
+            logger.warning(  # pragma: no cover
                 f"Estimated required memory ({emem}GB) exceeds available memory \
                     ({amem}GB)."
             )
@@ -125,7 +125,7 @@ class MomicsQuery:
 
             return results
 
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             logger.error(f"Error processing query batch: {e}")
             raise
 
@@ -161,9 +161,7 @@ class MomicsQuery:
         attrs = [_sch.attr(i).name for i in range(_sch.nattr)]
         if tracks is not None:
             for track in tracks:
-                if track == "nucleotide":
-                    logger.debug("'nucleotide' track is not a coverage track.")
-                elif track not in attrs:
+                if track not in attrs:
                     raise ValueError(f"Track {track} not found in the repository.")
             attrs = [tr for tr in tracks if tr != "nucleotide"]
 
@@ -234,7 +232,7 @@ class MomicsQuery:
 
             return dict(results)
 
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             logger.error(f"Error processing query batch: {e}")
             raise
 

@@ -20,7 +20,18 @@ multiprocessing.set_start_method("spawn", force=True)
 @pytest.mark.order(2)
 def test_momicsquery_tracks(momics_path: str, bed1: str):
     mom = Momics(momics_path)
-    q = MomicsQuery(mom, "I:990-1010").query_tracks()
+    with pytest.raises(ValueError):
+        q = MomicsQuery("strefsv", "I:990-1010")
+
+    with pytest.raises(ValueError):
+        q = MomicsQuery(mom, 1)
+
+    q = MomicsQuery(mom, "I:990-1010")
+
+    with pytest.raises(AttributeError):
+        q.to_df()
+
+    q.query_tracks()
     assert len(q.coverage) == 4
     assert len(q.coverage["bw2"]["I:990-1010"]) == 20
     assert q.to_df()["chrom"].__eq__(pd.Series(["I"] * 20)).all()
@@ -41,8 +52,11 @@ def test_momicsquery_tracks(momics_path: str, bed1: str):
     q = MomicsQuery(mom, bed).query_tracks(threads=2)
     assert list(q.coverage.keys()) == ["bw2", "custom", "bw3", "bw4"]
 
-    q = MomicsQuery(mom, bed).query_tracks(threads=2, tracks=["bw2", "bw3"])
+    q = MomicsQuery(mom, bed).query_tracks(threads=2, tracks=["bw2", "bw3"], silent=False)
     assert list(q.coverage.keys()) == ["bw2", "bw3"]
+
+    with pytest.raises(ValueError):
+        q = MomicsQuery(mom, bed).query_tracks(threads=2, tracks=["asdcasdc"])
 
 
 @pytest.mark.order(2)
@@ -52,7 +66,7 @@ def test_momicsquery_seq(momics_path: str):
     assert len(q.seq) == 1
     assert q.seq["nucleotide"]["I:0-10"] == "ATCGATCGAT"
 
-    q = MomicsQuery(mom, "I:9990-10000").query_sequence()
+    q = MomicsQuery(mom, "I:9990-10000").query_sequence(silent=False)
     assert len(q.seq) == 1
     assert q.seq["nucleotide"]["I:9990-10000"] == "TTCCGGTTCC"
 
@@ -67,6 +81,9 @@ def test_momicsquery_seq2(momics_path: str, bed1: str):
     print(q.seq["nucleotide"].keys())
     assert q.seq["nucleotide"]["I:0-10"] == "ATCGATCGAT"
     assert q.to_SeqRecord()[0].id == "I:0-10"
+
+    with pytest.raises(AttributeError):
+        MomicsQuery(mom, bed).to_SeqRecord()
 
 
 @pytest.mark.order(2)
@@ -119,6 +136,11 @@ def temp_npz_file():
 def test_to_json_npz(momics_path: str, temp_json_file: Path, temp_npz_file: Path):
     mom = Momics(momics_path)
     q = MomicsQuery(mom, "I:0-10").query_sequence().query_tracks()
+
+    with pytest.raises(AttributeError):
+        MomicsQuery(mom, "I:0-10").to_json(temp_json_file)
+    with pytest.raises(AttributeError):
+        MomicsQuery(mom, "I:0-10").to_npz(temp_npz_file)
 
     q.to_json(temp_json_file)
     q.to_npz(temp_npz_file)

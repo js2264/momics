@@ -14,6 +14,7 @@ def test_streamer(momics_path: str):
     with pytest.raises(ValueError, match=r".*not found in momics repository."):
         MomicsStreamer(mom, b, features=["CH1", "bw2"])
 
+    rg = MomicsStreamer(mom, b, batch_size=1000, silent=False)
     rg = MomicsStreamer(mom, b, features="bw2", batch_size=1000, silent=False)
     assert isinstance(rg.generator(), Generator)
     assert isinstance(iter(rg), Iterator)
@@ -57,6 +58,12 @@ def test_streamer(momics_path: str):
     assert len(n) == 2
     assert n["nucleotide"].shape == (10, 10, 4)
     assert n["bw2"].shape == (10, 10, 1)
+
+    with pytest.raises(ValueError):
+        rg.batch(-30)
+
+    rg.batch(1000000000000)
+    rg.generator()
 
 
 @pytest.mark.order(99)

@@ -142,7 +142,7 @@ class MomicsDataset(tf.data.Dataset):
                 )
 
         # Callable for combined generator
-        def combined_generator():
+        def combined_generator():  # pragma: no cover
             """Generate combined features and targets."""
             feature_generators = {ft: xstreamers[ft].generator() for ft in features}
             if target is not None:

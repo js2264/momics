@@ -64,3 +64,10 @@ def test_chromnn_cpu(momics_path: str):
         res[f"f{features_size}_s{stride}_t{target_size}"][key] = predictions[i]
 
     res = aggregate(res, bb2, chrom_sizes, type="mean", prefix="prediction")
+
+
+def test_mae_cor():
+    nn.mae_cor(
+        tf.reshape(np.array([0, 1, 2, 3, 4]), [-1, 1]),
+        tf.reshape(np.array([0, 1, 2, 3, 4]), [-1, 1]),
+    )
