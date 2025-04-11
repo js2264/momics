@@ -67,7 +67,10 @@ def test_chromnn_cpu(momics_path: str):
 
 
 def test_mae_cor():
+    y_true = tf.constant([0.0, 1.0, 2.0, 3.0, 4.0], dtype=tf.float32)
+    y_pred = tf.constant([0.0, 1.0, 2.0, 3.0, 4.0], dtype=tf.float32)
+
     nn.mae_cor(
-        tf.reshape(np.array([0, 1, 2, 3, 4]), [-1, 1]),
-        tf.reshape(np.array([0, 1, 2, 3, 4]), [-1, 1]),
+        tf.reshape(y_true, [1, 5]),
+        tf.reshape(y_pred, [1, 5]),
     )
