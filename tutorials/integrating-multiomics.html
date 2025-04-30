@@ -1,0 +1,1061 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Train neural networks with momics and tensorflow" href="nn-training-cov2cov.html" /><link rel="prev" title="Introduction to momics CLI" href="../user_guide/cli.html" />
+
+    <link rel="shortcut icon" href="../_static/logo.svg"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>Integrating multi-omics data with momics - momics</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f1559f00" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">momics</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/logo.svg" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">momics</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/intro.html">What is <code class="docutils literal notranslate"><span class="pre">momics</span></code>?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/concepts.html">Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/get-started.html">Get started with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/api.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/cli.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> CLI</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Integrating multi-omics data with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="nn-training-cov2cov.html">Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="nn-training-seq2cov.html">Predict genomic coverage from DNA sequence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nn-training-any2cov.html">Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cloud-repos.html">Managing cloud-hosted <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/momics/index.html">momics</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of momics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/aggregate/index.html">momics.aggregate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/config/index.html">momics.config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/dataset/index.html">momics.dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/logging/index.html">momics.logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/momics/index.html">momics.momics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/nn/index.html">momics.nn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/query/index.html">momics.query</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/streamer/index.html">momics.streamer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/utils/index.html">momics.utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/version/index.html">momics.version</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cli/index.html">CLI Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of CLI Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Changelog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../CHANGES.html">Changelog</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/tutorials/integrating-multiomics.ipynb" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <style>
+    .output_area {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+</style><section id="Integrating-multi-omics-data-with-momics">
+<h1>Integrating multi-omics data with <code class="docutils literal notranslate"><span class="pre">momics</span></code><a class="headerlink" href="#Integrating-multi-omics-data-with-momics" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">momics</span></code> excels at managing multi-omics data. It allows you to store and retrieve data from a variety of sources. Here, we will see how to create, manage and query local repositories using <code class="docutils literal notranslate"><span class="pre">momics</span></code>.</p>
+<section id="Creating-a-local-momics-repository">
+<h2>Creating a local <code class="docutils literal notranslate"><span class="pre">momics</span></code> repository<a class="headerlink" href="#Creating-a-local-momics-repository" title="Link to this heading">¶</a></h2>
+<p>To create a local <code class="docutils literal notranslate"><span class="pre">momics</span></code> repository, one can use the <code class="docutils literal notranslate"><span class="pre">Momics</span></code> constructor in python.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">momics.momics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Momics</span>
+
+<span class="c1">## Creating repository</span>
+<span class="n">Momics</span><span class="p">(</span><span class="s2">&quot;yeast_CNN_data.momics&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>  <span class="c1"># Purging existing files</span>
+<span class="n">mom</span> <span class="o">=</span> <span class="n">Momics</span><span class="p">(</span><span class="s2">&quot;yeast_CNN_data.momics&quot;</span><span class="p">)</span>  <span class="c1"># Creating a brand new repository</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+momics :: INFO :: 2025-03-29 23:27:02,309 :: No cloud config found for momics.Consider populating `~/.momics.ini` file with configuration settings for cloud access.
+momics :: INFO :: 2025-03-29 23:27:02,337 :: Purged yeast_CNN_data.momics
+momics :: INFO :: 2025-03-29 23:27:02,343 :: Created yeast_CNN_data.momics
+</pre></div></div>
+</div>
+</section>
+<section id="Adding-data-to-the-repository">
+<h2>Adding data to the repository<a class="headerlink" href="#Adding-data-to-the-repository" title="Link to this heading">¶</a></h2>
+<p>The first step to populate a repository is to register chromosomes. To do this, a dictionary with the chromosome name as the key and the chromosome length as the value is passed to the <code class="docutils literal notranslate"><span class="pre">ingest_chroms</span></code> method. This dictionary can be created manually, e.g. from a local <code class="docutils literal notranslate"><span class="pre">fasta</span></code> file.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## We will get chromosome sizes from a local fasta file.</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyfaidx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fasta</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Fasta</span><span class="p">(</span><span class="s2">&quot;/home/jaseriza/repos/momics/data/S288c.fa&quot;</span><span class="p">)</span>
+<span class="n">chrom_lengths</span> <span class="o">=</span> <span class="p">{</span><span class="n">chrom</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span> <span class="k">for</span> <span class="n">chrom</span><span class="p">,</span> <span class="n">seq</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">f</span><span class="o">.</span><span class="n">values</span><span class="p">())}</span>
+
+<span class="n">mom</span><span class="o">.</span><span class="n">ingest_chroms</span><span class="p">(</span><span class="n">chrom_lengths</span><span class="p">,</span> <span class="n">genome_version</span><span class="o">=</span><span class="s2">&quot;S288c&quot;</span><span class="p">)</span>
+<span class="n">mom</span><span class="o">.</span><span class="n">chroms</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>chrom_index</th>
+      <th>chrom</th>
+      <th>length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>I</td>
+      <td>230218</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>II</td>
+      <td>813184</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>III</td>
+      <td>316620</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>IV</td>
+      <td>1531933</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>V</td>
+      <td>576874</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>5</td>
+      <td>VI</td>
+      <td>270161</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>6</td>
+      <td>VII</td>
+      <td>1090940</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7</td>
+      <td>VIII</td>
+      <td>562643</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8</td>
+      <td>IX</td>
+      <td>439888</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>9</td>
+      <td>X</td>
+      <td>745751</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>10</td>
+      <td>XI</td>
+      <td>666816</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>11</td>
+      <td>XII</td>
+      <td>1078177</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>12</td>
+      <td>XIII</td>
+      <td>924431</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>13</td>
+      <td>XIV</td>
+      <td>784333</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>14</td>
+      <td>XV</td>
+      <td>1091291</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>15</td>
+      <td>XVI</td>
+      <td>948066</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>16</td>
+      <td>Mito</td>
+      <td>85779</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Once the chromosomes are registered, you can ingest data, e.g. genomic sequence or genomic features, to the repository.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Ingesting genome reference sequence</span>
+<span class="n">mom</span><span class="o">.</span><span class="n">ingest_sequence</span><span class="p">(</span><span class="s2">&quot;/home/jaseriza/repos/momics/data/S288c.fa&quot;</span><span class="p">)</span>
+<span class="n">mom</span><span class="o">.</span><span class="n">seq</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+momics :: INFO :: 2025-03-29 23:27:05,402 :: Genome sequence ingested in 3.0182s.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>chrom_index</th>
+      <th>chrom</th>
+      <th>length</th>
+      <th>seq</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>I</td>
+      <td>230218</td>
+      <td>CCACACCACA...TGTGTGTGGG</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>II</td>
+      <td>813184</td>
+      <td>AAATAGCCCT...GTGGGTGTGT</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>III</td>
+      <td>316620</td>
+      <td>CCCACACACC...GGTGTGTGTG</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>IV</td>
+      <td>1531933</td>
+      <td>ACACCACACC...TAGCTTTTGG</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>V</td>
+      <td>576874</td>
+      <td>CGTCTCCTCC...TTTTTTTTTT</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>5</td>
+      <td>VI</td>
+      <td>270161</td>
+      <td>GATCTCGCAA...TGGTGTGTGG</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>6</td>
+      <td>VII</td>
+      <td>1090940</td>
+      <td>CCACACCCAC...TTTTTTTTTT</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7</td>
+      <td>VIII</td>
+      <td>562643</td>
+      <td>CCCACACACA...GTGTGTGTGG</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8</td>
+      <td>IX</td>
+      <td>439888</td>
+      <td>CACACACACC...GTGTGTGTGT</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>9</td>
+      <td>X</td>
+      <td>745751</td>
+      <td>CCCACACACA...GTGTGGGTGT</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>10</td>
+      <td>XI</td>
+      <td>666816</td>
+      <td>CACCACACCC...GTGTGTGTGT</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>11</td>
+      <td>XII</td>
+      <td>1078177</td>
+      <td>CACACACACA...AGGGCTATTT</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>12</td>
+      <td>XIII</td>
+      <td>924431</td>
+      <td>CCACACACAC...GTGTGTGGGG</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>13</td>
+      <td>XIV</td>
+      <td>784333</td>
+      <td>CCGGCTTTCT...TGGTGTGGGT</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>14</td>
+      <td>XV</td>
+      <td>1091291</td>
+      <td>ACACCACACC...TGTGGTGTGT</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>15</td>
+      <td>XVI</td>
+      <td>948066</td>
+      <td>AAATAGCCCT...CGGTCAGAAA</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>16</td>
+      <td>Mito</td>
+      <td>85779</td>
+      <td>TTCATAATTA...AATATCCATA</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Coverage tracks in <code class="docutils literal notranslate"><span class="pre">bigwig</span></code> format can also be ingested to the local repository. Here again, a <code class="docutils literal notranslate"><span class="pre">&lt;ID&gt;:&lt;path&gt;</span></code> dictionary is passed to the <code class="docutils literal notranslate"><span class="pre">ingest_tracks</span></code> method.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Ingesting genome-wide tracks</span>
+<span class="n">mom</span><span class="o">.</span><span class="n">ingest_tracks</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;atac&quot;</span><span class="p">:</span> <span class="s2">&quot;/home/jaseriza/repos/momics/data/S288c_atac.bw&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;scc1&quot;</span><span class="p">:</span> <span class="s2">&quot;/home/jaseriza/repos/momics/data/S288c_scc1.bw&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;mnase&quot;</span><span class="p">:</span> <span class="s2">&quot;/home/jaseriza/repos/momics/data/S288c_mnase.bw&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+<span class="n">mom</span><span class="o">.</span><span class="n">tracks</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+momics :: INFO :: 2025-03-29 23:27:06,974 :: 3 tracks ingested in 1.4695s.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>idx</th>
+      <th>label</th>
+      <th>path</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>atac</td>
+      <td>/home/jaseriza/repos/momics/data/S288c_atac.bw</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>scc1</td>
+      <td>/home/jaseriza/repos/momics/data/S288c_scc1.bw</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>mnase</td>
+      <td>/home/jaseriza/repos/momics/data/S288c_mnase.bw</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="Querying-data-from-the-repository">
+<h2>Querying data from the repository<a class="headerlink" href="#Querying-data-from-the-repository" title="Link to this heading">¶</a></h2>
+<p>Now that we have added data to the repository, we can query specific genomic ranges using <code class="docutils literal notranslate"><span class="pre">MomicsQuery</span></code> objects.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## We define non-overlapping windows of 1kb over the entire S288c genome</span>
+<span class="n">windows</span> <span class="o">=</span> <span class="n">mom</span><span class="o">.</span><span class="n">bins</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">cut_last_bin_out</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">windows</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Chromosome</th>
+      <th>Start</th>
+      <th>End</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>I</td>
+      <td>0</td>
+      <td>1000</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>I</td>
+      <td>1000</td>
+      <td>2000</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>I</td>
+      <td>2000</td>
+      <td>3000</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>I</td>
+      <td>3000</td>
+      <td>4000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>I</td>
+      <td>4000</td>
+      <td>5000</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>12143</th>
+      <td>XVI</td>
+      <td>943000</td>
+      <td>944000</td>
+    </tr>
+    <tr>
+      <th>12144</th>
+      <td>XVI</td>
+      <td>944000</td>
+      <td>945000</td>
+    </tr>
+    <tr>
+      <th>12145</th>
+      <td>XVI</td>
+      <td>945000</td>
+      <td>946000</td>
+    </tr>
+    <tr>
+      <th>12146</th>
+      <td>XVI</td>
+      <td>946000</td>
+      <td>947000</td>
+    </tr>
+    <tr>
+      <th>12147</th>
+      <td>XVI</td>
+      <td>947000</td>
+      <td>948000</td>
+    </tr>
+  </tbody>
+</table>
+<p>12148 rows × 3 columns</p>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Next, we build a query object to query specific tracks from the momics object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">momics.query</span><span class="w"> </span><span class="kn">import</span> <span class="n">MomicsQuery</span>
+
+<span class="n">q</span> <span class="o">=</span> <span class="n">MomicsQuery</span><span class="p">(</span><span class="n">mom</span><span class="p">,</span> <span class="n">windows</span><span class="p">)</span>
+<span class="n">q</span><span class="o">.</span><span class="n">query_tracks</span><span class="p">(</span><span class="n">tracks</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;atac&quot;</span><span class="p">,</span> <span class="s2">&quot;scc1&quot;</span><span class="p">],</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="s2">&quot;ATAC coverage over the first range queried: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">coverage</span><span class="p">[</span><span class="s2">&quot;atac&quot;</span><span class="p">][</span><span class="s2">&quot;I:0-1000&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+momics :: INFO :: 2025-03-29 23:27:07,285 :: Query completed in 0.2031s.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;ATAC coverage over the first range queried: [1.91385 2.73407 2.73407 2.73407 2.73407]...&#39;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## We can also query sequences over the windows</span>
+<span class="n">q</span><span class="o">.</span><span class="n">query_sequence</span><span class="p">(</span><span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="s2">&quot;Genome sequence over the first range queried: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">seq</span><span class="p">[</span><span class="s2">&quot;nucleotide&quot;</span><span class="p">][</span><span class="s2">&quot;I:0-1000&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+momics :: INFO :: 2025-03-29 23:27:07,786 :: Query completed in 0.4939s.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;Genome sequence over the first range queried: CCACACCACA...&#39;
+</pre></div></div>
+</div>
+</section>
+<section id="Extracting-data-from-the-repository">
+<h2>Extracting data from the repository<a class="headerlink" href="#Extracting-data-from-the-repository" title="Link to this heading">¶</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">momics</span></code> repository can also be used to store and retrieve data. This data can be extracted from the repository and saved to a local file.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">atac</span> <span class="o">=</span> <span class="n">mom</span><span class="o">.</span><span class="n">tracks</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;atac&quot;</span><span class="p">)</span>
+<span class="n">atac</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;I&#39;: array([1.91385 , 2.73407 , 2.73407 , ..., 0.820222, 0.820222, 0.273407],
+       dtype=float32),
+ &#39;II&#39;: array([1.09363, 1.09363, 1.09363, ...,     nan,     nan,     nan],
+       dtype=float32),
+ &#39;III&#39;: array([nan, nan, nan, ..., nan, nan, nan], dtype=float32),
+ &#39;IV&#39;: array([     nan, 0.820222, 1.36704 , ...,      nan,      nan,      nan],
+       dtype=float32),
+ &#39;V&#39;: array([nan, nan, nan, ..., nan, nan, nan], dtype=float32),
+ &#39;VI&#39;: array([     nan,      nan,      nan, ..., 2.46067 , 2.46067 , 0.546815],
+       dtype=float32),
+ &#39;VII&#39;: array([0.820222, 1.36704 , 1.36704 , ...,      nan,      nan,      nan],
+       dtype=float32),
+ &#39;VIII&#39;: array([nan, nan, nan, ..., nan, nan, nan], dtype=float32),
+ &#39;IX&#39;: array([3.5543 , 4.37452, 5.74156, ...,     nan,     nan,     nan],
+       dtype=float32),
+ &#39;X&#39;: array([     nan,      nan,      nan, ..., 3.5543  , 2.46067 , 0.546815],
+       dtype=float32),
+ &#39;XI&#39;: array([2.46067 , 2.46067 , 2.73407 , ..., 0.273407, 0.273407, 0.273407],
+       dtype=float32),
+ &#39;XII&#39;: array([0.546815, 0.546815, 0.546815, ...,      nan,      nan,      nan],
+       dtype=float32),
+ &#39;XIII&#39;: array([     nan,      nan,      nan, ..., 0.273407, 0.273407,      nan],
+       dtype=float32),
+ &#39;XIV&#39;: array([     nan,      nan,      nan, ..., 0.273407, 0.273407, 0.273407],
+       dtype=float32),
+ &#39;XV&#39;: array([2.46067 , 4.92133 , 5.19474 , ..., 1.91385 , 1.64044 , 0.546815],
+       dtype=float32),
+ &#39;XVI&#39;: array([    nan,     nan,     nan, ..., 1.36704, 1.36704, 1.09363],
+       dtype=float32),
+ &#39;Mito&#39;: array([0.546815, 0.820222, 0.820222, ..., 0.273407, 0.273407, 0.273407],
+       dtype=float32)}
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">momics</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">mutils</span>
+
+<span class="n">path</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">dict_to_bigwig</span><span class="p">(</span><span class="n">atac</span><span class="p">,</span> <span class="s2">&quot;extracted_atac_track.bw&quot;</span><span class="p">)</span>
+<span class="s2">&quot;File saved to: &quot;</span> <span class="o">+</span> <span class="n">path</span><span class="o">.</span><span class="n">name</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;File saved to: extracted_atac_track.bw&#39;
+</pre></div></div>
+</div>
+</section>
+<section id="Deleting-a-repository">
+<h2>Deleting a repository<a class="headerlink" href="#Deleting-a-repository" title="Link to this heading">¶</a></h2>
+<p>To delete a repository, you can use the <code class="docutils literal notranslate"><span class="pre">remove()</span></code> method on the repository object. This will delete the repository and all its contents. Now that this notebook is complete, we can delete the repository :)</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># mom.remove()</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="nn-training-cov2cov.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code></div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../user_guide/cli.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> CLI</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023-2025, Jacques Serizay
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            <div class="last-updated">
+              Last updated on Apr 30, 2025</div>
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Integrating multi-omics data with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a><ul>
+<li><a class="reference internal" href="#Creating-a-local-momics-repository">Creating a local <code class="docutils literal notranslate"><span class="pre">momics</span></code> repository</a></li>
+<li><a class="reference internal" href="#Adding-data-to-the-repository">Adding data to the repository</a></li>
+<li><a class="reference internal" href="#Querying-data-from-the-repository">Querying data from the repository</a></li>
+<li><a class="reference internal" href="#Extracting-data-from-the-repository">Extracting data from the repository</a></li>
+<li><a class="reference internal" href="#Deleting-a-repository">Deleting a repository</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=183391d5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

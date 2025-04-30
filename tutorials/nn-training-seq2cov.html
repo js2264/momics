@@ -1,0 +1,878 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Train neural networks with momics and tensorflow" href="nn-training-any2cov.html" /><link rel="prev" title="Train neural networks with momics and tensorflow" href="nn-training-cov2cov.html" />
+
+    <link rel="shortcut icon" href="../_static/logo.svg"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>Predict genomic coverage from DNA sequence - momics</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f1559f00" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">momics</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/logo.svg" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">momics</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/intro.html">What is <code class="docutils literal notranslate"><span class="pre">momics</span></code>?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/concepts.html">Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/get-started.html">Get started with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/api.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/cli.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> CLI</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="integrating-multiomics.html">Integrating multi-omics data with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="nn-training-cov2cov.html">Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code></a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Predict genomic coverage from DNA sequence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nn-training-any2cov.html">Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cloud-repos.html">Managing cloud-hosted <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/momics/index.html">momics</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of momics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/aggregate/index.html">momics.aggregate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/config/index.html">momics.config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/dataset/index.html">momics.dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/logging/index.html">momics.logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/momics/index.html">momics.momics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/nn/index.html">momics.nn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/query/index.html">momics.query</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/streamer/index.html">momics.streamer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/utils/index.html">momics.utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/version/index.html">momics.version</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cli/index.html">CLI Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of CLI Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Changelog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../CHANGES.html">Changelog</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/tutorials/nn-training-seq2cov.ipynb" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <style>
+    .output_area {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+</style><section id="Predict-genomic-coverage-from-DNA-sequence">
+<h1>Predict genomic coverage from DNA sequence<a class="headerlink" href="#Predict-genomic-coverage-from-DNA-sequence" title="Link to this heading">¶</a></h1>
+<p>Because <code class="docutils literal notranslate"><span class="pre">momics</span></code> can ingest reference genome sequence as well as genomic coverage data, we can use it to predict genomic coverage from DNA sequence. This is useful for generating synthetic data or for filling in missing data in a dataset.</p>
+<section id="Connect-to-the-data-repository">
+<h2>Connect to the data repository<a class="headerlink" href="#Connect-to-the-data-repository" title="Link to this heading">¶</a></h2>
+<p>Here again, we will tap into the repository generated in the <a class="reference internal" href="integrating-multiomics.html"><span class="doc">previous tutorial</span></a>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">momics.momics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Momics</span>
+
+<span class="c1">## Creating repository</span>
+<span class="n">repo</span> <span class="o">=</span> <span class="n">Momics</span><span class="p">(</span><span class="s2">&quot;yeast_CNN_data.momics&quot;</span><span class="p">)</span>
+
+<span class="c1">## Check that sequence and some tracks are registered</span>
+<span class="n">repo</span><span class="o">.</span><span class="n">seq</span><span class="p">()</span>
+<span class="n">repo</span><span class="o">.</span><span class="n">tracks</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+momics :: INFO :: 2025-03-29 23:32:13,019 :: No cloud config found for momics.Consider populating `~/.momics.ini` file with configuration settings for cloud access.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>idx</th>
+      <th>label</th>
+      <th>path</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>atac</td>
+      <td>/home/jaseriza/repos/momics/data/S288c_atac.bw</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>scc1</td>
+      <td>/home/jaseriza/repos/momics/data/S288c_scc1.bw</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>mnase</td>
+      <td>/home/jaseriza/repos/momics/data/S288c_mnase.bw</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>atac_rescaled</td>
+      <td>tmpbyibsue1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>mnase_rescaled</td>
+      <td>tmpoqeo1dwd</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="Define-datasets-and-model">
+<h2>Define datasets and model<a class="headerlink" href="#Define-datasets-and-model" title="Link to this heading">¶</a></h2>
+<p>We will define a simple convolutional neural network with <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code> to predict the target variable <code class="docutils literal notranslate"><span class="pre">mnase</span></code> from the feature variable <code class="docutils literal notranslate"><span class="pre">seq</span></code> (the genome reference sequence). This requires to first define a set of genomic coordinates to extract genomic data from. We will extract sequences over tiling genomic windows (<code class="docutils literal notranslate"><span class="pre">features_size</span></code> of <code class="docutils literal notranslate"><span class="pre">8193</span></code>, with a stride of <code class="docutils literal notranslate"><span class="pre">48</span></code>) as feature variables to predict <code class="docutils literal notranslate"><span class="pre">mnase_rescaled</span></code> coverage scores over the same tiling genomic windows, but narrowed
+down to the a <code class="docutils literal notranslate"><span class="pre">target_size</span></code> of <code class="docutils literal notranslate"><span class="pre">128</span></code> bp around the center of the window. We can split the data into training, testing and validation sets, using <code class="docutils literal notranslate"><span class="pre">momics.utils.split_ranges()</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">momics.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mutils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">momics.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">MomicsDataset</span>
+
+<span class="c1"># Fetch data from the momics repository</span>
+<span class="n">features</span> <span class="o">=</span> <span class="s2">&quot;nucleotide&quot;</span>
+<span class="n">target</span> <span class="o">=</span> <span class="s2">&quot;mnase_rescaled&quot;</span>
+<span class="n">features_size</span> <span class="o">=</span> <span class="mi">2048</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">stride</span> <span class="o">=</span> <span class="mi">512</span>
+<span class="n">target_size</span> <span class="o">=</span> <span class="mi">32</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">500</span>
+
+<span class="n">bins</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">bins</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">features_size</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="n">stride</span><span class="p">,</span> <span class="n">cut_last_bin_out</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">bins</span> <span class="o">=</span> <span class="n">bins</span><span class="o">.</span><span class="n">subset</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">Chromosome</span> <span class="o">!=</span> <span class="s2">&quot;XVI&quot;</span><span class="p">)</span>
+<span class="n">bins_split</span><span class="p">,</span> <span class="n">bins_test</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">split_ranges</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">bins_train</span><span class="p">,</span> <span class="n">bins_val</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">split_ranges</span><span class="p">(</span><span class="n">bins_split</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">train_dataset</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">MomicsDataset</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">bins_train</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">target_size</span><span class="o">=</span><span class="n">target_size</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span><span class="o">.</span><span class="n">prefetch</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">repeat</span><span class="p">()</span>
+<span class="p">)</span>
+<span class="n">val_dataset</span> <span class="o">=</span> <span class="n">MomicsDataset</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">bins_val</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">target_size</span><span class="o">=</span><span class="n">target_size</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
+<span class="n">test_dataset</span> <span class="o">=</span> <span class="n">MomicsDataset</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">bins_test</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">target_size</span><span class="o">=</span><span class="n">target_size</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2025-03-29 23:32:13.365822: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2025-03-29 23:32:13.376873: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+E0000 00:00:1743287533.390698 4122550 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+E0000 00:00:1743287533.394535 4122550 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2025-03-29 23:32:13.410782: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX512_FP16 AVX_VNNI AMX_TILE AMX_INT8 AMX_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+I0000 00:00:1743287534.786931 4122550 gpu_device.cc:2022] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 10368 MB memory:  -&gt; device: 0, name: NVIDIA RTX A2000 12GB, pci bus id: 0000:55:00.0, compute capability: 8.6
+</pre></div></div>
+</div>
+<p>Now is time to define the model architecture. In this example, we will use a neural network adapted from <code class="docutils literal notranslate"><span class="pre">Basenji</span></code>, pre-defined in <code class="docutils literal notranslate"><span class="pre">momics.nn</span></code>. We can instantiate the model, and compile it with the desired optimizer, loss function and metrics.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">momics.nn</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChromNN</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">momics.nn</span><span class="w"> </span><span class="kn">import</span> <span class="n">mae_cor</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">layers</span>  <span class="c1"># type: ignore</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">ChromNN</span><span class="p">(</span>
+    <span class="nb">input</span><span class="o">=</span><span class="n">layers</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">features_size</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span>
+    <span class="n">output</span><span class="o">=</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">target_size</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">),</span>
+    <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="mi">64</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
+    <span class="n">kernel_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">80</span><span class="p">],</span>
+<span class="p">)</span><span class="o">.</span><span class="n">model</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">loss_fn</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">mae_cor</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+
+
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.001</span><span class="p">),</span>
+    <span class="n">loss</span><span class="o">=</span><span class="n">loss_fn</span><span class="p">,</span>
+    <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mae&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">Model: "functional"</span>
+</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
+┃<span style="font-weight: bold"> Layer (type)                    </span>┃<span style="font-weight: bold"> Output Shape           </span>┃<span style="font-weight: bold">       Param # </span>┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
+│ input_layer_1 (<span style="color: #0087ff; text-decoration-color: #0087ff">InputLayer</span>)      │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">2049</span>, <span style="color: #00af00; text-decoration-color: #00af00">4</span>)        │             <span style="color: #00af00; text-decoration-color: #00af00">0</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ conv1d (<span style="color: #0087ff; text-decoration-color: #0087ff">Conv1D</span>)                 │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">2049</span>, <span style="color: #00af00; text-decoration-color: #00af00">64</span>)       │           <span style="color: #00af00; text-decoration-color: #00af00">832</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ max_pooling1d (<span style="color: #0087ff; text-decoration-color: #0087ff">MaxPooling1D</span>)    │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">1025</span>, <span style="color: #00af00; text-decoration-color: #00af00">64</span>)       │             <span style="color: #00af00; text-decoration-color: #00af00">0</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ batch_normalization             │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">1025</span>, <span style="color: #00af00; text-decoration-color: #00af00">64</span>)       │           <span style="color: #00af00; text-decoration-color: #00af00">256</span> │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">BatchNormalization</span>)            │                        │               │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dropout (<span style="color: #0087ff; text-decoration-color: #0087ff">Dropout</span>)               │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">1025</span>, <span style="color: #00af00; text-decoration-color: #00af00">64</span>)       │             <span style="color: #00af00; text-decoration-color: #00af00">0</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ conv1d_1 (<span style="color: #0087ff; text-decoration-color: #0087ff">Conv1D</span>)               │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">1025</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>)       │         <span style="color: #00af00; text-decoration-color: #00af00">8,208</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ max_pooling1d_1 (<span style="color: #0087ff; text-decoration-color: #0087ff">MaxPooling1D</span>)  │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">513</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>)        │             <span style="color: #00af00; text-decoration-color: #00af00">0</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ batch_normalization_1           │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">513</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>)        │            <span style="color: #00af00; text-decoration-color: #00af00">64</span> │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">BatchNormalization</span>)            │                        │               │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dropout_1 (<span style="color: #0087ff; text-decoration-color: #0087ff">Dropout</span>)             │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">513</span>, <span style="color: #00af00; text-decoration-color: #00af00">16</span>)        │             <span style="color: #00af00; text-decoration-color: #00af00">0</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ conv1d_2 (<span style="color: #0087ff; text-decoration-color: #0087ff">Conv1D</span>)               │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">513</span>, <span style="color: #00af00; text-decoration-color: #00af00">8</span>)         │        <span style="color: #00af00; text-decoration-color: #00af00">10,248</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ max_pooling1d_2 (<span style="color: #0087ff; text-decoration-color: #0087ff">MaxPooling1D</span>)  │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">257</span>, <span style="color: #00af00; text-decoration-color: #00af00">8</span>)         │             <span style="color: #00af00; text-decoration-color: #00af00">0</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ batch_normalization_2           │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">257</span>, <span style="color: #00af00; text-decoration-color: #00af00">8</span>)         │            <span style="color: #00af00; text-decoration-color: #00af00">32</span> │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">BatchNormalization</span>)            │                        │               │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ flatten (<span style="color: #0087ff; text-decoration-color: #0087ff">Flatten</span>)               │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">2056</span>)           │             <span style="color: #00af00; text-decoration-color: #00af00">0</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dense_1 (<span style="color: #0087ff; text-decoration-color: #0087ff">Dense</span>)                 │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)             │        <span style="color: #00af00; text-decoration-color: #00af00">65,824</span> │
+└─────────────────────────────────┴────────────────────────┴───────────────┘
+</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold"> Total params: </span><span style="color: #00af00; text-decoration-color: #00af00">85,464</span> (333.84 KB)
+</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold"> Trainable params: </span><span style="color: #00af00; text-decoration-color: #00af00">85,288</span> (333.16 KB)
+</pre></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold"> Non-trainable params: </span><span style="color: #00af00; text-decoration-color: #00af00">176</span> (704.00 B)
+</pre></div>
+</div>
+</section>
+<section id="Fit-the-model">
+<h2>Fit the model<a class="headerlink" href="#Fit-the-model" title="Link to this heading">¶</a></h2>
+<p>Now that we have the datasets and the model, we can fit the model to the training data, using the <code class="docutils literal notranslate"><span class="pre">fit()</span></code> method of the model. We can also evaluate the model on the testing and validation datasets.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.callbacks</span><span class="w"> </span><span class="kn">import</span> <span class="n">CSVLogger</span><span class="p">,</span> <span class="n">EarlyStopping</span><span class="p">,</span> <span class="n">ModelCheckpoint</span><span class="p">,</span> <span class="n">ReduceLROnPlateau</span>  <span class="c1"># type: ignore</span>
+
+<span class="n">callbacks_list</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">CSVLogger</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;.chromnn&quot;</span><span class="p">,</span> <span class="s2">&quot;seq2cov.epoch_data.csv&quot;</span><span class="p">)),</span>
+    <span class="n">ModelCheckpoint</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;.chromnn&quot;</span><span class="p">,</span> <span class="s2">&quot;Checkpoint.seq2cov.keras&quot;</span><span class="p">),</span> <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span> <span class="n">save_best_only</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">EarlyStopping</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">min_delta</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">restore_best_weights</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">ReduceLROnPlateau</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">6</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">min_lr</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="mf">0.001</span><span class="p">),</span>
+<span class="p">]</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">train_dataset</span><span class="p">,</span>
+    <span class="n">validation_data</span><span class="o">=</span><span class="n">val_dataset</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <span class="n">callbacks</span><span class="o">=</span><span class="n">callbacks_list</span><span class="p">,</span>
+    <span class="n">steps_per_epoch</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bins_train</span><span class="p">)</span> <span class="o">//</span> <span class="n">batch_size</span><span class="p">)),</span>
+<span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Epoch 1/30
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/jaseriza/micromamba/envs/momics/lib/python3.10/site-packages/keras/src/models/functional.py:237: UserWarning: The structure of `inputs` doesn&#39;t match the expected structure.
+Expected: keras_tensor_1
+Received: inputs=(&#39;Tensor(shape=(None, 2049, 4))&#39;,)
+  warnings.warn(msg)
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1743287536.921523 4122713 service.cc:148] XLA service 0x654090de3f00 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1743287536.921543 4122713 service.cc:156]   StreamExecutor device (0): NVIDIA RTX A2000 12GB, Compute Capability 8.6
+2025-03-29 23:32:16.976294: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:268] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1743287537.313120 4122713 cuda_dnn.cc:529] Loaded cuDNN version 90300
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold"> 2/27</span> <span class="ansi-green-fg">━</span><span class="ansi-white-fg">━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">1s</span> 53ms/step - loss: 1.1097 - mae: 1.1375
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+I0000 00:00:1743287542.748312 4122713 device_compiler.h:188] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 54ms/step - loss: 1.0124 - mae: 1.0163
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/jaseriza/micromamba/envs/momics/lib/python3.10/site-packages/keras/src/models/functional.py:237: UserWarning: The structure of `inputs` doesn&#39;t match the expected structure.
+Expected: keras_tensor_1
+Received: inputs=(&#39;Tensor(shape=(None, 2049, 4))&#39;,)
+  warnings.warn(msg)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">12s</span> 180ms/step - loss: 1.0077 - mae: 1.0105 - val_loss: 0.4940 - val_mae: 0.3675 - learning_rate: 0.0010
+Epoch 2/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">7s</span> 92ms/step - loss: 0.4946 - mae: 0.3724 - val_loss: 0.4299 - val_mae: 0.2902 - learning_rate: 0.0010
+Epoch 3/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 179ms/step - loss: 0.3889 - mae: 0.2445 - val_loss: 0.3885 - val_mae: 0.2399 - learning_rate: 0.0010
+Epoch 4/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 182ms/step - loss: 0.3699 - mae: 0.2248 - val_loss: 0.3667 - val_mae: 0.2177 - learning_rate: 0.0010
+Epoch 5/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 193ms/step - loss: 0.3603 - mae: 0.2173 - val_loss: 0.3561 - val_mae: 0.2087 - learning_rate: 0.0010
+Epoch 6/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 174ms/step - loss: 0.3529 - mae: 0.2122 - val_loss: 0.3526 - val_mae: 0.2077 - learning_rate: 0.0010
+Epoch 7/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 176ms/step - loss: 0.3513 - mae: 0.2107 - val_loss: 0.3506 - val_mae: 0.2073 - learning_rate: 0.0010
+Epoch 8/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 175ms/step - loss: 0.3432 - mae: 0.2056 - val_loss: 0.3498 - val_mae: 0.2066 - learning_rate: 0.0010
+Epoch 9/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 171ms/step - loss: 0.3392 - mae: 0.2038 - val_loss: 0.3584 - val_mae: 0.2142 - learning_rate: 0.0010
+Epoch 10/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 176ms/step - loss: 0.3398 - mae: 0.2054 - val_loss: 0.3542 - val_mae: 0.2118 - learning_rate: 0.0010
+Epoch 11/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 181ms/step - loss: 0.3354 - mae: 0.2042 - val_loss: 0.3464 - val_mae: 0.2070 - learning_rate: 0.0010
+Epoch 12/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 177ms/step - loss: 0.3307 - mae: 0.2017 - val_loss: 0.3417 - val_mae: 0.2033 - learning_rate: 0.0010
+Epoch 13/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 172ms/step - loss: 0.3255 - mae: 0.1977 - val_loss: 0.3520 - val_mae: 0.2138 - learning_rate: 0.0010
+Epoch 14/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 176ms/step - loss: 0.3278 - mae: 0.1999 - val_loss: 0.3420 - val_mae: 0.2043 - learning_rate: 0.0010
+Epoch 15/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 181ms/step - loss: 0.3204 - mae: 0.1955 - val_loss: 0.3407 - val_mae: 0.2036 - learning_rate: 0.0010
+Epoch 16/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 180ms/step - loss: 0.3178 - mae: 0.1909 - val_loss: 0.3383 - val_mae: 0.2040 - learning_rate: 0.0010
+Epoch 17/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 178ms/step - loss: 0.3194 - mae: 0.1935 - val_loss: 0.3355 - val_mae: 0.2045 - learning_rate: 0.0010
+Epoch 18/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 181ms/step - loss: 0.3129 - mae: 0.1891 - val_loss: 0.3279 - val_mae: 0.1981 - learning_rate: 0.0010
+Epoch 19/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 178ms/step - loss: 0.3100 - mae: 0.1877 - val_loss: 0.3271 - val_mae: 0.1996 - learning_rate: 0.0010
+Epoch 20/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 175ms/step - loss: 0.3092 - mae: 0.1883 - val_loss: 0.3315 - val_mae: 0.2045 - learning_rate: 0.0010
+Epoch 21/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 185ms/step - loss: 0.3073 - mae: 0.1875 - val_loss: 0.3299 - val_mae: 0.2021 - learning_rate: 0.0010
+Epoch 22/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 186ms/step - loss: 0.3059 - mae: 0.1871 - val_loss: 0.3342 - val_mae: 0.2055 - learning_rate: 0.0010
+Epoch 23/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 185ms/step - loss: 0.2983 - mae: 0.1832 - val_loss: 0.3100 - val_mae: 0.1856 - learning_rate: 1.0000e-04
+Epoch 24/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 183ms/step - loss: 0.2817 - mae: 0.1722 - val_loss: 0.3085 - val_mae: 0.1836 - learning_rate: 1.0000e-04
+Epoch 25/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 183ms/step - loss: 0.2811 - mae: 0.1707 - val_loss: 0.3080 - val_mae: 0.1826 - learning_rate: 1.0000e-04
+Epoch 26/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 181ms/step - loss: 0.2800 - mae: 0.1698 - val_loss: 0.3086 - val_mae: 0.1821 - learning_rate: 1.0000e-04
+Epoch 27/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 183ms/step - loss: 0.2787 - mae: 0.1690 - val_loss: 0.3082 - val_mae: 0.1817 - learning_rate: 1.0000e-04
+Epoch 28/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 188ms/step - loss: 0.2762 - mae: 0.1681 - val_loss: 0.3060 - val_mae: 0.1807 - learning_rate: 1.0000e-04
+Epoch 29/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 183ms/step - loss: 0.2778 - mae: 0.1680 - val_loss: 0.3056 - val_mae: 0.1804 - learning_rate: 1.0000e-04
+Epoch 30/30
+<span class="ansi-bold">27/27</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">5s</span> 188ms/step - loss: 0.2768 - mae: 0.1670 - val_loss: 0.3048 - val_mae: 0.1801 - learning_rate: 1.0000e-04
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;keras.src.callbacks.history.History at 0x729ef7f85db0&gt;
+</pre></div></div>
+</div>
+</section>
+<section id="Evaluate-and-save-model">
+<h2>Evaluate and save model<a class="headerlink" href="#Evaluate-and-save-model" title="Link to this heading">¶</a></h2>
+<p>Now let’s see how the trained model performs, and save it to the local repository.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Evaluate the model</span>
+<span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">test_dataset</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">9/9</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">2s</span> 256ms/step - loss: 0.2934 - mae: 0.1684
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0.29288387298583984, 0.16718727350234985]
+</pre></div></div>
+</div>
+</section>
+<section id="Use-the-model-to-predict-MNase-seq-coverage">
+<h2>Use the model to predict MNase-seq coverage<a class="headerlink" href="#Use-the-model-to-predict-MNase-seq-coverage" title="Link to this heading">¶</a></h2>
+<p>We can now use our trained model to predict ATAC-seq coverage from MNase-seq coverage, for example on a chromosome which has not been used for training.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">momics</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataset</span> <span class="k">as</span> <span class="n">mmd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">momics</span><span class="w"> </span><span class="kn">import</span> <span class="n">aggregate</span> <span class="k">as</span> <span class="n">mma</span>
+
+<span class="c1">## Now predict the ATAC signal from the MNase signal</span>
+<span class="n">bb</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">bins</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">features_size</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">cut_last_bin_out</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="s2">&quot;XVI&quot;</span><span class="p">]</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">mmd</span><span class="o">.</span><span class="n">MomicsDataset</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">bb</span><span class="p">,</span> <span class="s2">&quot;nucleotide&quot;</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">prefetch</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+
+<span class="c1">## Export predictions as a bigwig</span>
+<span class="n">centered_bb</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">centered_bb</span><span class="o">.</span><span class="n">Start</span> <span class="o">=</span> <span class="n">centered_bb</span><span class="o">.</span><span class="n">Start</span> <span class="o">+</span> <span class="n">features_size</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">target_size</span> <span class="o">//</span> <span class="mi">2</span>
+<span class="n">centered_bb</span><span class="o">.</span><span class="n">End</span> <span class="o">=</span> <span class="n">centered_bb</span><span class="o">.</span><span class="n">Start</span> <span class="o">+</span> <span class="n">target_size</span>
+<span class="n">chrom_sizes</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">chroms</span><span class="p">(</span><span class="n">as_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">end</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">chrom</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">centered_bb</span><span class="o">.</span><span class="n">Chromosome</span><span class="p">,</span> <span class="n">centered_bb</span><span class="o">.</span><span class="n">Start</span><span class="p">,</span> <span class="n">centered_bb</span><span class="o">.</span><span class="n">End</span><span class="p">)]</span>
+<span class="n">res</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;mnase-from-seq_f</span><span class="si">{</span><span class="n">features_size</span><span class="si">}</span><span class="s2">_s</span><span class="si">{</span><span class="n">stride</span><span class="si">}</span><span class="s2">_t</span><span class="si">{</span><span class="n">target_size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">}}</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
+    <span class="n">res</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;mnase-from-seq_f</span><span class="si">{</span><span class="n">features_size</span><span class="si">}</span><span class="s2">_s</span><span class="si">{</span><span class="n">stride</span><span class="si">}</span><span class="s2">_t</span><span class="si">{</span><span class="n">target_size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+<span class="n">mma</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">centered_bb</span><span class="p">,</span> <span class="n">chrom_sizes</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;prediction&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">119/119</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">24s</span> 182ms/step
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+momics :: INFO :: 2025-03-29 23:35:19,973 :: Saved coverage for mnase-from-seq_f2049_s512_t32 to prediction_mnase-from-seq_f2049_s512_t32.bw
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;mnase-from-seq_f2049_s512_t32&#39;: {&#39;I&#39;: array([0., 0., 0., ..., 0., 0., 0.]),
+  &#39;II&#39;: array([0., 0., 0., ..., 0., 0., 0.]),
+  &#39;III&#39;: array([0., 0., 0., ..., 0., 0., 0.]),
+  &#39;IV&#39;: array([0., 0., 0., ..., 0., 0., 0.]),
+  &#39;V&#39;: array([0., 0., 0., ..., 0., 0., 0.]),
+  &#39;VI&#39;: array([0., 0., 0., ..., 0., 0., 0.]),
+  &#39;VII&#39;: array([0., 0., 0., ..., 0., 0., 0.]),
+  &#39;VIII&#39;: array([0., 0., 0., ..., 0., 0., 0.]),
+  &#39;IX&#39;: array([0., 0., 0., ..., 0., 0., 0.]),
+  &#39;X&#39;: array([0., 0., 0., ..., 0., 0., 0.]),
+  &#39;XI&#39;: array([0., 0., 0., ..., 0., 0., 0.]),
+  &#39;XII&#39;: array([0., 0., 0., ..., 0., 0., 0.]),
+  &#39;XIII&#39;: array([0., 0., 0., ..., 0., 0., 0.]),
+  &#39;XIV&#39;: array([0., 0., 0., ..., 0., 0., 0.]),
+  &#39;XV&#39;: array([0., 0., 0., ..., 0., 0., 0.]),
+  &#39;XVI&#39;: array([0., 0., 0., ..., 0., 0., 0.]),
+  &#39;Mito&#39;: array([0., 0., 0., ..., 0., 0., 0.])}}
+</pre></div></div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="nn-training-any2cov.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code></div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="nn-training-cov2cov.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code></div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023-2025, Jacques Serizay
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            <div class="last-updated">
+              Last updated on Apr 30, 2025</div>
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Predict genomic coverage from DNA sequence</a><ul>
+<li><a class="reference internal" href="#Connect-to-the-data-repository">Connect to the data repository</a></li>
+<li><a class="reference internal" href="#Define-datasets-and-model">Define datasets and model</a></li>
+<li><a class="reference internal" href="#Fit-the-model">Fit the model</a></li>
+<li><a class="reference internal" href="#Evaluate-and-save-model">Evaluate and save model</a></li>
+<li><a class="reference internal" href="#Use-the-model-to-predict-MNase-seq-coverage">Use the model to predict MNase-seq coverage</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=183391d5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

@@ -1,0 +1,619 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="momics.dataset" href="../dataset/index.html" /><link rel="prev" title="momics.aggregate" href="../aggregate/index.html" />
+
+    <link rel="shortcut icon" href="../../../_static/logo.svg"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>momics.config - momics</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=f1559f00" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">momics</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../../_static/logo.svg" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">momics</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/intro.html">What is <code class="docutils literal notranslate"><span class="pre">momics</span></code>?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/concepts.html">Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/get-started.html">Get started with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/api.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/cli.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> CLI</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/integrating-multiomics.html">Integrating multi-omics data with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/nn-training-cov2cov.html">Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/nn-training-seq2cov.html">Predict genomic coverage from DNA sequence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/nn-training-any2cov.html">Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/cloud-repos.html">Managing cloud-hosted <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html">momics</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of momics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../aggregate/index.html">momics.aggregate</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">momics.config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dataset/index.html">momics.dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logging/index.html">momics.logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../momics/index.html">momics.momics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../nn/index.html">momics.nn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../query/index.html">momics.query</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../streamer/index.html">momics.streamer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../utils/index.html">momics.utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../version/index.html">momics.version</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../cli/index.html">CLI Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of CLI Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Changelog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../CHANGES.html">Changelog</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../../../_sources/api/momics/config/index.rst" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="module-momics.config">
+<span id="momics-config"></span><h1>momics.config<a class="headerlink" href="#module-momics.config" title="Link to this heading">¶</a></h1>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#momics.config.DEFAULT_CONFIG_PATH" title="momics.config.DEFAULT_CONFIG_PATH"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DEFAULT_CONFIG_PATH</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#momics.config.AzureConfig" title="momics.config.AzureConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AzureConfig</span></code></a></p></td>
+<td><p>This class is used to provide manual configuration for Azure access. It requires</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#momics.config.GCSConfig" title="momics.config.GCSConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GCSConfig</span></code></a></p></td>
+<td><p>This class is used to provide manual configuration for GCS access. It requires</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#momics.config.LocalConfig" title="momics.config.LocalConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LocalConfig</span></code></a></p></td>
+<td><p>LocalConfig is a class to manage the configuration of local momics repositories.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#momics.config.MomicsConfig" title="momics.config.MomicsConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MomicsConfig</span></code></a></p></td>
+<td><p>MomicsConfig is a class to automatically manage the configuration of the momics</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#momics.config.S3Config" title="momics.config.S3Config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">S3Config</span></code></a></p></td>
+<td><p>This class is used to provide manual configuration for S3 access. It requires</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="momics.config.AzureConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">momics.config.</span></span><span class="sig-name descname"><span class="pre">AzureConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">account_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/config.html#AzureConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.config.AzureConfig" title="Link to this definition">¶</a></dt>
+<dd><p>This class is used to provide manual configuration for Azure access. It requires
+the following parameters:</p>
+<ul class="simple">
+<li><p><cite>account_name</cite>: An account name</p></li>
+<li><p><cite>account_key</cite>: The associated account key</p></li>
+</ul>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="momics.config.AzureConfig.account_key">
+<span class="sig-name descname"><span class="pre">account_key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#momics.config.AzureConfig.account_key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="momics.config.AzureConfig.account_name">
+<span class="sig-name descname"><span class="pre">account_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#momics.config.AzureConfig.account_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="momics.config.GCSConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">momics.config.</span></span><span class="sig-name descname"><span class="pre">GCSConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/config.html#GCSConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.config.GCSConfig" title="Link to this definition">¶</a></dt>
+<dd><p>This class is used to provide manual configuration for GCS access. It requires
+the following parameters:</p>
+<ul class="simple">
+<li><p><cite>project_id</cite>: The project ID for the GCS bucket</p></li>
+<li><p><cite>credentials</cite>: Path to the credentials JSON file for the GCS bucket</p></li>
+</ul>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="momics.config.GCSConfig.credentials">
+<span class="sig-name descname"><span class="pre">credentials</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#momics.config.GCSConfig.credentials" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="momics.config.GCSConfig.project_id">
+<span class="sig-name descname"><span class="pre">project_id</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#momics.config.GCSConfig.project_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="momics.config.LocalConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">momics.config.</span></span><span class="sig-name descname"><span class="pre">LocalConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">DEFAULT_CONFIG_PATH</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/config.html#LocalConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.config.LocalConfig" title="Link to this definition">¶</a></dt>
+<dd><p>LocalConfig is a class to manage the configuration of local momics repositories.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Union</em><em>[</em><em>pathlib.Path</em><em>, </em><em>str</em><em>]</em>)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.config.LocalConfig.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">section</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/config.html#LocalConfig.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.config.LocalConfig.get" title="Link to this definition">¶</a></dt>
+<dd><p>Get value from the config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[str, None]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.config.LocalConfig.set">
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">section</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/config.html#LocalConfig.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.config.LocalConfig.set" title="Link to this definition">¶</a></dt>
+<dd><p>Set value in the config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="momics.config.LocalConfig.cfg">
+<span class="sig-name descname"><span class="pre">cfg</span></span><a class="headerlink" href="#momics.config.LocalConfig.cfg" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="momics.config.LocalConfig.config_path">
+<span class="sig-name descname"><span class="pre">config_path</span></span><a class="headerlink" href="#momics.config.LocalConfig.config_path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="momics.config.MomicsConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">momics.config.</span></span><span class="sig-name descname"><span class="pre">MomicsConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s3</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gcs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">azure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_cfg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">DEFAULT_CONFIG_PATH</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/config.html#MomicsConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.config.MomicsConfig" title="Link to this definition">¶</a></dt>
+<dd><p>MomicsConfig is a class to automatically manage the configuration of the momics
+repository being accessed. It is used to set up the configuration for seamless
+cloud access.</p>
+<p>By default, it will parse a config file located at <cite>~/.momics.ini</cite> and
+use the first cloud configuration provided there. If the file does not exist or is
+incomplete, it will fall back to a base configuration which will only
+allow local momics repositories to be accessed.</p>
+<p>For example, a local config file might look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">s3</span><span class="p">]</span>
+<span class="n">region</span> <span class="o">=</span> <span class="n">us</span><span class="o">-</span><span class="n">west</span><span class="o">-</span><span class="mi">1</span>
+<span class="n">access_key_id</span> <span class="o">=</span> <span class="n">key</span>
+<span class="n">secret_access_key</span> <span class="o">=</span> <span class="n">secret</span>
+
+<span class="p">[</span><span class="n">gcs</span><span class="p">]</span>
+<span class="n">region</span> <span class="o">=</span> <span class="n">us</span><span class="o">-</span><span class="n">west</span><span class="o">-</span><span class="mi">1</span>
+<span class="n">access_key_id</span> <span class="o">=</span> <span class="n">key</span>
+<span class="n">secret_access_key</span> <span class="o">=</span> <span class="n">secret</span>
+
+<span class="p">[</span><span class="n">azure</span><span class="p">]</span>
+<span class="n">account_name</span> <span class="o">=</span> <span class="n">account</span>
+<span class="n">account_key</span> <span class="o">=</span> <span class="n">key</span>
+</pre></div>
+</div>
+<p>A manual configuration can also be used to access a specific cloud provider.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>To access an S3 bucket, pass an <cite>S3Config</cite> object to the <cite>s3</cite> parameter.</p></li>
+<li><p>To access a GCS bucket, pass a <cite>GCSConfig</cite> object to the <cite>gcs</cite> parameter.</p></li>
+<li><p>To access an Azure bucket, pass an <cite>AzureConfig</cite> object to the <cite>azure</cite>           parameter.</p></li>
+</ul>
+</div></blockquote>
+<p>Cloud configuration is chosen in this order:
+<cite>manual</cite> (<cite>S3Config</cite> &gt; <cite>GCSConfig</cite> &gt; <cite>AzureConfig</cite>) &gt; <cite>local</cite> &gt; <cite>blank</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s3</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="#momics.config.S3Config" title="momics.config.S3Config"><em>S3Config</em></a><em>]</em>)</p></li>
+<li><p><strong>gcs</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="#momics.config.GCSConfig" title="momics.config.GCSConfig"><em>GCSConfig</em></a><em>]</em>)</p></li>
+<li><p><strong>azure</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="#momics.config.AzureConfig" title="momics.config.AzureConfig"><em>AzureConfig</em></a><em>]</em>)</p></li>
+<li><p><strong>local_cfg</strong> (<em>pathlib.Path</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="momics.config.MomicsConfig.ctx">
+<span class="sig-name descname"><span class="pre">ctx</span></span><a class="headerlink" href="#momics.config.MomicsConfig.ctx" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="momics.config.MomicsConfig.type">
+<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#momics.config.MomicsConfig.type" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="momics.config.MomicsConfig.vfs">
+<span class="sig-name descname"><span class="pre">vfs</span></span><a class="headerlink" href="#momics.config.MomicsConfig.vfs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="momics.config.S3Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">momics.config.</span></span><span class="sig-name descname"><span class="pre">S3Config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_key_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secret_access_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/config.html#S3Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.config.S3Config" title="Link to this definition">¶</a></dt>
+<dd><p>This class is used to provide manual configuration for S3 access. It requires
+the following parameters:</p>
+<ul class="simple">
+<li><p><cite>region</cite>: The region of the S3 bucket</p></li>
+<li><p><cite>access_key_id</cite>: The access key ID for the S3 bucket</p></li>
+<li><p><cite>secret_access_key</cite>: The secret access key for the S3 bucket</p></li>
+</ul>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="momics.config.S3Config.access_key_id">
+<span class="sig-name descname"><span class="pre">access_key_id</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#momics.config.S3Config.access_key_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="momics.config.S3Config.region">
+<span class="sig-name descname"><span class="pre">region</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#momics.config.S3Config.region" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="momics.config.S3Config.secret_access_key">
+<span class="sig-name descname"><span class="pre">secret_access_key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#momics.config.S3Config.secret_access_key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="momics.config.DEFAULT_CONFIG_PATH">
+<span class="sig-prename descclassname"><span class="pre">momics.config.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_CONFIG_PATH</span></span><a class="headerlink" href="#momics.config.DEFAULT_CONFIG_PATH" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../dataset/index.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">momics.dataset</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../aggregate/index.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">momics.aggregate</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023-2025, Jacques Serizay
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            <div class="last-updated">
+              Last updated on Apr 30, 2025</div>
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">momics.config</a><ul>
+<li><a class="reference internal" href="#attributes">Attributes</a></li>
+<li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
+<li><a class="reference internal" href="#momics.config.AzureConfig"><code class="docutils literal notranslate"><span class="pre">AzureConfig</span></code></a><ul>
+<li><a class="reference internal" href="#momics.config.AzureConfig.account_key"><code class="docutils literal notranslate"><span class="pre">AzureConfig.account_key</span></code></a></li>
+<li><a class="reference internal" href="#momics.config.AzureConfig.account_name"><code class="docutils literal notranslate"><span class="pre">AzureConfig.account_name</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#momics.config.GCSConfig"><code class="docutils literal notranslate"><span class="pre">GCSConfig</span></code></a><ul>
+<li><a class="reference internal" href="#momics.config.GCSConfig.credentials"><code class="docutils literal notranslate"><span class="pre">GCSConfig.credentials</span></code></a></li>
+<li><a class="reference internal" href="#momics.config.GCSConfig.project_id"><code class="docutils literal notranslate"><span class="pre">GCSConfig.project_id</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#momics.config.LocalConfig"><code class="docutils literal notranslate"><span class="pre">LocalConfig</span></code></a><ul>
+<li><a class="reference internal" href="#momics.config.LocalConfig.get"><code class="docutils literal notranslate"><span class="pre">LocalConfig.get()</span></code></a></li>
+<li><a class="reference internal" href="#momics.config.LocalConfig.set"><code class="docutils literal notranslate"><span class="pre">LocalConfig.set()</span></code></a></li>
+<li><a class="reference internal" href="#momics.config.LocalConfig.cfg"><code class="docutils literal notranslate"><span class="pre">LocalConfig.cfg</span></code></a></li>
+<li><a class="reference internal" href="#momics.config.LocalConfig.config_path"><code class="docutils literal notranslate"><span class="pre">LocalConfig.config_path</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#momics.config.MomicsConfig"><code class="docutils literal notranslate"><span class="pre">MomicsConfig</span></code></a><ul>
+<li><a class="reference internal" href="#momics.config.MomicsConfig.ctx"><code class="docutils literal notranslate"><span class="pre">MomicsConfig.ctx</span></code></a></li>
+<li><a class="reference internal" href="#momics.config.MomicsConfig.type"><code class="docutils literal notranslate"><span class="pre">MomicsConfig.type</span></code></a></li>
+<li><a class="reference internal" href="#momics.config.MomicsConfig.vfs"><code class="docutils literal notranslate"><span class="pre">MomicsConfig.vfs</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#momics.config.S3Config"><code class="docutils literal notranslate"><span class="pre">S3Config</span></code></a><ul>
+<li><a class="reference internal" href="#momics.config.S3Config.access_key_id"><code class="docutils literal notranslate"><span class="pre">S3Config.access_key_id</span></code></a></li>
+<li><a class="reference internal" href="#momics.config.S3Config.region"><code class="docutils literal notranslate"><span class="pre">S3Config.region</span></code></a></li>
+<li><a class="reference internal" href="#momics.config.S3Config.secret_access_key"><code class="docutils literal notranslate"><span class="pre">S3Config.secret_access_key</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#momics.config.DEFAULT_CONFIG_PATH"><code class="docutils literal notranslate"><span class="pre">DEFAULT_CONFIG_PATH</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=183391d5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    </body>
+</html>

@@ -1,0 +1,876 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="momics.nn" href="../nn/index.html" /><link rel="prev" title="momics.logging" href="../logging/index.html" />
+
+    <link rel="shortcut icon" href="../../../_static/logo.svg"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>momics.momics - momics</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=f1559f00" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">momics</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../../_static/logo.svg" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">momics</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/intro.html">What is <code class="docutils literal notranslate"><span class="pre">momics</span></code>?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/concepts.html">Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/get-started.html">Get started with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/api.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/cli.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> CLI</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/integrating-multiomics.html">Integrating multi-omics data with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/nn-training-cov2cov.html">Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/nn-training-seq2cov.html">Predict genomic coverage from DNA sequence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/nn-training-any2cov.html">Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/cloud-repos.html">Managing cloud-hosted <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html">momics</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of momics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../aggregate/index.html">momics.aggregate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../config/index.html">momics.config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dataset/index.html">momics.dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logging/index.html">momics.logging</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">momics.momics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../nn/index.html">momics.nn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../query/index.html">momics.query</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../streamer/index.html">momics.streamer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../utils/index.html">momics.utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../version/index.html">momics.version</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../cli/index.html">CLI Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of CLI Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Changelog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../CHANGES.html">Changelog</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../../../_sources/api/momics/momics/index.rst" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="module-momics.momics">
+<span id="momics-momics"></span><h1>momics.momics<a class="headerlink" href="#module-momics.momics" title="Link to this heading">¶</a></h1>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#momics.momics.BULK_OVERWRITE" title="momics.momics.BULK_OVERWRITE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BULK_OVERWRITE</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#momics.momics.TILEDB_CHUNKSIZE" title="momics.momics.TILEDB_CHUNKSIZE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TILEDB_CHUNKSIZE</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#momics.momics.TILEDB_COMPRESSION" title="momics.momics.TILEDB_COMPRESSION"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TILEDB_COMPRESSION</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#momics.momics.TILEDB_COV_FILTERS" title="momics.momics.TILEDB_COV_FILTERS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TILEDB_COV_FILTERS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#momics.momics.TILEDB_POSITION_FILTERS" title="momics.momics.TILEDB_POSITION_FILTERS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TILEDB_POSITION_FILTERS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#momics.momics.TILEDB_SEQ_FILTERS" title="momics.momics.TILEDB_SEQ_FILTERS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TILEDB_SEQ_FILTERS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#momics.momics.lock" title="momics.momics.lock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lock</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#momics.momics.Momics" title="momics.momics.Momics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Momics</span></code></a></p></td>
+<td><p>A class to manipulate <cite>.momics</cite> repositories.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="momics.momics.Momics">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">momics.momics.</span></span><span class="sig-name descname"><span class="pre">Momics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/momics.html#Momics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.momics.Momics" title="Link to this definition">¶</a></dt>
+<dd><p>A class to manipulate <cite>.momics</cite> repositories.</p>
+<p><cite>.momics</cite> repositories are a TileDB-backed storage system for genomics data.
+They are structured as follows:</p>
+<ul class="simple">
+<li><p><cite>./genome/chroms.tdb</cite> - table for ingested chromosomes;</p></li>
+<li><p><cite>./coverage/tracks.tdb</cite> - table for ingested bigwig tracks;</p></li>
+<li><p><cite>./annotations/features.tdb</cite> - table for ingested feature sets.</p></li>
+</ul>
+<p>In each subdirectory, there is also one <cite>.tdb</cite> file per chromosome, which
+stores the following data:</p>
+<ul class="simple">
+<li><p>In <cite>./genome/{X}.tdb</cite>: the reference sequence of the chromosome;</p></li>
+<li><p>In <cite>./coverage/{X}.tdb</cite>: the coverage scores of the chromosome;</p></li>
+<li><p>In <cite>./annotations/{X}.tdb</cite>: the genomic features of the chromosome.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>)</p></li>
+<li><p><strong>config</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../config/index.html#momics.config.MomicsConfig" title="momics.config.MomicsConfig"><em>momics.config.MomicsConfig</em></a><em>]</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="momics.momics.Momics.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#momics.momics.Momics.path" title="Link to this definition">¶</a></dt>
+<dd><p>Path to a <cite>.momics</cite> repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="momics.momics.Momics.cfg">
+<span class="sig-name descname"><span class="pre">cfg</span></span><a class="headerlink" href="#momics.momics.Momics.cfg" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../config/index.html#momics.config.MomicsConfig" title="momics.config.MomicsConfig">MomicsConfig</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.momics.Momics.bins">
+<span class="sig-name descname"><span class="pre">bins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cut_last_bin_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/momics.html#Momics.bins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.momics.Momics.bins" title="Link to this definition">¶</a></dt>
+<dd><p>Generate a PyRanges of tiled genomic bins</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>width</strong> (<em>_type_</em>) – The width of each bin.</p></li>
+<li><p><strong>stride</strong> (<em>_type_</em>) – The stride size for tiling.</p></li>
+<li><p><strong>cut_last_bin_out</strong> (<em>bool</em><em>, </em><em>optional</em>) – Remove the last bin of each                 chromosome. Defaults to False.</p></li>
+<li><p><strong>end-exclusive.</strong> (<em>Remember that PyRanges are 0-based and</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pr.PyRanges: a PyRanges object of tiled genomic bins.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_type_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.momics.Momics.chroms">
+<span class="sig-name descname"><span class="pre">chroms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/momics.html#Momics.chroms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.momics.Momics.chroms" title="Link to this definition">¶</a></dt>
+<dd><p>Extract chromosome table from a <cite>.momics</cite> repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>as_dict</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to return chromosomes as a dictionary. Defaults to False.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>If as_dict=False: A data frame listing one chromosome per row</p></li>
+<li><p>If as_dict=True: A dictionary with chromosome names as keys and lengths as values</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[pd.DataFrame, Dict[str, int]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.momics.Momics.consolidate">
+<span class="sig-name descname"><span class="pre">consolidate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vacuum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/momics.html#Momics.consolidate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.momics.Momics.consolidate" title="Link to this definition">¶</a></dt>
+<dd><p>Consolidates the fragments of all arrays in the repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vacuum</strong> (<em>bool</em><em>, </em><em>optional</em>) – Vacuum the consolidated array. Defaults to True.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Literal[True]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.momics.Momics.export_features">
+<span class="sig-name descname"><span class="pre">export_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/momics.html#Momics.export_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.momics.Momics.export_features" title="Link to this definition">¶</a></dt>
+<dd><p>Export a features set from a <cite>.momics</cite> repository as a <cite>.bed</cite> file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> (<em>str</em>) – Which features to remove</p></li>
+<li><p><strong>output</strong> (<em>Path</em>) – Prefix of the output BED file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An updated Momics object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#momics.momics.Momics" title="momics.momics.Momics">Momics</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.momics.Momics.export_sequence">
+<span class="sig-name descname"><span class="pre">export_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/momics.html#Momics.export_sequence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.momics.Momics.export_sequence" title="Link to this definition">¶</a></dt>
+<dd><p>Export sequence from a <cite>.momics</cite> repository as a <cite>.fa</cite> file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>output</strong> (<em>Path</em>) – Prefix of the output fasta file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An updated Momics object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#momics.momics.Momics" title="momics.momics.Momics">Momics</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.momics.Momics.export_track">
+<span class="sig-name descname"><span class="pre">export_track</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">track</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/momics.html#Momics.export_track"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.momics.Momics.export_track" title="Link to this definition">¶</a></dt>
+<dd><p>Export a track from a <cite>.momics</cite> repository as a <cite>.bw</cite> file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>track</strong> (<em>str</em>) – Which track to remove</p></li>
+<li><p><strong>output</strong> (<em>Path</em>) – Prefix of the output bigwig file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An updated Momics object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#momics.momics.Momics" title="momics.momics.Momics">Momics</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.momics.Momics.features">
+<span class="sig-name descname"><span class="pre">features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/momics.html#Momics.features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.momics.Momics.features" title="Link to this definition">¶</a></dt>
+<dd><p>Extract table of ingested features sets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame: A data frame listing one ingested feature set per row
+- if <cite>label</cite> is not None: pr.PyRanges: A PyRanges object of the specified feature set</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>if <cite>label</cite> is None</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>label</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.momics.Momics.ingest_chroms">
+<span class="sig-name descname"><span class="pre">ingest_chroms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chr_lengths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genome_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/momics.html#Momics.ingest_chroms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.momics.Momics.ingest_chroms" title="Link to this definition">¶</a></dt>
+<dd><p>Add chromosomes (and genome) information the <cite>.momics</cite> repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>chr_lengths</strong> (<em>dict</em>) – Chromosome lengths</p></li>
+<li><p><strong>genome_version</strong> (<em>str</em><em>, </em><em>optional</em>) – Genome version (default: “”).                 Defaults to “”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An updated Momics object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#momics.momics.Momics" title="momics.momics.Momics">Momics</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.momics.Momics.ingest_features">
+<span class="sig-name descname"><span class="pre">ingest_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/momics.html#Momics.ingest_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.momics.Momics.ingest_features" title="Link to this definition">¶</a></dt>
+<dd><p>Ingest feature sets to the <cite>.momics</cite> repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> (<em>dict</em>) – Dictionary of feature sets already imported as a PyRanges.</p></li>
+<li><p><strong>threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Threads to parallelize I/O. Defaults to 1.</p></li>
+<li><p><strong>max_features</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of feature sets. Defaults to 9999.</p></li>
+<li><p><strong>tile</strong> (<em>int</em><em>, </em><em>optional</em>) – Tile size. Defaults to 50000.</p></li>
+<li><p><strong>compression</strong> (<em>int</em><em>, </em><em>optional</em>) – Compression level. Defaults to 3.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated Momics object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#momics.momics.Momics" title="momics.momics.Momics">Momics</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.momics.Momics.ingest_sequence">
+<span class="sig-name descname"><span class="pre">ingest_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fasta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/momics.html#Momics.ingest_sequence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.momics.Momics.ingest_sequence" title="Link to this definition">¶</a></dt>
+<dd><p>Ingest a fasta file into a Momics repository</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fasta</strong> (<em>str</em>) – Path to a Fasta file containing the genome reference sequence.</p></li>
+<li><p><strong>threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Threads to parallelize I/O. Defaults to 1.</p></li>
+<li><p><strong>tile</strong> (<em>int</em><em>, </em><em>optional</em>) – Tile size for TileDB. Defaults to 50000.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated Momics object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#momics.momics.Momics" title="momics.momics.Momics">Momics</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.momics.Momics.ingest_track">
+<span class="sig-name descname"><span class="pre">ingest_track</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coverage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/momics.html#Momics.ingest_track"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.momics.Momics.ingest_track" title="Link to this definition">¶</a></dt>
+<dd><p>Ingest a coverage track provided as a dictionary to a <cite>.momics</cite> repository.
+This method is useful when you have already computed the coverage track and
+have it in memory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coverage</strong> (<em>dict</em>) – Dictionary of coverage tracks. The keys are                 chromosome names and the values are numpy arrays.</p></li>
+<li><p><strong>track</strong> (<em>str</em>) – Label to store the track under.</p></li>
+<li><p><strong>threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Threads to parallelize I/O. Defaults to 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated Momics object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#momics.momics.Momics" title="momics.momics.Momics">Momics</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.momics.Momics.ingest_tracks">
+<span class="sig-name descname"><span class="pre">ingest_tracks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bws</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bws</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/momics.html#Momics.ingest_tracks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.momics.Momics.ingest_tracks" title="Link to this definition">¶</a></dt>
+<dd><p>Ingest bigwig coverage tracks to the <cite>.momics</cite> repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bws</strong> (<em>dict</em>) – Dictionary of bigwig files</p></li>
+<li><p><strong>threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Threads to parallelize I/O. Defaults to 1.</p></li>
+<li><p><strong>max_bws</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of bigwig files. Defaults to 9999.</p></li>
+<li><p><strong>tile</strong> (<em>int</em><em>, </em><em>optional</em>) – Tile size. Defaults to 50000.</p></li>
+<li><p><strong>compression</strong> (<em>int</em><em>, </em><em>optional</em>) – Compression level. Defaults to 3.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated Momics object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#momics.momics.Momics" title="momics.momics.Momics">Momics</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.momics.Momics.manifest">
+<span class="sig-name descname"><span class="pre">manifest</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/momics.html#Momics.manifest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.momics.Momics.manifest" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the manifest of the Momics repository. The manifest lists the
+configuration for all the arrays stored in the repository, including
+their schema, attributes, and metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.momics.Momics.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/momics.html#Momics.remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.momics.Momics.remove" title="Link to this definition">¶</a></dt>
+<dd><p>Remove a <cite>.momics</cite> repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.momics.Momics.remove_track">
+<span class="sig-name descname"><span class="pre">remove_track</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">track</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/momics.html#Momics.remove_track"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.momics.Momics.remove_track" title="Link to this definition">¶</a></dt>
+<dd><p>Remove a track from a <cite>.momics</cite> repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>track</strong> (<em>str</em>) – Which track to remove</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An updated Momics object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#momics.momics.Momics" title="momics.momics.Momics">Momics</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.momics.Momics.seq">
+<span class="sig-name descname"><span class="pre">seq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/momics.html#Momics.seq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.momics.Momics.seq" title="Link to this definition">¶</a></dt>
+<dd><p>Extract sequence table from a <cite>.momics</cite> repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>label</strong> (<em>str</em><em>, </em><em>optional</em>) – Which chromosome to extract. Defaults to None.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A data frame listing one chromosome per row,
+with first/last 10 nts.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.momics.Momics.size">
+<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/momics.html#Momics.size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.momics.Momics.size" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The size of the repository in bytes.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="momics.momics.Momics.tracks">
+<span class="sig-name descname"><span class="pre">tracks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/momics/momics.html#Momics.tracks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#momics.momics.Momics.tracks" title="Link to this definition">¶</a></dt>
+<dd><p>Extract table of ingested bigwigs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A data frame listing one ingested bigwig file per row</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>label</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">cfg</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#id1" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="momics.momics.BULK_OVERWRITE">
+<span class="sig-prename descclassname"><span class="pre">momics.momics.</span></span><span class="sig-name descname"><span class="pre">BULK_OVERWRITE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#momics.momics.BULK_OVERWRITE" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="momics.momics.TILEDB_CHUNKSIZE">
+<span class="sig-prename descclassname"><span class="pre">momics.momics.</span></span><span class="sig-name descname"><span class="pre">TILEDB_CHUNKSIZE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10000</span></em><a class="headerlink" href="#momics.momics.TILEDB_CHUNKSIZE" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="momics.momics.TILEDB_COMPRESSION">
+<span class="sig-prename descclassname"><span class="pre">momics.momics.</span></span><span class="sig-name descname"><span class="pre">TILEDB_COMPRESSION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#momics.momics.TILEDB_COMPRESSION" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="momics.momics.TILEDB_COV_FILTERS">
+<span class="sig-prename descclassname"><span class="pre">momics.momics.</span></span><span class="sig-name descname"><span class="pre">TILEDB_COV_FILTERS</span></span><a class="headerlink" href="#momics.momics.TILEDB_COV_FILTERS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="momics.momics.TILEDB_POSITION_FILTERS">
+<span class="sig-prename descclassname"><span class="pre">momics.momics.</span></span><span class="sig-name descname"><span class="pre">TILEDB_POSITION_FILTERS</span></span><a class="headerlink" href="#momics.momics.TILEDB_POSITION_FILTERS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="momics.momics.TILEDB_SEQ_FILTERS">
+<span class="sig-prename descclassname"><span class="pre">momics.momics.</span></span><span class="sig-name descname"><span class="pre">TILEDB_SEQ_FILTERS</span></span><a class="headerlink" href="#momics.momics.TILEDB_SEQ_FILTERS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="momics.momics.lock">
+<span class="sig-prename descclassname"><span class="pre">momics.momics.</span></span><span class="sig-name descname"><span class="pre">lock</span></span><a class="headerlink" href="#momics.momics.lock" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../nn/index.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">momics.nn</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../logging/index.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">momics.logging</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023-2025, Jacques Serizay
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            <div class="last-updated">
+              Last updated on Apr 30, 2025</div>
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">momics.momics</a><ul>
+<li><a class="reference internal" href="#attributes">Attributes</a></li>
+<li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
+<li><a class="reference internal" href="#momics.momics.Momics"><code class="docutils literal notranslate"><span class="pre">Momics</span></code></a><ul>
+<li><a class="reference internal" href="#momics.momics.Momics.path"><code class="docutils literal notranslate"><span class="pre">Momics.path</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.Momics.cfg"><code class="docutils literal notranslate"><span class="pre">Momics.cfg</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.Momics.bins"><code class="docutils literal notranslate"><span class="pre">Momics.bins()</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.Momics.chroms"><code class="docutils literal notranslate"><span class="pre">Momics.chroms()</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.Momics.consolidate"><code class="docutils literal notranslate"><span class="pre">Momics.consolidate()</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.Momics.export_features"><code class="docutils literal notranslate"><span class="pre">Momics.export_features()</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.Momics.export_sequence"><code class="docutils literal notranslate"><span class="pre">Momics.export_sequence()</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.Momics.export_track"><code class="docutils literal notranslate"><span class="pre">Momics.export_track()</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.Momics.features"><code class="docutils literal notranslate"><span class="pre">Momics.features()</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.Momics.ingest_chroms"><code class="docutils literal notranslate"><span class="pre">Momics.ingest_chroms()</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.Momics.ingest_features"><code class="docutils literal notranslate"><span class="pre">Momics.ingest_features()</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.Momics.ingest_sequence"><code class="docutils literal notranslate"><span class="pre">Momics.ingest_sequence()</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.Momics.ingest_track"><code class="docutils literal notranslate"><span class="pre">Momics.ingest_track()</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.Momics.ingest_tracks"><code class="docutils literal notranslate"><span class="pre">Momics.ingest_tracks()</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.Momics.manifest"><code class="docutils literal notranslate"><span class="pre">Momics.manifest()</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.Momics.remove"><code class="docutils literal notranslate"><span class="pre">Momics.remove()</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.Momics.remove_track"><code class="docutils literal notranslate"><span class="pre">Momics.remove_track()</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.Momics.seq"><code class="docutils literal notranslate"><span class="pre">Momics.seq()</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.Momics.size"><code class="docutils literal notranslate"><span class="pre">Momics.size()</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.Momics.tracks"><code class="docutils literal notranslate"><span class="pre">Momics.tracks()</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">Momics.cfg</span></code></a></li>
+<li><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">Momics.path</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#momics.momics.BULK_OVERWRITE"><code class="docutils literal notranslate"><span class="pre">BULK_OVERWRITE</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.TILEDB_CHUNKSIZE"><code class="docutils literal notranslate"><span class="pre">TILEDB_CHUNKSIZE</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.TILEDB_COMPRESSION"><code class="docutils literal notranslate"><span class="pre">TILEDB_COMPRESSION</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.TILEDB_COV_FILTERS"><code class="docutils literal notranslate"><span class="pre">TILEDB_COV_FILTERS</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.TILEDB_POSITION_FILTERS"><code class="docutils literal notranslate"><span class="pre">TILEDB_POSITION_FILTERS</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.TILEDB_SEQ_FILTERS"><code class="docutils literal notranslate"><span class="pre">TILEDB_SEQ_FILTERS</span></code></a></li>
+<li><a class="reference internal" href="#momics.momics.lock"><code class="docutils literal notranslate"><span class="pre">lock</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=183391d5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    </body>
+</html>

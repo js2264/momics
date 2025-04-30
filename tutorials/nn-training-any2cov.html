@@ -1,0 +1,607 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Managing cloud-hosted momics repositories" href="cloud-repos.html" /><link rel="prev" title="Predict genomic coverage from DNA sequence" href="nn-training-seq2cov.html" />
+
+    <link rel="shortcut icon" href="../_static/logo.svg"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>Train neural networks with momics and tensorflow - momics</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=f1559f00" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">momics</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/logo.svg" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">momics</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/intro.html">What is <code class="docutils literal notranslate"><span class="pre">momics</span></code>?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/concepts.html">Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/get-started.html">Get started with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/api.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/cli.html">Introduction to <code class="docutils literal notranslate"><span class="pre">momics</span></code> CLI</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="integrating-multiomics.html">Integrating multi-omics data with <code class="docutils literal notranslate"><span class="pre">momics</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="nn-training-cov2cov.html">Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="nn-training-seq2cov.html">Predict genomic coverage from DNA sequence</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cloud-repos.html">Managing cloud-hosted <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/momics/index.html">momics</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of momics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/aggregate/index.html">momics.aggregate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/config/index.html">momics.config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/dataset/index.html">momics.dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/logging/index.html">momics.logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/momics/index.html">momics.momics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/nn/index.html">momics.nn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/query/index.html">momics.query</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/streamer/index.html">momics.streamer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/utils/index.html">momics.utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/momics/version/index.html">momics.version</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cli/index.html">CLI Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of CLI Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Changelog</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../CHANGES.html">Changelog</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/tutorials/nn-training-any2cov.ipynb" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <style>
+    .output_area {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+</style><section id="Train-neural-networks-with-momics-and-tensorflow">
+<h1>Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code><a class="headerlink" href="#Train-neural-networks-with-momics-and-tensorflow" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">momics</span></code> provides several useful resources to train neural networks with <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code>. This notebook demonstrates how to train a simple neural network with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code>.</p>
+<section id="Connect-to-the-data-repository">
+<h2>Connect to the data repository<a class="headerlink" href="#Connect-to-the-data-repository" title="Link to this heading">¶</a></h2>
+<p>We will tap into the repository generated in the <a class="reference internal" href="integrating-multiomics.html"><span class="doc">previous tutorial</span></a>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">momics</span><span class="w"> </span><span class="kn">import</span> <span class="n">momics</span> <span class="k">as</span> <span class="n">mmm</span>
+
+<span class="c1">## Creating repository</span>
+<span class="n">repo</span> <span class="o">=</span> <span class="n">mmm</span><span class="o">.</span><span class="n">Momics</span><span class="p">(</span><span class="s2">&quot;yeast_CNN_data.momics&quot;</span><span class="p">)</span>
+
+<span class="c1">## Check that sequence and some tracks are registered</span>
+<span class="n">repo</span><span class="o">.</span><span class="n">seq</span><span class="p">()</span>
+<span class="n">repo</span><span class="o">.</span><span class="n">tracks</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="Modify-some-tracks">
+<h2>Modify some tracks<a class="headerlink" href="#Modify-some-tracks" title="Link to this heading">¶</a></h2>
+<p>We can first pre-process the tracks to normalize them, and save them back to the local repository.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;atac&quot;</span><span class="p">,</span> <span class="s2">&quot;mnase&quot;</span><span class="p">,</span> <span class="s2">&quot;scc1&quot;</span><span class="p">]:</span>
+    <span class="n">cov</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">tracks</span><span class="p">(</span><span class="n">track</span><span class="p">)</span>
+    <span class="c1"># Compute genome-wide 99th percentile</span>
+    <span class="n">q99</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cov</span><span class="o">.</span><span class="n">values</span><span class="p">())),</span> <span class="mi">99</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">chrom</span> <span class="ow">in</span> <span class="n">cov</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">cov</span><span class="p">[</span><span class="n">chrom</span><span class="p">]</span>
+        <span class="c1"># Truncate to genome-wide 99th percentile</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">q99</span><span class="p">)</span>
+        <span class="c1"># Rescale to [0, 1]</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="p">(</span><span class="n">arr</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">arr</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">arr</span><span class="p">))</span>
+        <span class="c1"># Convert NaNs to 0</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># Store back</span>
+        <span class="n">cov</span><span class="p">[</span><span class="n">chrom</span><span class="p">]</span> <span class="o">=</span> <span class="n">arr</span>
+    <span class="n">repo</span><span class="o">.</span><span class="n">ingest_track</span><span class="p">(</span><span class="n">cov</span><span class="p">,</span> <span class="n">track</span> <span class="o">+</span> <span class="s2">&quot;_rescaled&quot;</span><span class="p">)</span>
+
+<span class="n">repo</span><span class="o">.</span><span class="n">tracks</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="Define-datasets-and-model">
+<h2>Define datasets and model<a class="headerlink" href="#Define-datasets-and-model" title="Link to this heading">¶</a></h2>
+<p>We will define a simple convolutional neural network with <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code> to predict the target variable <code class="docutils literal notranslate"><span class="pre">ATAC</span></code> from the feature variable <code class="docutils literal notranslate"><span class="pre">MNase</span></code>. This requires to first define a set of genomic coordinates to extract genomic data from. We will use <code class="docutils literal notranslate"><span class="pre">MNase_rescaled</span></code> coverage scores over tiling genomic windows (<code class="docutils literal notranslate"><span class="pre">features_size</span></code> of <code class="docutils literal notranslate"><span class="pre">1025</span></code>, with a stride of <code class="docutils literal notranslate"><span class="pre">48</span></code>) as feature variables to predict <code class="docutils literal notranslate"><span class="pre">ATAC_rescaled</span></code> coverage scores over the same tiling genomic windows, but narrowed down to the
+a <code class="docutils literal notranslate"><span class="pre">target_size</span></code> of <code class="docutils literal notranslate"><span class="pre">24</span></code> bp around the center of the window. We can split the data into training, testing and validation sets, using <code class="docutils literal notranslate"><span class="pre">momics.utils.split_ranges()</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">momics.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mutils</span>
+
+<span class="c1"># Fetch data from the momics repository</span>
+<span class="n">features_size</span> <span class="o">=</span> <span class="mi">8192</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">stride</span> <span class="o">=</span> <span class="mi">48</span>
+
+<span class="n">bins</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">bins</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">features_size</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="n">stride</span><span class="p">,</span> <span class="n">cut_last_bin_out</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">bins</span> <span class="o">=</span> <span class="n">bins</span><span class="o">.</span><span class="n">subset</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">Chromosome</span> <span class="o">!=</span> <span class="s2">&quot;XVI&quot;</span><span class="p">)</span>
+<span class="n">bins_split</span><span class="p">,</span> <span class="n">bins_test</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">split_ranges</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">bins_train</span><span class="p">,</span> <span class="n">bins_val</span> <span class="o">=</span> <span class="n">mutils</span><span class="o">.</span><span class="n">split_ranges</span><span class="p">(</span><span class="n">bins_split</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">bins_train</span>
+<br/></pre></div>
+</div>
+</div>
+<p>We now need to define different datasets, for training, testing and validation. We will use <code class="docutils literal notranslate"><span class="pre">momics.dataset.MomicsDataset()</span></code> constructor, indicating the batch size we wish to use in the training process.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">momics</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataset</span> <span class="k">as</span> <span class="n">mmd</span>
+
+<span class="n">features</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mnase_rescaled&quot;</span><span class="p">,</span> <span class="s2">&quot;nucleotide&quot;</span><span class="p">]</span>
+<span class="n">target</span> <span class="o">=</span> <span class="s2">&quot;atac_rescaled&quot;</span>
+<span class="n">target_size</span> <span class="o">=</span> <span class="mi">512</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">500</span>
+
+<span class="n">train_dataset</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">mmd</span><span class="o">.</span><span class="n">MomicsDataset</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">bins_train</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">target_size</span><span class="o">=</span><span class="n">target_size</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">prefetch</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">repeat</span><span class="p">()</span>
+<span class="p">)</span>
+<span class="n">val_dataset</span> <span class="o">=</span> <span class="n">mmd</span><span class="o">.</span><span class="n">MomicsDataset</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">bins_val</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">target_size</span><span class="o">=</span><span class="n">target_size</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
+<span class="n">test_dataset</span> <span class="o">=</span> <span class="n">mmd</span><span class="o">.</span><span class="n">MomicsDataset</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">bins_test</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">target_size</span><span class="o">=</span><span class="n">target_size</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
+<span class="n">train_dataset</span>
+<br/></pre></div>
+</div>
+</div>
+<p>Now is time to define the model architecture. In this example, we will use a simple customizable convolutional neural network (<code class="docutils literal notranslate"><span class="pre">ChromNN</span></code>), provided in <code class="docutils literal notranslate"><span class="pre">momics.nn</span></code>. We can instantiate the model with the number and shape of layers we want, and compile it with the desired optimizer, loss function and metrics.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">momics</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">layers</span>  <span class="c1"># type: ignore</span>
+
+<span class="c1">## Define the model with three convolutional layers</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ChromNN</span><span class="p">(</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;mnase_rescaled&quot;</span><span class="p">:</span> <span class="n">layers</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">features_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mnase_rescaled&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;nucleotide&quot;</span><span class="p">:</span> <span class="n">layers</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">features_size</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;nucleotide&quot;</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="n">outputs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;atac_rescaled&quot;</span><span class="p">:</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">target_size</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;atac_rescaled&quot;</span><span class="p">)},</span>
+    <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="mi">64</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
+    <span class="n">kernel_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">80</span><span class="p">],</span>
+<span class="p">)</span><span class="o">.</span><span class="n">model</span>
+
+
+<span class="c1">## Use a combination of MAE and correlation as loss function</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">loss_atac</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">nn</span><span class="o">.</span><span class="n">mae_cor</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+
+
+<span class="c1">## Use Adam optimizer, a learning rate of 0.001, and return MAE as metric</span>
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.001</span><span class="p">),</span>
+    <span class="n">loss</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;atac_rescaled&quot;</span><span class="p">:</span> <span class="n">loss_atac</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">loss_weights</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;atac_rescaled&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">metrics</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;atac_rescaled&quot;</span><span class="p">:</span> <span class="s2">&quot;mae&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="Fit-the-model">
+<h2>Fit the model<a class="headerlink" href="#Fit-the-model" title="Link to this heading">¶</a></h2>
+<p>Now that we have the datasets and the model, we can fit the model to the training data, using the <code class="docutils literal notranslate"><span class="pre">fit()</span></code> method of the model. We can also evaluate the model on the testing and validation datasets. Here, we’ll quickly iterate over 10 epochs, but you can increase this number to improve the model performance.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.callbacks</span><span class="w"> </span><span class="kn">import</span> <span class="n">CSVLogger</span><span class="p">,</span> <span class="n">EarlyStopping</span><span class="p">,</span> <span class="n">ModelCheckpoint</span><span class="p">,</span> <span class="n">ReduceLROnPlateau</span>  <span class="c1"># type: ignore</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s2">&quot;.chromnn&quot;</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">callbacks_list</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">CSVLogger</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;.chromnn&quot;</span><span class="p">,</span> <span class="s2">&quot;epoch_data.csv&quot;</span><span class="p">)),</span>
+    <span class="n">ModelCheckpoint</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;.chromnn&quot;</span><span class="p">,</span> <span class="s2">&quot;Checkpoint.keras&quot;</span><span class="p">),</span> <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span> <span class="n">save_best_only</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">EarlyStopping</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">min_delta</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">restore_best_weights</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">ReduceLROnPlateau</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">6</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">min_lr</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="mf">0.001</span><span class="p">),</span>
+<span class="p">]</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">train_dataset</span><span class="p">,</span>
+    <span class="n">validation_data</span><span class="o">=</span><span class="n">val_dataset</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <span class="n">steps_per_epoch</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bins_train</span><span class="p">)</span> <span class="o">//</span> <span class="n">batch_size</span><span class="p">)),</span>
+    <span class="n">callbacks</span><span class="o">=</span><span class="n">callbacks_list</span><span class="p">,</span>
+<span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="Evaluate-and-save-model">
+<h2>Evaluate and save model<a class="headerlink" href="#Evaluate-and-save-model" title="Link to this heading">¶</a></h2>
+<p>Now let’s see how the trained model performs, and save it to the local repository.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Evaluate the model with our test dataset</span>
+<span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">test_dataset</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="Use-the-model-to-predict-ATAC-seq-coverage">
+<h2>Use the model to predict ATAC-seq coverage<a class="headerlink" href="#Use-the-model-to-predict-ATAC-seq-coverage" title="Link to this heading">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">momics</span><span class="w"> </span><span class="kn">import</span> <span class="n">aggregate</span> <span class="k">as</span> <span class="n">mma</span>
+
+<span class="c1">## Predict the ATAC signal from the MNase signal</span>
+<span class="n">bb</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">bins</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">features_size</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">cut_last_bin_out</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="s2">&quot;XVI&quot;</span><span class="p">]</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">mmd</span><span class="o">.</span><span class="n">MomicsDataset</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">bb</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">prefetch</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+
+<span class="c1">## Export predictions as a bigwig</span>
+<span class="n">centered_bb</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">centered_bb</span><span class="o">.</span><span class="n">Start</span> <span class="o">=</span> <span class="n">centered_bb</span><span class="o">.</span><span class="n">Start</span> <span class="o">+</span> <span class="n">features_size</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">target_size</span> <span class="o">//</span> <span class="mi">2</span>
+<span class="n">centered_bb</span><span class="o">.</span><span class="n">End</span> <span class="o">=</span> <span class="n">centered_bb</span><span class="o">.</span><span class="n">Start</span> <span class="o">+</span> <span class="n">target_size</span>
+<span class="n">chrom_sizes</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">chroms</span><span class="p">(</span><span class="n">as_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">chrom</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">end</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">chrom</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">centered_bb</span><span class="o">.</span><span class="n">Chromosome</span><span class="p">,</span> <span class="n">centered_bb</span><span class="o">.</span><span class="n">Start</span><span class="p">,</span> <span class="n">centered_bb</span><span class="o">.</span><span class="n">End</span><span class="p">)]</span>
+<span class="n">res</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;atac-from-seq-and-mnase_f</span><span class="si">{</span><span class="n">features_size</span><span class="si">}</span><span class="s2">_s</span><span class="si">{</span><span class="n">stride</span><span class="si">}</span><span class="s2">_t</span><span class="si">{</span><span class="n">target_size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">}}</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
+    <span class="n">res</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;atac-from-seq-and-mnase_f</span><span class="si">{</span><span class="n">features_size</span><span class="si">}</span><span class="s2">_s</span><span class="si">{</span><span class="n">stride</span><span class="si">}</span><span class="s2">_t</span><span class="si">{</span><span class="n">target_size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;atac_rescaled&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+
+<span class="n">mma</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">centered_bb</span><span class="p">,</span> <span class="n">chrom_sizes</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;prediction&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<p>This generates a new <code class="docutils literal notranslate"><span class="pre">bw</span></code> file with ATAC-seq coverage over chr16, predicted from MNase-seq coverage.</p>
+<p>Here is a screenshot of ATAC-seq coverage track over chr16, from experimental data (darker cyan) or predicted from MNase-seq coverage (MNase: grey track; predicted ATAC: lighter cyan), taken from IGV:</p>
+<p><img alt="ATAC-seq coverage track over chr16" src="../_images/atac_mnase.png" /></p>
+<p>A closer look:</p>
+<p><img alt="ATAC-seq coverage track over chr16, zoom" src="../_images/atac_mnase2.png" /></p>
+</section>
+<section id="Correlation-of-the-predicted-and-experimental-ATAC-seq-coverage">
+<h2>Correlation of the predicted and experimental ATAC-seq coverage<a class="headerlink" href="#Correlation-of-the-predicted-and-experimental-ATAC-seq-coverage" title="Link to this heading">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="cloud-repos.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Managing cloud-hosted <code class="docutils literal notranslate"><span class="pre">momics</span></code> repositories</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="nn-training-seq2cov.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Predict genomic coverage from DNA sequence</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023-2025, Jacques Serizay
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            <div class="last-updated">
+              Last updated on Apr 30, 2025</div>
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Train neural networks with <code class="docutils literal notranslate"><span class="pre">momics</span></code> and <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code></a><ul>
+<li><a class="reference internal" href="#Connect-to-the-data-repository">Connect to the data repository</a></li>
+<li><a class="reference internal" href="#Modify-some-tracks">Modify some tracks</a></li>
+<li><a class="reference internal" href="#Define-datasets-and-model">Define datasets and model</a></li>
+<li><a class="reference internal" href="#Fit-the-model">Fit the model</a></li>
+<li><a class="reference internal" href="#Evaluate-and-save-model">Evaluate and save model</a></li>
+<li><a class="reference internal" href="#Use-the-model-to-predict-ATAC-seq-coverage">Use the model to predict ATAC-seq coverage</a></li>
+<li><a class="reference internal" href="#Correlation-of-the-predicted-and-experimental-ATAC-seq-coverage">Correlation of the predicted and experimental ATAC-seq coverage</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=183391d5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

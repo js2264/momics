@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 50 50">
+  <defs>
+    <style>
+      .cls-1 {
+        font-size: 4.38px;
+        letter-spacing: .2em;
+      }
+
+      .cls-1, .cls-2 {
+        fill: #231f20;
+        font-family: SourceCodeProForPowerline-Regular, 'Source Code Pro for Powerline';
+      }
+
+      .cls-2 {
+        font-size: 5.29px;
+        letter-spacing: .2em;
+      }
+
+      .cls-3 {
+        filter: url(#drop-shadow-5);
+      }
+
+      .cls-4 {
+        filter: url(#drop-shadow-7);
+      }
+
+      .cls-5 {
+        filter: url(#drop-shadow-4);
+      }
+
+      .cls-6 {
+        filter: url(#drop-shadow-6);
+      }
+
+      .cls-7 {
+        filter: url(#drop-shadow-2);
+      }
+
+      .cls-8 {
+        filter: url(#drop-shadow-3);
+      }
+
+      .cls-9 {
+        filter: url(#drop-shadow-1);
+      }
+
+      .cls-10 {
+        fill: #5a9cd4;
+      }
+
+      .cls-10, .cls-11, .cls-12, .cls-13, .cls-14, .cls-15, .cls-16, .cls-17, .cls-18, .cls-19, .cls-20, .cls-21, .cls-22, .cls-23, .cls-24, .cls-25 {
+        stroke: #231f20;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: .05px;
+      }
+
+      .cls-11 {
+        fill: #9bd091;
+      }
+
+      .cls-12 {
+        fill: #39b54a;
+      }
+
+      .cls-13 {
+        fill: #2b79b5;
+      }
+
+      .cls-14 {
+        fill: #eaeaea;
+      }
+
+      .cls-15 {
+        fill: #eae491;
+      }
+
+      .cls-16 {
+        fill: #f38f9d;
+      }
+
+      .cls-17 {
+        fill: #e5df69;
+      }
+
+      .cls-18 {
+        fill: #7bc57c;
+      }
+
+      .cls-19 {
+        fill: #bab9ba;
+      }
+
+      .cls-20 {
+        fill: #be1e2d;
+      }
+
+      .cls-21 {
+        fill: #ce5967;
+      }
+
+      .cls-22 {
+        fill: #cdc92b;
+      }
+
+      .cls-23 {
+        fill: #d8d8d8;
+      }
+
+      .cls-24 {
+        fill: #b0c6e6;
+      }
+
+      .cls-25 {
+        fill: none;
+      }
+    </style>
+    <filter id="drop-shadow-1" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy=".57"/>
+      <feGaussianBlur result="blur" stdDeviation="1.13"/>
+      <feFlood flood-color="#231f20" flood-opacity=".2"/>
+      <feComposite in2="blur" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="drop-shadow-2" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy=".57"/>
+      <feGaussianBlur result="blur-2" stdDeviation="1.13"/>
+      <feFlood flood-color="#231f20" flood-opacity=".2"/>
+      <feComposite in2="blur-2" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="drop-shadow-3" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy=".57"/>
+      <feGaussianBlur result="blur-3" stdDeviation="1.13"/>
+      <feFlood flood-color="#231f20" flood-opacity=".2"/>
+      <feComposite in2="blur-3" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="drop-shadow-4" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy=".57"/>
+      <feGaussianBlur result="blur-4" stdDeviation="1.13"/>
+      <feFlood flood-color="#231f20" flood-opacity=".2"/>
+      <feComposite in2="blur-4" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="drop-shadow-5" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy=".57"/>
+      <feGaussianBlur result="blur-5" stdDeviation="1.13"/>
+      <feFlood flood-color="#231f20" flood-opacity=".2"/>
+      <feComposite in2="blur-5" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="drop-shadow-6" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy=".57"/>
+      <feGaussianBlur result="blur-6" stdDeviation="1.13"/>
+      <feFlood flood-color="#231f20" flood-opacity=".2"/>
+      <feComposite in2="blur-6" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="drop-shadow-7" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy=".57"/>
+      <feGaussianBlur result="blur-7" stdDeviation="1.13"/>
+      <feFlood flood-color="#231f20" flood-opacity=".2"/>
+      <feComposite in2="blur-7" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g>
+    <g>
+      <g>
+        <polyline class="cls-14" points="36.05 33.76 31.13 30.32 36.05 26.88 40.97 30.32"/>
+        <polygon class="cls-23" points="36.05 38.99 36.05 33.76 40.97 30.32 40.97 35.55 36.05 38.99"/>
+        <polygon class="cls-19" points="31.13 30.32 31.13 35.55 36.05 38.99 36.05 33.76 31.13 30.32"/>
+      </g>
+      <polyline class="cls-25" points="36.05 33.76 31.13 30.32 36.05 26.88 40.97 30.32"/>
+      <polygon class="cls-25" points="36.05 38.99 36.05 33.76 40.97 30.32 40.97 35.55 36.05 38.99"/>
+      <polygon class="cls-25" points="31.13 30.32 31.13 35.55 36.05 38.99 36.05 33.76 31.13 30.32"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-14" points="25.04 25.99 20.12 22.54 25.04 19.1 29.96 22.54"/>
+        <polygon class="cls-23" points="25.04 31.22 25.04 25.99 29.96 22.54 29.96 27.77 25.04 31.22"/>
+        <polygon class="cls-19" points="20.12 22.54 20.12 27.77 25.04 31.22 25.04 25.99 20.12 22.54"/>
+      </g>
+      <polyline class="cls-25" points="25.04 25.99 20.12 22.54 25.04 19.1 29.96 22.54"/>
+      <polygon class="cls-25" points="25.04 31.22 25.04 25.99 29.96 22.54 29.96 27.77 25.04 31.22"/>
+      <polygon class="cls-25" points="20.12 22.54 20.12 27.77 25.04 31.22 25.04 25.99 20.12 22.54"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-14" points="25.04 19.93 20.12 16.49 25.04 13.04 29.96 16.49"/>
+        <polygon class="cls-23" points="25.04 25.16 25.04 19.93 29.96 16.49 29.96 21.72 25.04 25.16"/>
+        <polygon class="cls-19" points="20.12 16.49 20.12 21.72 25.04 25.16 25.04 19.93 20.12 16.49"/>
+      </g>
+      <polyline class="cls-25" points="25.04 19.93 20.12 16.49 25.04 13.04 29.96 16.49"/>
+      <polygon class="cls-25" points="25.04 25.16 25.04 19.93 29.96 16.49 29.96 21.72 25.04 25.16"/>
+      <polygon class="cls-25" points="20.12 16.49 20.12 21.72 25.04 25.16 25.04 19.93 20.12 16.49"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-14" points="25.04 13.87 20.12 10.43 25.04 6.99 29.96 10.43"/>
+        <polygon class="cls-23" points="25.04 19.1 25.04 13.87 29.96 10.43 29.96 15.66 25.04 19.1"/>
+        <polygon class="cls-19" points="20.12 10.43 20.12 15.66 25.04 19.1 25.04 13.87 20.12 10.43"/>
+      </g>
+      <polyline class="cls-25" points="25.04 13.87 20.12 10.43 25.04 6.99 29.96 10.43"/>
+      <polygon class="cls-25" points="25.04 19.1 25.04 13.87 29.96 10.43 29.96 15.66 25.04 19.1"/>
+      <polygon class="cls-25" points="20.12 10.43 20.12 15.66 25.04 19.1 25.04 13.87 20.12 10.43"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-15" points="25.04 7.81 20.12 4.37 25.04 .93 29.96 4.37"/>
+        <polygon class="cls-17" points="25.04 13.04 25.04 7.81 29.96 4.37 29.96 9.6 25.04 13.04"/>
+        <polygon class="cls-22" points="20.12 4.37 20.12 9.6 25.04 13.04 25.04 7.81 20.12 4.37"/>
+      </g>
+      <polyline class="cls-25" points="25.04 7.81 20.12 4.37 25.04 .93 29.96 4.37"/>
+      <polygon class="cls-25" points="25.04 13.04 25.04 7.81 29.96 4.37 29.96 9.6 25.04 13.04"/>
+      <polygon class="cls-25" points="20.12 4.37 20.12 9.6 25.04 13.04 25.04 7.81 20.12 4.37"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-14" points="30.52 29.8 25.61 26.36 30.52 22.92 35.44 26.36"/>
+        <polygon class="cls-23" points="30.52 35.03 30.52 29.8 35.44 26.36 35.44 31.59 30.52 35.03"/>
+        <polygon class="cls-19" points="25.61 26.36 25.61 31.59 30.52 35.03 30.52 29.8 25.61 26.36"/>
+      </g>
+      <polyline class="cls-25" points="30.52 29.8 25.61 26.36 30.52 22.92 35.44 26.36"/>
+      <polygon class="cls-25" points="30.52 35.03 30.52 29.8 35.44 26.36 35.44 31.59 30.52 35.03"/>
+      <polygon class="cls-25" points="25.61 26.36 25.61 31.59 30.52 35.03 30.52 29.8 25.61 26.36"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-14" points="30.52 23.75 25.61 20.3 30.52 16.86 35.44 20.3"/>
+        <polygon class="cls-23" points="30.52 28.98 30.52 23.75 35.44 20.3 35.44 25.53 30.52 28.98"/>
+        <polygon class="cls-19" points="25.61 20.3 25.61 25.53 30.52 28.98 30.52 23.75 25.61 20.3"/>
+      </g>
+      <polyline class="cls-25" points="30.52 23.75 25.61 20.3 30.52 16.86 35.44 20.3"/>
+      <polygon class="cls-25" points="30.52 28.98 30.52 23.75 35.44 20.3 35.44 25.53 30.52 28.98"/>
+      <polygon class="cls-25" points="25.61 20.3 25.61 25.53 30.52 28.98 30.52 23.75 25.61 20.3"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-14" points="30.52 17.69 25.61 14.25 30.52 10.8 35.44 14.25"/>
+        <polygon class="cls-23" points="30.52 22.92 30.52 17.69 35.44 14.25 35.44 19.48 30.52 22.92"/>
+        <polygon class="cls-19" points="25.61 14.25 25.61 19.48 30.52 22.92 30.52 17.69 25.61 14.25"/>
+      </g>
+      <polyline class="cls-25" points="30.52 17.69 25.61 14.25 30.52 10.8 35.44 14.25"/>
+      <polygon class="cls-25" points="30.52 22.92 30.52 17.69 35.44 14.25 35.44 19.48 30.52 22.92"/>
+      <polygon class="cls-25" points="25.61 14.25 25.61 19.48 30.52 22.92 30.52 17.69 25.61 14.25"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-14" points="36.05 27.6 31.13 24.16 36.05 20.72 40.97 24.16"/>
+        <polygon class="cls-23" points="36.05 32.83 36.05 27.6 40.97 24.16 40.97 29.39 36.05 32.83"/>
+        <polygon class="cls-19" points="31.13 24.16 31.13 29.39 36.05 32.83 36.05 27.6 31.13 24.16"/>
+      </g>
+      <polyline class="cls-25" points="36.05 27.6 31.13 24.16 36.05 20.72 40.97 24.16"/>
+      <polygon class="cls-25" points="36.05 32.83 36.05 27.6 40.97 24.16 40.97 29.39 36.05 32.83"/>
+      <polygon class="cls-25" points="31.13 24.16 31.13 29.39 36.05 32.83 36.05 27.6 31.13 24.16"/>
+    </g>
+    <g class="cls-9">
+      <g>
+        <polyline class="cls-14" points="41.51 37.58 36.59 34.14 41.51 30.7 46.43 34.14"/>
+        <polygon class="cls-23" points="41.51 42.81 41.51 37.58 46.43 34.14 46.43 39.37 41.51 42.81"/>
+        <polygon class="cls-19" points="36.59 34.14 36.59 39.37 41.51 42.81 41.51 37.58 36.59 34.14"/>
+      </g>
+      <polyline class="cls-25" points="41.51 37.58 36.59 34.14 41.51 30.7 46.43 34.14"/>
+      <polygon class="cls-25" points="41.51 42.81 41.51 37.58 46.43 34.14 46.43 39.37 41.51 42.81"/>
+      <polygon class="cls-25" points="36.59 34.14 36.59 39.37 41.51 42.81 41.51 37.58 36.59 34.14"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-14" points="41.51 31.53 36.59 28.08 41.51 24.64 46.43 28.08"/>
+        <polygon class="cls-23" points="41.51 36.75 41.51 31.53 46.43 28.08 46.43 33.31 41.51 36.75"/>
+        <polygon class="cls-19" points="36.59 28.08 36.59 33.31 41.51 36.75 41.51 31.53 36.59 28.08"/>
+      </g>
+      <polyline class="cls-25" points="41.51 31.53 36.59 28.08 41.51 24.64 46.43 28.08"/>
+      <polygon class="cls-25" points="41.51 36.75 41.51 31.53 46.43 28.08 46.43 33.31 41.51 36.75"/>
+      <polygon class="cls-25" points="36.59 28.08 36.59 33.31 41.51 36.75 41.51 31.53 36.59 28.08"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-14" points="19.58 29.8 14.66 26.36 19.58 22.92 24.5 26.36"/>
+        <polygon class="cls-23" points="19.58 35.03 19.58 29.8 24.5 26.36 24.5 31.59 19.58 35.03"/>
+        <polygon class="cls-19" points="14.66 26.36 14.66 31.59 19.58 35.03 19.58 29.8 14.66 26.36"/>
+      </g>
+      <polyline class="cls-25" points="19.58 29.8 14.66 26.36 19.58 22.92 24.5 26.36"/>
+      <polygon class="cls-25" points="19.58 35.03 19.58 29.8 24.5 26.36 24.5 31.59 19.58 35.03"/>
+      <polygon class="cls-25" points="14.66 26.36 14.66 31.59 19.58 35.03 19.58 29.8 14.66 26.36"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-14" points="19.58 23.75 14.66 20.3 19.58 16.86 24.5 20.3"/>
+        <polygon class="cls-23" points="19.58 28.98 19.58 23.75 24.5 20.3 24.5 25.53 19.58 28.98"/>
+        <polygon class="cls-19" points="14.66 20.3 14.66 25.53 19.58 28.98 19.58 23.75 14.66 20.3"/>
+      </g>
+      <polyline class="cls-25" points="19.58 23.75 14.66 20.3 19.58 16.86 24.5 20.3"/>
+      <polygon class="cls-25" points="19.58 28.98 19.58 23.75 24.5 20.3 24.5 25.53 19.58 28.98"/>
+      <polygon class="cls-25" points="14.66 20.3 14.66 25.53 19.58 28.98 19.58 23.75 14.66 20.3"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-14" points="19.58 17.69 14.66 14.25 19.58 10.8 24.5 14.25"/>
+        <polygon class="cls-23" points="19.58 22.92 19.58 17.69 24.5 14.25 24.5 19.48 19.58 22.92"/>
+        <polygon class="cls-19" points="14.66 14.25 14.66 19.48 19.58 22.92 19.58 17.69 14.66 14.25"/>
+      </g>
+      <polyline class="cls-25" points="19.58 17.69 14.66 14.25 19.58 10.8 24.5 14.25"/>
+      <polygon class="cls-25" points="19.58 22.92 19.58 17.69 24.5 14.25 24.5 19.48 19.58 22.92"/>
+      <polygon class="cls-25" points="14.66 14.25 14.66 19.48 19.58 22.92 19.58 17.69 14.66 14.25"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-24" points="14.03 33.76 9.11 30.32 14.03 26.88 18.95 30.32"/>
+        <polygon class="cls-10" points="14.03 38.99 14.03 33.76 18.95 30.32 18.95 35.55 14.03 38.99"/>
+        <polygon class="cls-13" points="9.11 30.32 9.11 35.55 14.03 38.99 14.03 33.76 9.11 30.32"/>
+      </g>
+      <polyline class="cls-25" points="14.03 33.76 9.11 30.32 14.03 26.88 18.95 30.32"/>
+      <polygon class="cls-25" points="14.03 38.99 14.03 33.76 18.95 30.32 18.95 35.55 14.03 38.99"/>
+      <polygon class="cls-25" points="9.11 30.32 9.11 35.55 14.03 38.99 14.03 33.76 9.11 30.32"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-24" points="14.03 27.71 9.11 24.27 14.03 20.82 18.95 24.27"/>
+        <polygon class="cls-10" points="14.03 32.94 14.03 27.71 18.95 24.27 18.95 29.49 14.03 32.94"/>
+        <polygon class="cls-13" points="9.11 24.27 9.11 29.49 14.03 32.94 14.03 27.71 9.11 24.27"/>
+      </g>
+      <polyline class="cls-25" points="14.03 27.71 9.11 24.27 14.03 20.82 18.95 24.27"/>
+      <polygon class="cls-25" points="14.03 32.94 14.03 27.71 18.95 24.27 18.95 29.49 14.03 32.94"/>
+      <polygon class="cls-25" points="9.11 24.27 9.11 29.49 14.03 32.94 14.03 27.71 9.11 24.27"/>
+    </g>
+    <g class="cls-7">
+      <g>
+        <polyline class="cls-14" points="8.49 37.73 3.57 34.28 8.49 30.84 13.41 34.28"/>
+        <polygon class="cls-23" points="8.49 42.95 8.49 37.73 13.41 34.28 13.41 39.51 8.49 42.95"/>
+        <polygon class="cls-19" points="3.57 34.28 3.57 39.51 8.49 42.95 8.49 37.73 3.57 34.28"/>
+      </g>
+      <polyline class="cls-25" points="8.49 37.73 3.57 34.28 8.49 30.84 13.41 34.28"/>
+      <polygon class="cls-25" points="8.49 42.95 8.49 37.73 13.41 34.28 13.41 39.51 8.49 42.95"/>
+      <polygon class="cls-25" points="3.57 34.28 3.57 39.51 8.49 42.95 8.49 37.73 3.57 34.28"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-14" points="14.03 27.71 9.11 24.26 14.03 20.82 18.95 24.26"/>
+        <polygon class="cls-23" points="14.03 32.94 14.03 27.71 18.95 24.26 18.95 29.49 14.03 32.94"/>
+        <polygon class="cls-19" points="9.11 24.26 9.11 29.49 14.03 32.94 14.03 27.71 9.11 24.26"/>
+      </g>
+      <polyline class="cls-25" points="14.03 27.71 9.11 24.26 14.03 20.82 18.95 24.26"/>
+      <polygon class="cls-25" points="14.03 32.94 14.03 27.71 18.95 24.26 18.95 29.49 14.03 32.94"/>
+      <polygon class="cls-25" points="9.11 24.26 9.11 29.49 14.03 32.94 14.03 27.71 9.11 24.26"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-14" points="25.04 33.66 20.12 30.22 25.04 26.78 29.96 30.22"/>
+        <polygon class="cls-23" points="25.04 38.89 25.04 33.66 29.96 30.22 29.96 35.45 25.04 38.89"/>
+        <polygon class="cls-19" points="20.12 30.22 20.12 35.45 25.04 38.89 25.04 33.66 20.12 30.22"/>
+      </g>
+      <polyline class="cls-25" points="25.04 33.66 20.12 30.22 25.04 26.78 29.96 30.22"/>
+      <polygon class="cls-25" points="25.04 38.89 25.04 33.66 29.96 30.22 29.96 35.45 25.04 38.89"/>
+      <polygon class="cls-25" points="20.12 30.22 20.12 35.45 25.04 38.89 25.04 33.66 20.12 30.22"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-14" points="25.04 27.6 20.12 24.16 25.04 20.72 29.96 24.16"/>
+        <polygon class="cls-23" points="25.04 32.83 25.04 27.6 29.96 24.16 29.96 29.39 25.04 32.83"/>
+        <polygon class="cls-19" points="20.12 24.16 20.12 29.39 25.04 32.83 25.04 27.6 20.12 24.16"/>
+      </g>
+      <polyline class="cls-25" points="25.04 27.6 20.12 24.16 25.04 20.72 29.96 24.16"/>
+      <polygon class="cls-25" points="25.04 32.83 25.04 27.6 29.96 24.16 29.96 29.39 25.04 32.83"/>
+      <polygon class="cls-25" points="20.12 24.16 20.12 29.39 25.04 32.83 25.04 27.6 20.12 24.16"/>
+    </g>
+    <g class="cls-8">
+      <g>
+        <polyline class="cls-14" points="19.58 37.62 14.66 34.18 19.58 30.74 24.5 34.18"/>
+        <polygon class="cls-23" points="19.58 42.85 19.58 37.62 24.5 34.18 24.5 39.41 19.58 42.85"/>
+        <polygon class="cls-19" points="14.66 34.18 14.66 39.41 19.58 42.85 19.58 37.62 14.66 34.18"/>
+      </g>
+      <polyline class="cls-25" points="19.58 37.62 14.66 34.18 19.58 30.74 24.5 34.18"/>
+      <polygon class="cls-25" points="19.58 42.85 19.58 37.62 24.5 34.18 24.5 39.41 19.58 42.85"/>
+      <polygon class="cls-25" points="14.66 34.18 14.66 39.41 19.58 42.85 19.58 37.62 14.66 34.18"/>
+    </g>
+    <g class="cls-5">
+      <g>
+        <polyline class="cls-14" points="30.52 37.62 25.61 34.18 30.52 30.74 35.44 34.18"/>
+        <polygon class="cls-23" points="30.52 42.85 30.52 37.62 35.44 34.18 35.44 39.41 30.52 42.85"/>
+        <polygon class="cls-19" points="25.61 34.18 25.61 39.41 30.52 42.85 30.52 37.62 25.61 34.18"/>
+      </g>
+      <polyline class="cls-25" points="30.52 37.62 25.61 34.18 30.52 30.74 35.44 34.18"/>
+      <polygon class="cls-25" points="30.52 42.85 30.52 37.62 35.44 34.18 35.44 39.41 30.52 42.85"/>
+      <polygon class="cls-25" points="25.61 34.18 25.61 39.41 30.52 42.85 30.52 37.62 25.61 34.18"/>
+    </g>
+    <g class="cls-3">
+      <g>
+        <polyline class="cls-14" points="14.03 41.54 9.11 38.1 14.03 34.66 18.95 38.1"/>
+        <polygon class="cls-23" points="14.03 46.77 14.03 41.54 18.95 38.1 18.95 43.33 14.03 46.77"/>
+        <polygon class="cls-19" points="9.11 38.1 9.11 43.33 14.03 46.77 14.03 41.54 9.11 38.1"/>
+      </g>
+      <polyline class="cls-25" points="14.03 41.54 9.11 38.1 14.03 34.66 18.95 38.1"/>
+      <polygon class="cls-25" points="14.03 46.77 14.03 41.54 18.95 38.1 18.95 43.33 14.03 46.77"/>
+      <polygon class="cls-25" points="9.11 38.1 9.11 43.33 14.03 46.77 14.03 41.54 9.11 38.1"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-14" points="8.49 31.67 3.57 28.23 8.49 24.78 13.41 28.23"/>
+        <polygon class="cls-23" points="8.49 36.9 8.49 31.67 13.41 28.23 13.41 33.45 8.49 36.9"/>
+        <polygon class="cls-19" points="3.57 28.23 3.57 33.45 8.49 36.9 8.49 31.67 3.57 28.23"/>
+      </g>
+      <polyline class="cls-25" points="8.49 31.67 3.57 28.23 8.49 24.78 13.41 28.23"/>
+      <polygon class="cls-25" points="8.49 36.9 8.49 31.67 13.41 28.23 13.41 33.45 8.49 36.9"/>
+      <polygon class="cls-25" points="3.57 28.23 3.57 33.45 8.49 36.9 8.49 31.67 3.57 28.23"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-14" points="19.58 31.56 14.66 28.12 19.58 24.68 24.5 28.12"/>
+        <polygon class="cls-23" points="19.58 36.79 19.58 31.56 24.5 28.12 24.5 33.35 19.58 36.79"/>
+        <polygon class="cls-19" points="14.66 28.12 14.66 33.35 19.58 36.79 19.58 31.56 14.66 28.12"/>
+      </g>
+      <polyline class="cls-25" points="19.58 31.56 14.66 28.12 19.58 24.68 24.5 28.12"/>
+      <polygon class="cls-25" points="19.58 36.79 19.58 31.56 24.5 28.12 24.5 33.35 19.58 36.79"/>
+      <polygon class="cls-25" points="14.66 28.12 14.66 33.35 19.58 36.79 19.58 31.56 14.66 28.12"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-11" points="14.03 35.48 9.13 32.05 14.03 28.62 18.93 32.05"/>
+        <polygon class="cls-18" points="14.03 40.69 14.03 35.48 18.93 32.05 18.93 37.26 14.03 40.69"/>
+        <polygon class="cls-12" points="9.13 32.05 9.13 37.26 14.03 40.69 14.03 35.48 9.13 32.05"/>
+      </g>
+      <polyline class="cls-25" points="14.03 35.48 9.13 32.05 14.03 28.62 18.93 32.05"/>
+      <polygon class="cls-25" points="14.03 40.69 14.03 35.48 18.93 32.05 18.93 37.26 14.03 40.69"/>
+      <polygon class="cls-25" points="9.13 32.05 9.13 37.26 14.03 40.69 14.03 35.48 9.13 32.05"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-24" points="14.03 21.65 9.11 18.21 14.03 14.77 18.95 18.21"/>
+        <polygon class="cls-10" points="14.03 26.88 14.03 21.65 18.95 18.21 18.95 23.44 14.03 26.88"/>
+        <polygon class="cls-13" points="9.11 18.21 9.11 23.44 14.03 26.88 14.03 21.65 9.11 18.21"/>
+      </g>
+      <polyline class="cls-25" points="14.03 21.65 9.11 18.21 14.03 14.77 18.95 18.21"/>
+      <polygon class="cls-25" points="14.03 26.88 14.03 21.65 18.95 18.21 18.95 23.44 14.03 26.88"/>
+      <polygon class="cls-25" points="9.11 18.21 9.11 23.44 14.03 26.88 14.03 21.65 9.11 18.21"/>
+    </g>
+    <g>
+      <g>
+        <polyline class="cls-16" points="30.54 31.53 25.63 28.08 30.54 24.64 35.46 28.08"/>
+        <polygon class="cls-21" points="30.54 36.75 30.54 31.53 35.46 28.08 35.46 33.31 30.54 36.75"/>
+        <polygon class="cls-20" points="25.63 28.08 25.63 33.31 30.54 36.75 30.54 31.53 25.63 28.08"/>
+      </g>
+      <polyline class="cls-25" points="30.54 31.53 25.63 28.08 30.54 24.64 35.46 28.08"/>
+      <polygon class="cls-25" points="30.54 36.75 30.54 31.53 35.46 28.08 35.46 33.31 30.54 36.75"/>
+      <polygon class="cls-25" points="25.63 28.08 25.63 33.31 30.54 36.75 30.54 31.53 25.63 28.08"/>
+    </g>
+    <g class="cls-6">
+      <g>
+        <polyline class="cls-14" points="36.05 41.54 31.13 38.1 36.05 34.66 40.97 38.1"/>
+        <polygon class="cls-23" points="36.05 46.77 36.05 41.54 40.97 38.1 40.97 43.33 36.05 46.77"/>
+        <polygon class="cls-19" points="31.13 38.1 31.13 43.33 36.05 46.77 36.05 41.54 31.13 38.1"/>
+      </g>
+      <polyline class="cls-25" points="36.05 41.54 31.13 38.1 36.05 34.66 40.97 38.1"/>
+      <polygon class="cls-25" points="36.05 46.77 36.05 41.54 40.97 38.1 40.97 43.33 36.05 46.77"/>
+      <polygon class="cls-25" points="31.13 38.1 31.13 43.33 36.05 46.77 36.05 41.54 31.13 38.1"/>
+    </g>
+    <g class="cls-4">
+      <g>
+        <polyline class="cls-14" points="25.04 41.54 20.12 38.1 25.04 34.66 29.96 38.1"/>
+        <polygon class="cls-23" points="25.04 46.77 25.04 41.54 29.96 38.1 29.96 43.33 25.04 46.77"/>
+        <polygon class="cls-19" points="20.12 38.1 20.12 43.33 25.04 46.77 25.04 41.54 20.12 38.1"/>
+      </g>
+      <polyline class="cls-25" points="25.04 41.54 20.12 38.1 25.04 34.66 29.96 38.1"/>
+      <polygon class="cls-25" points="25.04 46.77 25.04 41.54 29.96 38.1 29.96 43.33 25.04 46.77"/>
+      <polygon class="cls-25" points="20.12 38.1 20.12 43.33 25.04 46.77 25.04 41.54 20.12 38.1"/>
+    </g>
+  </g>
+  <g>
+    <text class="cls-2" transform="translate(14.66 45.49) rotate(-35.62) scale(1.48 .81) skewX(-21.8)"><tspan x="0" y="0">O</tspan></text>
+    <text class="cls-2" transform="translate(25.61 45.49) rotate(-35.62) scale(1.48 .81) skewX(-21.8)"><tspan x="0" y="0">I</tspan></text>
+    <text class="cls-2" transform="translate(36.59 45.49) rotate(-35.62) scale(1.48 .81) skewX(-21.8)"><tspan x="0" y="0">S</tspan></text>
+    <text class="cls-1" transform="translate(9.46 42.44) rotate(34.02) scale(2.08 .84) skewX(14.75)"><tspan x="0" y="0">M</tspan></text>
+    <text class="cls-1" transform="translate(20.29 42.44) rotate(34.02) scale(2.08 .84) skewX(14.75)"><tspan x="0" y="0">M</tspan></text>
+    <text class="cls-1" transform="translate(31.41 42.44) rotate(34.02) scale(2.08 .84) skewX(14.75)"><tspan x="0" y="0">C</tspan></text>
+  </g>
+</svg>
