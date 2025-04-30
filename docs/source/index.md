@@ -35,6 +35,7 @@ user_guide/cli
 tutorials/integrating-multiomics
 tutorials/nn-training-cov2cov
 tutorials/nn-training-seq2cov
+tutorials/nn-training-any2cov
 tutorials/cloud-repos
 ```
 
