@@ -232,8 +232,8 @@ def one_hot_encode(sequences, handle_non_standard=False, dtype=np.int8) -> np.nd
         dtype: NumPy data type for the output array (default: np.int8 to save memory)
 
     Returns:
-        np.ndarray: A one-hot encoded array of shape (len(sequences), seq_length, 4) for multiple
-                  sequences or (seq_length, 4) for a single sequence
+        np.ndarray: A one-hot encoded array of shape (len(sequences), seq_length, 5) for multiple
+                  sequences or (seq_length, 5) for a single sequence
     """
     # Handle single sequence
     single_input = isinstance(sequences, str)
@@ -247,10 +247,10 @@ def one_hot_encode(sequences, handle_non_standard=False, dtype=np.int8) -> np.nd
     max_len = max(len(seq) for seq in sequences)
 
     # Initialize output array
-    output = np.zeros((len(sequences), max_len, 4), dtype=dtype)
+    output = np.zeros((len(sequences), max_len, 5), dtype=dtype)
 
     # Define the mapping for standard nucleotides
-    mapping = {"A": 0, "T": 1, "C": 2, "G": 3}
+    mapping = {"N": 0, "A": 1, "T": 2, "G": 3, "C": 4}
 
     # Process each sequence using NumPy vectorization
     for i, seq in enumerate(sequences):

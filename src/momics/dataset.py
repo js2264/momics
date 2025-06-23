@@ -68,7 +68,7 @@ class MomicsDataset(tf.data.Dataset):
               Where {feature_dict} is a dictionary mapping track names to data arrays
 
             Data shapes:
-            - Nucleotide data: (batch_size, sequence_length, 4) with dtype=tf.int32
+            - Nucleotide data: (batch_size, sequence_length, 5) with dtype=tf.int32
             - Track data: (batch_size, sequence_length, 1) with dtype=tf.float32
 
         Examples
@@ -175,7 +175,7 @@ class MomicsDataset(tf.data.Dataset):
         # Define output signatures
         xsigs = {
             ft: tf.TensorSpec(
-                shape=(None, features_size, 4) if ft == "nucleotide" else (None, features_size, 1),
+                shape=(None, features_size, 5) if ft == "nucleotide" else (None, features_size, 1),
                 dtype=tf.int32 if ft == "nucleotide" else tf.float32,
                 name=ft,
             )
@@ -184,7 +184,7 @@ class MomicsDataset(tf.data.Dataset):
         if target is not None:
             ysigs = {
                 tg: tf.TensorSpec(
-                    shape=(None, target_size, 4) if tg == "nucleotide" else (None, target_size, 1),
+                    shape=(None, target_size, 5) if tg == "nucleotide" else (None, target_size, 1),
                     dtype=tf.int32 if tg == "nucleotide" else tf.float32,
                     name=tg,
                 )
