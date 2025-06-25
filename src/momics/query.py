@@ -175,14 +175,17 @@ class MomicsQuery:
         results = []
         for chrom in chroms:
             logger.debug(chrom)
-            results.append(
-                self._query_tracks_per_batch(
-                    chrom=chrom,
-                    ranges=ranges_per_chrom[chrom],
-                    attrs=attrs,
-                    cfg=cfg,
+            if ranges_per_chrom[chrom].empty:
+                continue
+            else:
+                results.append(
+                    self._query_tracks_per_batch(
+                        chrom=chrom,
+                        ranges=ranges_per_chrom[chrom],
+                        attrs=attrs,
+                        cfg=cfg,
+                    )
                 )
-            )
 
         combined_results: dict = {attr: dict() for attr in attrs}
         for d in results:
@@ -264,14 +267,17 @@ class MomicsQuery:
         results = []
         for chrom in ranges_per_chrom.keys():
             logger.debug(chrom)
-            results.append(
-                self._query_seq_per_batch(
-                    chrom=chrom,
-                    ranges=ranges_per_chrom[chrom],
-                    attrs=attrs,
-                    cfg=cfg,
+            if ranges_per_chrom[chrom].empty:
+                continue
+            else:
+                results.append(
+                    self._query_seq_per_batch(
+                        chrom=chrom,
+                        ranges=ranges_per_chrom[chrom],
+                        attrs=attrs,
+                        cfg=cfg,
+                    )
                 )
-            )
 
         combined_results: dict = {attr: dict() for attr in attrs}
         for d in results:
