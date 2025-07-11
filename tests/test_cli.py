@@ -27,6 +27,16 @@ def path():
         shutil.rmtree(tmp_dir)
 
 
+@pytest.fixture(scope="session")
+def tmppath():
+    tmp_dir = os.path.join(os.getcwd(), "temp.mom")
+    if os.path.exists(tmp_dir):
+        shutil.rmtree(tmp_dir)
+    yield tmp_dir
+    if os.path.exists(tmp_dir):
+        shutil.rmtree(tmp_dir)
+
+
 def test_cli_help(runner):
     result = runner.invoke(cli.cli)
     assert result.exit_code == 0
@@ -74,6 +84,17 @@ def test_ingest_tracks(runner, path, bw3):
     assert mom.tracks()["label"].__eq__(["bw1", "bw2"]).all()
     result = runner.invoke(cli.tree.tree, [path])
     assert len(result.output.strip().split("\n")) == 13
+
+
+def test_ingest_tracks_bulk(runner, tmppath):
+    result = runner.invoke(cli.ingest.bulk, ["--folder", "tests_data/bw", tmppath])
+    assert result.exit_code == 0
+    result = runner.invoke(cli.extract.extract, ["-t", "bw2,bw3", "-o", "tests_out/", tmppath])
+    assert result.exit_code == 0
+    assert os.path.exists("tests_out/bw2.bw")
+    result = runner.invoke(cli.delete.delete, ["-y", tmppath])
+    assert result.exit_code == 0
+    shutil.rmtree("tests_out", ignore_errors=True)
 
 
 def test_query_sequence_before_created(runner, path):

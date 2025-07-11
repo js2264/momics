@@ -55,6 +55,7 @@ def cli(ctx):
 
 # Load and register cli subcommands
 from . import (
+    extract,
     ingest,
     binnify,
     cloudconfig,
@@ -79,6 +80,7 @@ __all__ = [
     "create",
     "delete",
     "ingest",
+    "extract",
     "ls",
     "manifest",
     "query",

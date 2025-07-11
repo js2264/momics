@@ -1,5 +1,8 @@
+import glob
+import os
 import click
 import cloup
+import pyBigWig
 import numpy as np
 import pyranges as pr
 
@@ -11,7 +14,7 @@ from .cli import Sections
 @cli.group(section=Sections.io)
 @click.pass_context
 def ingest(ctx):
-    """Ingest a data file to a Momics."""
+    """Ingest data file(s) to a Momics repository."""
 
 
 @ingest.command()
@@ -125,3 +128,39 @@ def features(ctx, file, path, threads):
     m = Momics(path)
     m.ingest_features(fs, threads=threads)
     print(m.features().iloc[np.where(m.features()["label"] != "None")].iloc[:, 0:2])
+
+
+@ingest.command()
+@click.option(
+    "--folder",
+    "-F",
+    type=click.Path(exists=True),
+    required=True,
+)
+@click.option(
+    "--genome",
+    "-g",
+    help="Genome reference (e.g. hg38, sacCer3, ...).",
+    default="",
+)
+@click.option(
+    "-@",
+    "--threads",
+    default=1,
+    help="Number of threads to use in parallel operations (default: 1)",
+)
+@cloup.argument("path", help="Path to a momics repository", metavar="MOMICS_REPO", required=True)
+@click.pass_context
+def bulk(ctx, folder, genome, threads, path):
+    """Bulk ingest all bigwig files from a folder into a Momics repository."""
+    m = Momics(path)
+    files = glob.glob(os.path.join(folder, "*.bw"))
+
+    # Ingest chroms
+    with pyBigWig.open(files[0]) as bw:
+        chroms = bw.chroms()
+    m.ingest_chroms(chroms, genome_version=genome)
+
+    # Ingest tracks
+    bws = {os.path.basename(f).split(".bw")[0]: f for f in files}
+    m.ingest_tracks(bws, threads=threads)
