@@ -230,6 +230,17 @@ def test_manifest(runner, path):
     os.remove("out.json")
 
 
+def test_info(runner, path):
+    result = runner.invoke(cli.info.info, [path])
+    print(result.output)
+    assert '"genome-assembly": "S288c"' in result.output
+    assert '"genome-sequence": true' in result.output
+    assert '"nchroms": 4' in result.output
+    assert '"ntracks": 2' in result.output
+    assert '"nfeatures": 2' in result.output
+    assert result.exit_code == 0
+
+
 def test_delete(runner, path):
     result = runner.invoke(cli.delete.delete, ["-y", "oiasudhncoaisuhmdcoiaushcd"])
     assert result.output == "Repository oiasudhncoaisuhmdcoiaushcd does not exist.\n"
