@@ -41,6 +41,7 @@ _scratch/
 .vscode
 example.py
 *.momics/
+!tests_data/*.momics/
 .tox
 benchmark.py
 /*py
