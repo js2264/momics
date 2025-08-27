@@ -22,7 +22,6 @@ Follow `momics` development on [GitHub](https://github.com/js2264/momics).
 :maxdepth: 1
 
 user_guide/intro
-user_guide/concepts
 user_guide/get-started
 user_guide/api
 user_guide/cli

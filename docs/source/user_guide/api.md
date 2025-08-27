@@ -101,7 +101,16 @@ to register query ranges, run queries and export results.
 ### Registering a query
 
 ```python
-q = momics.MomicsQuery(mom, "I:10-1000")
+# Query by coordinates
+from momics.query import MomicsQuery
+import pyranges as pr
+
+# Query over a single region
+q = MomicsQuery(mom, "I:10-1000")
+
+# Query using a BED file
+gr = pr.read_bed("path_to_regions.bed")
+q = MomicsQuery(mom, gr)
 ```
 
 ### Running a query
@@ -110,17 +119,21 @@ Once a query `q` is defined, it can be exectuted to extract data from
 `sequence` and `tracks` tables.
 
 ```python
+# Query sequences
 q.query_sequence()
 print(q.seq)
 
-q.query_tracks()
+# Query specific tracks
+q.query_tracks(tracks=["ATAC", "MNase"])
 print(q.coverage)
+
+# Query all available tracks
+q.query_tracks()
 print(q.to_df())
 ```
 
-Both `query_*` methods profide a `threads` argument to parallelize the query
-using the efficient tileDB storage backend. By default, the number of threads
-is set to all available threads.
+Both `query_*` methods provide a `threads` argument to parallelize the query
+using the efficient tileDB storage backend.
 
 ```python
 q.query_sequence(threads = 4)
@@ -141,6 +154,160 @@ q.to_json("output.json")
 
 # Export both sequences and scores as a npz file
 q.to_npz("output.npz")
+
+# Export as standard bioinformatics formats
+q.to_fasta("sequences.fa")
+q.to_bed("regions.bed")
+q.to_bigwig("coverage.bw", track="bw_a")
+
+# Export as pandas DataFrame for further analysis
+df = q.to_df()
+df.to_csv("results.csv")
+```
+
+## Working with genomic bins and windows
+
+`momics` provides utilities for creating genomic bins for systematic analysis:
+
+```python
+# Create genome-wide bins
+bins = mom.bins(width=1000, stride=1000)  # Non-overlapping 1kb bins
+bins_overlap = mom.bins(width=1000, stride=500)  # Overlapping bins
+
+# Create bins for specific chromosomes
+chr1_bins = mom.bins(width=1000, stride=1000)["I"]
+
+# Create bins with specific properties
+bins = mom.bins(
+    width=2048,           # Window size
+    stride=128,           # Step size
+    cut_last_bin_out=True # Remove incomplete bins at chromosome ends
+)
+
+# Sample random bins for training
+training_bins = bins.sample(10000)
+```
+
+## Data streaming and batch processing
+
+For large-scale analysis, `momics` provides streaming interfaces:
+
+```python
+from momics.streamer import MomicsStreamer
+
+# Create a data streamer
+bins = mom.bins(width=1024, stride=128, cut_last_bin_out=True)
+streamer = MomicsStreamer(
+    mom,
+    bins,
+    features=["nucleotide", "atac"],
+    batch_size=1000
+)
+
+# Each batch contains one-hot-encoded sequence and features for 1000 genomic windows
+for batch in streamer:
+    print(f"Processing batch {streamer.batch_index}/{streamer.num_batches}")
+    nucleotide_data = batch["nucleotide"]  # Shape: (1000, 1024, 5)
+    atac_data = batch["atac"]              # Shape: (1000, 1024, 1)
+
+    # Process batch...
+```
+
+## Machine Learning integration
+
+### Creating datasets for deep learning
+
+```python
+from momics.dataset import MomicsDataset
+
+# Create a dataset for supervised learning
+dataset = MomicsDataset(
+    mom,
+    bins,
+    features=["nucleotide", "h3k27ac"],  # Input features
+    target="rna_expression",             # Target variable
+    target_size=128,                     # Output window size
+    batch_size=32
+)
+
+# Create dataset with multiple targets
+multi_target_dataset = MomicsDataset(
+    mom,
+    bins,
+    features=["nucleotide"],
+    target=["h3k27ac", "h3k4me3", "atac"],
+    target_size=256,
+    batch_size=16
+)
+```
+
+### Using pre-built neural network architectures
+
+```python
+from momics import nn
+from tensorflow.keras import layers  # type: ignore
+
+# Use a ChromNN model for multi-modal input
+inputs = {
+    "nucleotide": layers.Input(shape=(1024, 5))
+}
+outputs = {
+    "h3k27ac": layers.Dense(256, activation="linear"),
+    "h3k4me3": layers.Dense(256, activation="linear"),
+    "atac": layers.Dense(256, activation="linear")
+}
+
+model = nn.ChromNN(inputs, outputs).model
+model.compile(
+    optimizer="adam",
+    loss={
+        "h3k27ac": nn.loss_mae_cor,
+        "h3k4me3": nn.loss_mae_cor,
+        "atac": nn.loss_mae_cor
+    },
+    metrics={
+        "h3k27ac": ["mae", nn.cor],
+        "h3k4me3": ["mae", nn.cor],
+        "atac": ["mae", nn.cor]
+    })
+model.fit(multi_target_dataset, epochs=10)
+```
+
+## Data management and repository operations
+
+### Repository information and metadata
+
+```python
+# Get repository information
+mom.path
+mom.cfg
+
+# List available data
+mom.chroms()
+mom.tracks()
+mom.features()
+mom.seq()
+```
+
+### Repository maintenance
+
+```python
+# Consolidate repository for optimal performance
+mom.consolidate(vacuum=True)
+
+# Create repository manifest
+manifest = mom.manifest()
+
+# Remove data
+mom.remove_track("old_track")
+```
+
+### Copying and exporting data
+
+```python
+# Copy tracks to standard formats
+mom.export_track("chip_seq", "output.bw")
+mom.export_sequence("output.fa")
 ```
 
 ## Going further
