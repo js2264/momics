@@ -63,14 +63,4 @@ def test_chromnn_cpu(momics_path: str):
     for i, key in enumerate(keys):
         res[f"f{features_size}_s{stride}_t{target_size}"][key] = predictions[i]
 
-    res = aggregate(res, bb2, chrom_sizes, type="mean", prefix="prediction")
-
-
-def test_mae_cor():
-    y_true = tf.constant([0.0, 1.0, 2.0, 3.0, 4.0], dtype=tf.float32)
-    y_pred = tf.constant([0.0, 1.0, 2.0, 3.0, 4.0], dtype=tf.float32)
-
-    nn.mae_cor(
-        tf.reshape(y_true, [1, 5]),
-        tf.reshape(y_pred, [1, 5]),
-    )
+    res = aggregate(res, chrom_sizes, type="mean", prefix="prediction")

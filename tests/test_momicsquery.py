@@ -166,24 +166,31 @@ def test_aggregate(momics_path: str):
     chrom_sizes = {chrom: size for chrom, size in zip(mom.chroms().chrom, mom.chroms().length)}
     q = MomicsQuery(mom, b).query_tracks()
     cov = q.coverage
-    x = aggregate(cov, b, chrom_sizes)
+
+    x = aggregate(cov, chrom_sizes)
     print(x.keys())
     assert list(x.keys()) == ["bw2", "custom", "bw3", "bw4"]
     assert [len(y) for y in x["bw2"].values()] == [10000, 20000, 30000]
     assert x["bw2"]["I"].shape == (10000,)
 
-    x = aggregate(cov, b, chrom_sizes, type="mean")
+    x = aggregate(cov, chrom_sizes, ranges=b)
+    print(x.keys())
+    assert list(x.keys()) == ["bw2", "custom", "bw3", "bw4"]
+    assert [len(y) for y in x["bw2"].values()] == [10000, 20000, 30000]
+    assert x["bw2"]["I"].shape == (10000,)
+
+    x = aggregate(cov, chrom_sizes, type="mean")
     assert x["bw2"]["I"].shape == (10000,)
     vec = x["bw2"]["I"][6985:7015] - np.array([0] * 3 + [0.06] * 12 + [0.07] * 12 + [0] * 3) < 1e-6
     assert sum(vec) == 30
 
-    x = aggregate(cov, b, chrom_sizes, type="sum")
+    x = aggregate(cov, chrom_sizes, type="sum")
     assert x["bw2"]["I"].shape == (10000,)
     res = np.array([0] * 3 + [0.06, 0.12] + [0.18] * 10 + [0.21] * 10 + [0.14, 0.07] + [0] * 3)
     vec = x["bw2"]["I"][6985:7015] - res < 1e-6
     assert sum(vec) == 30
 
-    x = aggregate(cov, b, chrom_sizes, prefix="tmp__")
+    x = aggregate(cov, chrom_sizes, prefix="tmp__")
     assert x["bw2"]["I"].shape == (10000,)
     vec = x["bw2"]["I"][6985:7015] - np.array([0] * 3 + [0.06] * 12 + [0.07] * 12 + [0] * 3) < 1e-6
     assert sum(vec) == 30

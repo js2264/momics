@@ -1,13 +1,21 @@
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 from pathlib import Path
 import numpy as np
+from pyranges import PyRanges
 
 from .logging import logger
 from .utils import dict_to_bigwig
+from .utils import parse_ucsc_coordinates
 
 
 # For this function, the `type` argument can be either "mean" or "sum"
-def aggregate(cov, ranges, chrom_sizes, type: Literal["mean", "sum"] = "mean", prefix: Optional[str] = None) -> dict:
+def aggregate(
+    cov: dict,
+    chrom_sizes: dict,
+    ranges: Union[PyRanges, None] = None,
+    type: Literal["mean", "sum"] = "mean",
+    prefix: Optional[str] = None,
+) -> dict:
     """
     Aggregate query coverage outputs into genome-wide dictionary(ies).
     The coverage over each range is aggregated across all tracks. In the case of
@@ -19,8 +27,8 @@ def aggregate(cov, ranges, chrom_sizes, type: Literal["mean", "sum"] = "mean", p
     Args:
         cov (dict): A dictionary of coverage scores, for each track. This is generally the output of
             :func:`MomicsQuery.query_tracks().coverage`.
-        ranges (PyRanges): A PyRanges object containing the ranges queried.
         chrom_sizes (dict): A dictionary of chromosome sizes.
+        ranges (PyRanges): A PyRanges object containing the ranges queried.
         type: The type of aggregation to perform. Can be either "mean" or "sum".
         prefix (str, optional): Prefix to the output `.bw` files to create.
             If provided, queried coverage will be saved for each track in a file
@@ -46,7 +54,11 @@ def aggregate(cov, ranges, chrom_sizes, type: Literal["mean", "sum"] = "mean", p
         >>> aggregate(cov, windows, {"I": 30})
     """
     attrs = cov.keys()
-    tracks = {attr: dict() for attr in attrs}
+    tracks: dict = {attr: dict() for attr in attrs}
+
+    if ranges is None:
+        r = cov[next(iter(attrs))].keys()
+        ranges = parse_ucsc_coordinates(list(r))
 
     for attr in iter(attrs):
         attr_cov = cov[attr]
