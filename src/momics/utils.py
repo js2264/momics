@@ -8,6 +8,7 @@ import pyBigWig
 import pyfaidx
 
 DEFAULT_OHE_MAPPING = {"N": 0, "A": 1, "T": 2, "G": 3, "C": 4}
+DEFAULT_OHD_MAPPING = {0: "N", 1: "A", 2: "T", 3: "G", 4: "C"}
 
 
 def _repo_exists(path, cfg) -> bool:
@@ -277,7 +278,7 @@ def one_hot_encode(sequences, mapping=DEFAULT_OHE_MAPPING, handle_non_standard=F
     return output
 
 
-def one_hot_decode(encoded_sequences: np.ndarray, mapping: dict = DEFAULT_OHE_MAPPING) -> List[str]:
+def one_hot_decode(encoded_sequences: np.ndarray, mapping: dict = DEFAULT_OHD_MAPPING) -> List[str]:
     """
     Decode one-hot encoded sequences back to their original string representation.
 
@@ -286,6 +287,11 @@ def one_hot_decode(encoded_sequences: np.ndarray, mapping: dict = DEFAULT_OHE_MA
 
     Returns:
         List[str]: A list of decoded DNA sequences.
+
+    Examples:
+        >>> encoded = np.array([[[0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]])
+        >>> one_hot_decode(encoded)
+        ['ATGC']
     """
     # Decode each sequence
     decoded_sequences = []

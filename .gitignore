@@ -74,3 +74,10 @@ manifest.json
 regions.bed
 .jupyter_cache
 NOTES.md
+.logs
+REB1_*
+Reb1_*
+REP1_*
+Rep1_*
+ABF1_*
+Abf1_*

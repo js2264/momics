@@ -3,7 +3,7 @@ from tensorflow.keras import layers  # type: ignore
 
 kernel_init = tf.keras.initializers.VarianceScaling()
 
-DEFAULT_NN_INPUT_LAYER = layers.Input(shape=(2049, 1))
+DEFAULT_NN_INPUT_LAYER = layers.Input(shape=(2048, 1))
 DEFAULT_NN_OUTPUT_LAYER = layers.Dense(1, activation="linear")
 
 
@@ -100,10 +100,11 @@ class Basenji:  # pragma: no cover
     for the prediction of epigenomic data from DNA sequence (Kelley et al. 2018).
     """
 
-    def __init__(self, input=DEFAULT_NN_INPUT_LAYER, output=DEFAULT_NN_OUTPUT_LAYER) -> None:
+    def __init__(self, input_size=2048, output_size=512) -> None:
 
         # First PooledConvLayer
-        x = layers.Conv1D(64, 12, padding="same")(input)
+        input = layers.Input(shape=(input_size, 5))
+        x = layers.Conv1D(64, 15, padding="same")(input)
         x = layers.ReLU()(x)
         x = layers.MaxPooling1D(4)(x)
         x = layers.BatchNormalization()(x)
@@ -112,14 +113,12 @@ class Basenji:  # pragma: no cover
         # Second PooledConvLayer
         x = layers.Conv1D(64, 5, padding="same")(x)
         x = layers.ReLU()(x)
-        x = layers.MaxPooling1D(2)(x)
         x = layers.BatchNormalization()(x)
         x = layers.Dropout(0.2)(x)
 
         # Third PooledConvLayer
         x = layers.Conv1D(64, 5, padding="same")(x)
         x = layers.ReLU()(x)
-        x = layers.MaxPooling1D(2)(x)
         x = layers.BatchNormalization()(x)
         x = layers.Dropout(0.2)(x)
 
@@ -150,13 +149,18 @@ class Basenji:  # pragma: no cover
         y = layers.Dropout(0.2)(y)
         x = layers.Concatenate()([x, y])
 
-        x = layers.Flatten()(x)
-        x = output(x)
+        # Final layers
+        x = layers.Conv1D(1, 1, padding="same")(x)
+        P = x.shape[1] // output_size
+        if P > 1:
+            x = layers.AveragePooling1D(pool_size=P)(x)
+        x = layers.Reshape((output_size,))(x)
+        output = layers.Dense(output_size, activation="linear")(x)
 
-        self.model = tf.keras.Model(input, x)
+        self.model = tf.keras.Model(input, output)
 
 
-def mae_cor(y_true, y_pred, alpha=0.5):
+def loss_mae_cor(y_true, y_pred, alpha=0.5):
     """
     Custom loss function combining MAE and correlation.
 
@@ -172,18 +176,31 @@ def mae_cor(y_true, y_pred, alpha=0.5):
     Returns:
         MAE and correlation combined loss value
     """
-
-    def correlation_coefficient(y_true, y_pred):
-        x_mean = tf.reduce_mean(y_true, axis=1, keepdims=True)
-        y_mean = tf.reduce_mean(y_pred, axis=1, keepdims=True)
-        cov_xy = tf.reduce_mean((y_true - x_mean) * (y_pred - y_mean), axis=1)
-        std_x = tf.sqrt(tf.reduce_mean(tf.square(y_true - x_mean), axis=1) + tf.keras.backend.epsilon())
-        std_y = tf.sqrt(tf.reduce_mean(tf.square(y_pred - y_mean), axis=1) + tf.keras.backend.epsilon())
-        corr = cov_xy / (std_x * std_y + tf.keras.backend.epsilon())
-        return tf.reduce_mean(corr)
-
-    cor_loss = 1.0 - correlation_coefficient(y_true, y_pred)
+    cor_loss = 1.0 - cor(y_true, y_pred)
     mae = tf.reduce_mean(tf.abs(y_true - y_pred))
-
-    # Combine losses with weighting
     return alpha * mae + (1.0 - alpha) * cor_loss
+
+
+def cor(y_true, y_pred):
+    """
+    Returns Pearson r correlation value (-1 to 1, higher is better) for a batch.
+
+    Args:
+        y_true: Ground truth values
+        y_pred: Predicted values
+    Returns:
+        Pearson r correlation value
+    """
+    if y_true.shape[-1] == 1:
+        y_true = tf.squeeze(y_true, axis=-1)
+    if y_pred.shape[-1] == 1:
+        y_pred = tf.squeeze(y_pred, axis=-1)
+    noise = tf.random.normal(shape=tf.shape(y_pred), mean=0.0, stddev=1e-6)
+    y_pred = y_pred + noise
+    x_mean = tf.reduce_mean(y_true, axis=1, keepdims=True)
+    y_mean = tf.reduce_mean(y_pred, axis=1, keepdims=True)
+    cov_xy = tf.reduce_mean((y_true - x_mean) * (y_pred - y_mean), axis=1)
+    std_x = tf.sqrt(tf.reduce_mean(tf.square(y_true - x_mean), axis=1) + tf.keras.backend.epsilon())
+    std_y = tf.sqrt(tf.reduce_mean(tf.square(y_pred - y_mean), axis=1) + tf.keras.backend.epsilon())
+    corr = cov_xy / (std_x * std_y + tf.keras.backend.epsilon())
+    return tf.reduce_mean(corr)
