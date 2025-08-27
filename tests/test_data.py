@@ -116,3 +116,22 @@ def test_dataset(momics_path: str):
     assert n[0]["bw2"].shape == (10, 10, 1)
     assert n[1]["bw3"].shape == (10, 2, 1)
     assert n[1]["bw2"].shape == (10, 2, 1)
+
+
+def test_dataset_existing_repo():
+    mom = momics.Momics("tests_data/yeast_CNN_data.momics")
+    b = mom.bins(10, 21, cut_last_bin_out=True)
+
+    rg = MomicsDataset(
+        mom, b, features=["nucleotide", "ATAC"], target=["ATAC_rescaled", "MNase_rescaled"], target_size=2, batch_size=10
+    )
+    assert (
+        str(rg.element_spec)
+        == """({'nucleotide': TensorSpec(shape=(None, 10, 5), dtype=tf.int32, name='nucleotide'), 'ATAC': TensorSpec(shape=(None, 10, 1), dtype=tf.float32, name='ATAC')}, {'ATAC_rescaled': TensorSpec(shape=(None, 2, 1), dtype=tf.float32, name='ATAC_rescaled'), 'MNase_rescaled': TensorSpec(shape=(None, 2, 1), dtype=tf.float32, name='MNase_rescaled')})"""  # noqa: E501
+    )
+
+    rg = MomicsDataset(mom, b, features=["nucleotide", "ATAC"], batch_size=10)
+    assert (
+        str(rg.element_spec)
+        == """{'nucleotide': TensorSpec(shape=(None, 10, 5), dtype=tf.int32, name=None), 'ATAC': TensorSpec(shape=(None, 10, 1), dtype=tf.float32, name=None)}"""  # noqa: E501
+    )
