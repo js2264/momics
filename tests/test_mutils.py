@@ -42,6 +42,22 @@ def test_dict_to_bigwig():
     assert os.path.exists("out.bw")
     os.remove("out.bw")
 
+    bws_dict = {
+        "bw1": {
+            "I": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            "II": [11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+        },
+        "bw2": {
+            "I": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            "II": [11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+        },
+    }
+    utils.to_bw(bws_dict)
+    assert os.path.exists("bw1.bw")
+    assert os.path.exists("bw2.bw")
+    os.remove("bw1.bw")
+    os.remove("bw2.bw")
+
 
 @pytest.mark.order(999)
 def test_split_ranges():

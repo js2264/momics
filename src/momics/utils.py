@@ -1,6 +1,6 @@
 import collections
 from pathlib import Path
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 import pyranges as pr
@@ -112,6 +112,30 @@ def dict_to_bigwig(bw_dict: dict, output: Union[Path, str]) -> Path:
     bw.close()
 
     return Path(output)
+
+
+def to_bw(dict: dict, bw_names: Optional[list] = None) -> dict:
+    """
+    Export multiple tracks into separate bigwig files. Internally, it wraps
+    the `dict_to_bigwig` function on each value of the input dictionary.
+
+    Args:
+        dict (dict): Dictionary of chromosome coverages
+        bw_names (list, optional): List of names (without `.bw` extension)
+            for the output bigwig files.
+            If None, the keys of the input dictionary will be used.
+    """
+
+    if bw_names is None:
+        bw_names = list(dict.keys())
+
+    out = {}
+
+    for name, (i, coverage) in zip(bw_names, dict.items()):
+        dict_to_bigwig(coverage, f"{name}.bw")
+        out[i] = f"{name}.bw"
+
+    return out
 
 
 def parse_ucsc_coordinates(coords: Union[List, str]) -> pr.PyRanges:

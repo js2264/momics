@@ -155,11 +155,6 @@ q.to_json("output.json")
 # Export both sequences and scores as a npz file
 q.to_npz("output.npz")
 
-# Export as standard bioinformatics formats
-q.to_fasta("sequences.fa")
-q.to_bed("regions.bed")
-q.to_bigwig("coverage.bw", track="bw_a")
-
 # Export as pandas DataFrame for further analysis
 df = q.to_df()
 df.to_csv("results.csv")

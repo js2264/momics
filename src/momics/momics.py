@@ -567,6 +567,8 @@ class Momics:
             tr = self.tracks()
             if isinstance(label, str):
                 labels = [label]
+                if label not in tr["label"].values:
+                    raise ValueError(f"Feature set '{label}' not found.")
             else:
                 labels = label
                 for label in labels:
