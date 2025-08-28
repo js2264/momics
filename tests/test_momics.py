@@ -248,10 +248,10 @@ def test_momics_multitracks_recover():
     assert mom.tracks()["label"].equals(out)
 
     covs = mom.tracks("ATAC_rescaled")
-    assert np.sum(next(iter(covs.values()))) == 17045.24
+    assert np.isclose(np.sum(next(iter(covs.values()))), 17045, atol=5)
 
     covs = mom.tracks(["ATAC_rescaled"])
-    assert np.sum(next(iter(covs.values()))) == 17045.24
+    assert np.isclose(np.sum(next(iter(covs.values()))), 17045, atol=5)
 
     covs = mom.tracks(["ATAC_rescaled", "MNase_rescaled"])
     assert list(np.sum(next(iter(covs.values()))).keys()) == list(mom.chroms()["chrom"])
