@@ -517,7 +517,7 @@ class Momics:
 
         return chroms
 
-    def seq(self, label: Optional[str] = None) -> pd.DataFrame:
+    def seq(self, label: Optional[Union[str, list]] = None) -> pd.DataFrame:
         """Extract sequence table from a `.momics` repository.
 
         Args:
@@ -565,15 +565,29 @@ class Momics:
         """
         if label is not None:
             tr = self.tracks()
-            if label not in tr["label"].values:
-                raise ValueError(f"Feature set '{label}' not found.")
+            if isinstance(label, str):
+                labels = [label]
+            else:
+                labels = label
+                for label in labels:
+                    if label not in tr["label"].values:
+                        raise ValueError(f"Feature set '{label}' not found.")
+
             chroms = self.chroms()
-            cov = {chrom: np.empty(length, dtype=object) for (chrom, length) in zip(chroms.chrom, chroms.length)}
-            for chrom in chroms["chrom"]:
-                tdb = self._build_uri("coverage", f"{chrom}.tdb")
-                with tiledb.open(tdb, "r", ctx=self.cfg.ctx) as A:
-                    cov[chrom] = A.query(attrs=[label])[:][label][:-1]
-            return cov
+            covs = {
+                lab: {chrom: np.empty(length, dtype=object) for (chrom, length) in zip(chroms.chrom, chroms.length)}
+                for lab in labels
+            }
+            for lab in labels:
+                for chrom in chroms["chrom"]:
+                    tdb = self._build_uri("coverage", f"{chrom}.tdb")
+                    with tiledb.open(tdb, "r", ctx=self.cfg.ctx) as A:
+                        covs[lab][chrom] = A.query(attrs=[label])[:][label][:-1]
+
+            if len(labels) == 1:
+                covs = covs[labels[0]]  # type: ignore
+
+            return covs
         else:
             try:
                 tracks = self._get_table(self._build_uri("coverage", "tracks.tdb"))

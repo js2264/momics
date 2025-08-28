@@ -300,3 +300,14 @@ def one_hot_decode(encoded_sequences: np.ndarray, mapping: dict = DEFAULT_OHD_MA
         decoded_sequences.append(decoded_seq)
 
     return decoded_sequences
+
+
+def scale_track(cov):
+    q99 = np.nanpercentile(np.concatenate(list(cov.values())), 99.99)
+    for chrom in cov.keys():
+        arr = cov[chrom]
+        arr = np.minimum(arr, q99)
+        arr = (arr - np.nanmin(arr)) / (np.nanmax(arr) - np.nanmin(arr))
+        arr = np.nan_to_num(arr, nan=0)
+        cov[chrom] = arr
+    return cov

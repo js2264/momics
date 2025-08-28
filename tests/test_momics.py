@@ -240,3 +240,18 @@ def test_Momics_remove(momics_path: str):
     mom = momics.Momics(momics_path)
     mom.remove()
     assert not Path(mom.path).exists()
+
+
+def test_momics_multitracks_recover():
+    mom = momics.Momics("tests_data/yeast_CNN_data.momics")
+    out = pd.Series(["ATAC", "MNase", "ATAC_rescaled", "MNase_rescaled"], name="label")
+    assert mom.tracks()["label"].equals(out)
+
+    covs = mom.tracks("ATAC_rescaled")
+    assert np.sum(next(iter(covs.values()))) == 17045.24
+
+    covs = mom.tracks(["ATAC_rescaled"])
+    assert np.sum(next(iter(covs.values()))) == 17045.24
+
+    covs = mom.tracks(["ATAC_rescaled", "MNase_rescaled"])
+    assert list(np.sum(next(iter(covs.values()))).keys()) == list(mom.chroms()["chrom"])
