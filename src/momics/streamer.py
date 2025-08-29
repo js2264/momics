@@ -54,6 +54,7 @@ class MomicsStreamer:
         batch_size: Optional[int] = None,
         features: Optional[Union[list, str]] = None,
         preprocess_func: Optional[Callable] = None,
+        threads: Optional[int] = None,
         silent: bool = True,
     ) -> None:
         """Initialize the MomicsStreamer object.
@@ -76,6 +77,12 @@ class MomicsStreamer:
 
         self.batch_size = batch_size
         self.num_batches = (len(ranges) + batch_size - 1) // batch_size
+
+        # Set the threads
+        if threads is not None:
+            self.threads = threads
+        else:
+            self.threads = int(momics.cfg.cfg["sm.compute_concurrency_level"])
 
         # Check features
         if features is not None:
@@ -118,7 +125,7 @@ class MomicsStreamer:
         # Fetch seq if needed
         if "nucleotide" in attrs:
             i -= 1
-            q.query_sequence()
+            q.query_sequence(threads=self.threads)
             if q.seq is not None:
                 seqs = list(q.seq["nucleotide"].values())
             else:
@@ -131,7 +138,7 @@ class MomicsStreamer:
         # Fetch coverage tracks if needed
         if i > 0:
             attrs2 = [attr for attr in attrs if attr != "nucleotide"]
-            q.query_tracks(tracks=attrs2)
+            q.query_tracks(tracks=attrs2, threads=self.threads)
             for attr in attrs2:
                 out = np.array(list(q.coverage[attr].values()))  # type: ignore
                 sh = out.shape
