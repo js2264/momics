@@ -160,6 +160,68 @@ class Basenji:  # pragma: no cover
         self.model = tf.keras.Model(input, output)
 
 
+class BasenjiMulti:  # pragma: no cover
+    def __init__(self, inputs, outputs, target_size) -> None:
+
+        # First PooledConvLayer
+        x = layers.Conv1D(64, 15, padding="same")(inputs["nucleotide"])
+        x = layers.ReLU()(x)
+        x = layers.MaxPooling1D(4)(x)
+        x = layers.BatchNormalization()(x)
+        x = layers.Dropout(0.2)(x)
+
+        # Second PooledConvLayer
+        x = layers.Conv1D(64, 5, padding="same")(x)
+        x = layers.ReLU()(x)
+        x = layers.BatchNormalization()(x)
+        x = layers.Dropout(0.2)(x)
+
+        # Third PooledConvLayer
+        x = layers.Conv1D(64, 5, padding="same")(x)
+        x = layers.ReLU()(x)
+        x = layers.BatchNormalization()(x)
+        x = layers.Dropout(0.2)(x)
+
+        # First DilatedConvLayer
+        x = layers.Conv1D(32, 5, padding="same", dilation_rate=2)(x)
+        x = layers.ReLU()(x)
+        x = layers.BatchNormalization()(x)
+        x = layers.Dropout(0.2)(x)
+
+        # First ResidualConcatLayer
+        y = layers.Conv1D(32, 5, padding="same", dilation_rate=4)(x)
+        y = layers.ReLU()(y)
+        y = layers.BatchNormalization()(y)
+        y = layers.Dropout(0.2)(y)
+        x = layers.Concatenate()([x, y])
+
+        # Second ResidualConcatLayer
+        y = layers.Conv1D(32, 5, padding="same", dilation_rate=8)(x)
+        y = layers.ReLU()(y)
+        y = layers.BatchNormalization()(y)
+        y = layers.Dropout(0.2)(y)
+        x = layers.Concatenate()([x, y])
+
+        # Third ResidualConcatLayer
+        y = layers.Conv1D(32, 5, padding="same", dilation_rate=16)(x)
+        y = layers.ReLU()(y)
+        y = layers.BatchNormalization()(y)
+        y = layers.Dropout(0.2)(y)
+        x = layers.Concatenate()([x, y])
+
+        # Separate head for each track
+        output_heads = {}
+        for out_name, out_layer in outputs.items():
+            track_out = layers.Conv1D(1, 1, padding="same")(x)
+            P = track_out.shape[1] // target_size
+            if P > 1:
+                track_out = layers.AveragePooling1D(pool_size=P)(track_out)
+            track_out = layers.Reshape((target_size,))(track_out)
+            output_heads[out_name] = out_layer(track_out)
+
+        self.model = tf.keras.Model(inputs=inputs, outputs=output_heads)
+
+
 def loss_mae_cor(y_true, y_pred, alpha=0.5):
     """
     Custom loss function combining MAE and correlation.
