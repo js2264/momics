@@ -154,13 +154,35 @@ def features(ctx, file, path, threads):
 def bulk(ctx, folder, genome, threads, path):
     """Bulk ingest all bigwig files from a folder into a Momics repository."""
     m = Momics(path)
-    files = glob.glob(os.path.join(folder, "*.bw"))
+
+    bw_files = glob.glob(os.path.join(folder, "*.bw"))
+    fa_file = glob.glob(os.path.join(folder, "*.fa"))
+    bed_files = glob.glob(os.path.join(folder, "*.bed"))
+
+    # If more than 1 fasta file found and sequence is not already registered, abort
+    needs_fa = True
+    if len(fa_file) > 0 and not needs_fa:
+        ctx.warn("Fasta file found but no sequence already registered. Ignoring fasta.")
+    if len(fa_file) > 1:
+        ctx.fail("At most one fasta file can be provided. Aborting now.")
 
     # Ingest chroms
-    with pyBigWig.open(files[0]) as bw:
-        chroms = bw.chroms()
-    m.ingest_chroms(chroms, genome_version=genome)
+    if m.chroms().empty:
+        with pyBigWig.open(bw_files[0]) as bw:
+            chroms = bw.chroms()
+        m.ingest_chroms(chroms, genome_version=genome)
+
+    # Ingest seq
+    if needs_fa and len(fa_file) > 0:
+        m.ingest_sequence(fa_file[0], threads=threads)
 
     # Ingest tracks
-    bws = {os.path.basename(f).split(".bw")[0]: f for f in files}
-    m.ingest_tracks(bws, threads=threads)
+    if len(bw_files) > 0:
+        bws = {os.path.basename(f).split(".bw")[0]: f for f in bw_files}
+        m.ingest_tracks(bws, threads=threads)
+
+    # Ingest features
+    if len(bed_files) > 0:
+        beds = {os.path.basename(f).split(".bed")[0]: f for f in bed_files}
+        gr = {k: pr.read_bed(v) for k, v in beds.items()}
+        m.ingest_features(gr, threads=threads)
