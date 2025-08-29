@@ -3,7 +3,6 @@ from typing import Callable, Optional, Generator, Union
 import numpy as np
 import pyranges as pr
 
-from . import utils as mutils
 from .momics import Momics
 from .logging import logger
 from .query import MomicsQuery
@@ -125,13 +124,13 @@ class MomicsStreamer:
         # Fetch seq if needed
         if "nucleotide" in attrs:
             i -= 1
-            q.query_sequence(threads=self.threads)
-            if q.seq is not None:
-                seqs = list(q.seq["nucleotide"].values())
+            q.query_sequence(one_hot=True, threads=self.threads)
+            if q.seq_onehot is not None:
+                seqs = list(q.seq_onehot.values())
             else:
                 raise ValueError("No sequence data found in the momics repository.")
 
-            X = np.array([mutils.one_hot_encode(seq) for seq in seqs])
+            X = np.array(seqs)
             sh = X.shape
             res["nucleotide"] = X.reshape(-1, sh[1], 5)
 

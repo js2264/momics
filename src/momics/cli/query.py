@@ -105,6 +105,12 @@ def tracks(ctx, path, coordinates, file, output: str, threads: int = 1):
     show_default=True,
 )
 @click.option(
+    "--one-hot",
+    is_flag=True,
+    help="Export sequences as one-hot encoded arrays in NPZ format instead of FASTA",
+    default=False,
+)
+@click.option(
     "-@",
     "--threads",
     default=1,
@@ -112,7 +118,7 @@ def tracks(ctx, path, coordinates, file, output: str, threads: int = 1):
 )
 @cloup.argument("path", help="Path to a momics repository", metavar="MOMICS_REPO", required=True)
 @click.pass_context
-def seq(ctx, path, coordinates, file, output: str, threads: int = 1):
+def seq(ctx, path, coordinates, file, output: str, one_hot: bool, threads: int = 1):
     """Extract chromosomal sequences over chromosome intervals."""
 
     # Validate that either `file` or `coordinates` is provided, but not both
@@ -132,12 +138,32 @@ def seq(ctx, path, coordinates, file, output: str, threads: int = 1):
     else:
         bed = pr.read_bed(file)
 
-    res = MomicsQuery(mom, bed).query_sequence(threads=threads).to_SeqRecord()
-    if output is None:
-        for record in res:
-            print(f">{record.id}")
-            print(record.seq)
+    if one_hot:
+        # Use one-hot encoded query
+        query_obj = MomicsQuery(mom, bed).query_sequence(one_hot=True, threads=threads)
+
+        if output is None:
+            # Print summary of one-hot data to stdout
+            for key, array in query_obj.seq_onehot.items():
+                print(f">{key}")
+                print(f"Shape: {array.shape}")
+                print("Channels: [N, A, T, G, C]")
+                print(f"Sample (first 10 positions):\n{array[:10]}")
+                print()
+        else:
+            # Save as NPZ file
+            logger.info(f"Writing one-hot encoded sequences to {output} file...")
+            import numpy as np
+
+            np.savez_compressed(output, **query_obj.seq_onehot)
     else:
-        logger.info(f"Writing sequences to {output} file...")
-        with open(output, "w") as fasta_file:
-            SeqIO.write(res, fasta_file, "fasta")
+        # Use regular sequence query (backward compatibility)
+        res = MomicsQuery(mom, bed).query_sequence(threads=threads).to_SeqRecord()
+        if output is None:
+            for record in res:
+                print(f">{record.id}")
+                print(record.seq)
+        else:
+            logger.info(f"Writing sequences to {output} file...")
+            with open(output, "w") as fasta_file:
+                SeqIO.write(res, fasta_file, "fasta")

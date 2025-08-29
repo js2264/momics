@@ -224,13 +224,28 @@ class MomicsQuery:
             start0 = time.time()
             results = {attr: collections.defaultdict(list) for attr in attrs}
             keys = [f"{c}:{i}-{j}" for c, i, j in zip(ranges.Chromosome, ranges.Start, ranges.End)]
+            channels = ["N", "A", "T", "G", "C"]
+            nucleotide_map = {0: "N", 1: "A", 2: "T", 3: "G", 4: "C"}
+
             for attr in attrs:
-                seq = subarray[attr]
+                channel_data = {}
+                for i, channel in enumerate(channels):
+                    if channel in subarray:
+                        channel_data[i] = subarray[channel]
+                    else:
+                        total_length = sum(s.stop - s.start + 1 for s in query)
+                        channel_data[i] = np.zeros(total_length, dtype=np.uint8)
+
+                # Reconstruct sequences from one-hot encoding
                 start_idx = 0
                 query_lengths = [s.stop - s.start + 1 for s in query]
                 for i, length in enumerate(query_lengths):
-                    results[attr][keys[i]] = "".join(seq[start_idx : start_idx + length].tolist())
+                    one_hot_slice = np.column_stack([channel_data[j][start_idx : start_idx + length] for j in range(5)])
+                    indices = np.argmax(one_hot_slice, axis=1)
+                    sequence = "".join([nucleotide_map[idx] for idx in indices])
+                    results[attr][keys[i]] = sequence
                     start_idx += length
+
             logger.debug(f"wrangle data in {round(time.time() - start0,4)}s")
 
             return dict(results)
@@ -239,10 +254,61 @@ class MomicsQuery:
             logger.error(f"Error processing query batch: {e}")
             raise
 
-    def query_sequence(self, threads: Optional[int] = None, silent: bool = True) -> "MomicsQuery":
+    def _query_seq_onehot_per_batch(self, chrom, ranges, cfg):
+        """Query one-hot encoded sequences for a batch of ranges on a chromosome."""
+        try:
+            # Prepare queries: list of slices [(start, stop), (start, stop), ...]
+            start0 = time.time()
+            query = [slice(int(i), int(j) - 1) for (i, j) in zip(ranges.Start, ranges.End)]
+            logger.debug(f"define query in {round(time.time() - start0,4)}s")
+
+            # Query tiledb for one-hot channels
+            start0 = time.time()
+            tdb = self.momics._build_uri("genome", f"{chrom}.tdb")
+            with tiledb.open(tdb, "r", config=cfg) as A:
+                subarray = A.multi_index[query]
+            logger.debug(f"query tiledb in {round(time.time() - start0,4)}s")
+
+            # Extract one-hot encoded data
+            start0 = time.time()
+            results = {}
+            keys = [f"{c}:{i}-{j}" for c, i, j in zip(ranges.Chromosome, ranges.Start, ranges.End)]
+
+            # Extract one-hot channels
+            channels = ["N", "A", "T", "G", "C"]
+            channel_data = {}
+            for i, channel in enumerate(channels):
+                if channel in subarray:
+                    channel_data[i] = subarray[channel]
+                else:
+                    # Fallback: create empty array if channel missing
+                    total_length = sum(s.stop - s.start + 1 for s in query)
+                    channel_data[i] = np.zeros(total_length, dtype=np.uint8)
+
+            # Split data by original queries
+            start_idx = 0
+            query_lengths = [s.stop - s.start + 1 for s in query]
+
+            for i, length in enumerate(query_lengths):
+                # Extract slice for this query and stack channels
+                one_hot_slice = np.column_stack([channel_data[j][start_idx : start_idx + length] for j in range(5)])
+
+                results[keys[i]] = one_hot_slice
+                start_idx += length
+
+            logger.debug(f"wrangle one-hot data in {round(time.time() - start0,4)}s")
+
+            return results
+
+        except Exception as e:  # pragma: no cover
+            logger.error(f"Error processing one-hot query batch: {e}")
+            raise
+
+    def query_sequence(self, one_hot: bool = False, threads: Optional[int] = None, silent: bool = True) -> "MomicsQuery":
         """Query multiple sequence ranges from a Momics repo.
 
         Args:
+            one_hot (bool, optional): Return one-hot encoded sequences. Defaults to False.
             threads (int, optional): Number of threads for parallel query. Defaults to all.
             silent (bool, optional): Whether to suppress info messages.
 
@@ -259,32 +325,55 @@ class MomicsQuery:
             cfg.update({"sm.io_concurrency_level": threads})
 
         # Split ranges by chromosome
-        attrs = ["nucleotide"]
         chroms = self.ranges.chromosomes
         ranges_per_chrom = {chrom: self.ranges[chrom] for chrom in chroms}
 
-        # Prepare empty dictionary of results {attr1: { ranges1: ., ranges2: . }, .}
-        results = []
-        for chrom in ranges_per_chrom.keys():
-            logger.debug(chrom)
-            if ranges_per_chrom[chrom].empty:
-                continue
-            else:
-                results.append(
-                    self._query_seq_per_batch(
-                        chrom=chrom,
-                        ranges=ranges_per_chrom[chrom],
-                        attrs=attrs,
-                        cfg=cfg,
+        if one_hot:
+            # Query one-hot encoded sequences
+            results = []
+            for chrom in ranges_per_chrom.keys():
+                logger.debug(chrom)
+                if ranges_per_chrom[chrom].empty:
+                    continue
+                else:
+                    results.append(
+                        self._query_seq_onehot_per_batch(
+                            chrom=chrom,
+                            ranges=ranges_per_chrom[chrom],
+                            cfg=cfg,
+                        )
                     )
-                )
 
-        combined_results: dict = {attr: dict() for attr in attrs}
-        for d in results:
-            for attr in attrs:
-                combined_results[attr].update(d[attr])
+            # Combine results from all chromosomes
+            combined_results = {}
+            for d in results:
+                combined_results.update(d)
 
-        self.seq = combined_results
+            self.seq_onehot = combined_results
+        else:
+            attrs = ["nucleotide"]
+            results = []
+            for chrom in ranges_per_chrom.keys():
+                logger.debug(chrom)
+                if ranges_per_chrom[chrom].empty:
+                    continue
+                else:
+                    results.append(
+                        self._query_seq_per_batch(
+                            chrom=chrom,
+                            ranges=ranges_per_chrom[chrom],
+                            attrs=attrs,
+                            cfg=cfg,
+                        )
+                    )
+
+            combined_results_dict: dict = {attr: dict() for attr in attrs}
+            for d in results:
+                for attr in attrs:
+                    combined_results_dict[attr].update(d[attr])
+
+            self.seq = combined_results_dict
+
         t = time.time() - start0
         if not silent:
             logger.info(f"Query completed in {round(t,4)}s.")

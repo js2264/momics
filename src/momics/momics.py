@@ -56,6 +56,32 @@ def _set_tiledb_tile(tile, chrom_length) -> int:
     return t
 
 
+def _encode_nucleotides(sequence: str) -> np.ndarray:
+    nucleotide_map = {
+        "N": [1, 0, 0, 0, 0],
+        "A": [0, 1, 0, 0, 0],
+        "T": [0, 0, 1, 0, 0],
+        "G": [0, 0, 0, 1, 0],
+        "C": [0, 0, 0, 0, 1],
+    }
+    sequence = sequence.upper()
+    encoded = np.zeros((len(sequence), 5), dtype=np.uint8)
+    for i, nucleotide in enumerate(sequence):
+        if nucleotide in nucleotide_map:
+            encoded[i] = nucleotide_map[nucleotide]
+        else:
+            encoded[i] = nucleotide_map["N"]
+
+    return encoded
+
+
+def _decode_nucleotides(encoded_array: np.ndarray) -> str:
+    nucleotides = ["N", "A", "T", "G", "C"]
+    indices = np.argmax(encoded_array, axis=1)
+    sequence = "".join([nucleotides[idx] for idx in indices])
+    return sequence
+
+
 class Momics:
     """
     A class to manipulate `.momics` repositories.
@@ -174,11 +200,17 @@ class Momics:
                     filters=TILEDB_POSITION_FILTERS,
                 )
             )
-            attr = tiledb.Attr(name="nucleotide", dtype=np.str_, filters=TILEDB_SEQ_FILTERS)
+            attrs = [
+                tiledb.Attr(name="N", dtype=np.uint8, filters=TILEDB_SEQ_FILTERS),
+                tiledb.Attr(name="A", dtype=np.uint8, filters=TILEDB_SEQ_FILTERS),
+                tiledb.Attr(name="T", dtype=np.uint8, filters=TILEDB_SEQ_FILTERS),
+                tiledb.Attr(name="G", dtype=np.uint8, filters=TILEDB_SEQ_FILTERS),
+                tiledb.Attr(name="C", dtype=np.uint8, filters=TILEDB_SEQ_FILTERS),
+            ]
             schema = tiledb.ArraySchema(
                 ctx=self.cfg.ctx,
                 domain=dom,
-                attrs=[attr],
+                attrs=attrs,
                 sparse=False,
             )
             tiledb.Array.create(tdb, schema)
@@ -466,12 +498,18 @@ class Momics:
             with pyfaidx.Fasta(fasta) as fa:
                 # get_seq() is 1-based
                 chrom_seq = fa.get_seq(chrom, 1, chrom_length + 1)
-                chrom_seq = np.array(list(chrom_seq.seq), dtype=np.str_)
+                encoded_seq = _encode_nucleotides(str(chrom_seq.seq))
             cfg = self.cfg.cfg
             cfg.update({"sm.compute_concurrency_level": 1})
             cfg.update({"sm.io_concurrency_level": 1})
             with tiledb.open(tdb, mode="w", config=cfg) as A:
-                A[0:chrom_length] = {"nucleotide": chrom_seq}
+                A[0:chrom_length] = {
+                    "N": encoded_seq[:, 0],
+                    "A": encoded_seq[:, 1],
+                    "T": encoded_seq[:, 2],
+                    "G": encoded_seq[:, 3],
+                    "C": encoded_seq[:, 4],
+                }
             cfg.update({"sm.compute_concurrency_level": multiprocessing.cpu_count() - 1})
             cfg.update({"sm.io_concurrency_level": multiprocessing.cpu_count() - 1})
 
@@ -517,15 +555,18 @@ class Momics:
 
         return chroms
 
-    def seq(self, label: Optional[Union[str, list]] = None) -> pd.DataFrame:
+    def seq(self, label: Optional[Union[str, list]] = None, one_hot: bool = False) -> Union[pd.DataFrame, str, np.ndarray]:
         """Extract sequence table from a `.momics` repository.
 
         Args:
             label (str, optional): Which chromosome to extract. Defaults to None.
+            one_hot (bool, optional): Whether to return one-hot encoded array. Defaults to False.
 
         Returns:
-            pd.DataFrame: A data frame listing one chromosome per row,
-            with first/last 10 nts.
+            Union[pd.DataFrame, str, np.ndarray]:
+                - If label=None: A data frame listing one chromosome per row, with first/last 10 nts.
+                - If label is specified and one_hot=False: A string of the chromosome sequence
+                - If label is specified and one_hot=True: A numpy array of shape (length, 5) with one-hot encoding
         """
         chroms = self.chroms()
         if chroms.empty:
@@ -543,16 +584,29 @@ class Momics:
                 raise ValueError(f"Selected attribute does not exist: '{label}'.")
             tdb = self._build_uri("genome", f"{label}.tdb")
             with tiledb.open(tdb, "r", ctx=self.cfg.ctx) as A:
-                seq = A[:]["nucleotide"][:-1]
-            return "".join(seq)
+                data = A[:]
+                encoded_seq = np.column_stack([data["N"][:-1], data["A"][:-1], data["T"][:-1], data["G"][:-1], data["C"][:-1]])
+
+            if one_hot:
+                return encoded_seq
+            else:
+                return _decode_nucleotides(encoded_seq)
         else:
             chroms["seq"] = pd.Series()
             for chrom in chroms["chrom"]:
                 tdb = self._build_uri("genome", f"{chrom}.tdb")
                 chrom_len = chroms[chroms["chrom"] == chrom]["length"].iloc[0]
                 with tiledb.open(tdb, "r", ctx=self.cfg.ctx) as A:
-                    start_nt = "".join(A.df[0:9]["nucleotide"])
-                    end_nt = "".join(A.df[(chrom_len - 10) : (chrom_len - 1)]["nucleotide"])
+                    start_data = A.df[0:9]
+                    end_data = A.df[(chrom_len - 10) : (chrom_len - 1)]
+                    start_encoded = np.column_stack(
+                        [start_data["N"], start_data["A"], start_data["T"], start_data["G"], start_data["C"]]
+                    )
+                    end_encoded = np.column_stack([end_data["N"], end_data["A"], end_data["T"], end_data["G"], end_data["C"]])
+
+                    start_nt = _decode_nucleotides(start_encoded)
+                    end_nt = _decode_nucleotides(end_encoded)
+
                 chroms.loc[chroms["chrom"] == chrom, "seq"] = start_nt + "..." + end_nt
 
             return chroms
@@ -998,7 +1052,7 @@ class Momics:
         chroms = self.chroms()["chrom"]
         with open(output, "a") as output_handle:
             for chrom in chroms:
-                seq = self.seq(chrom)
+                seq = str(self.seq(chrom, one_hot=False))
                 sr = Bio.SeqRecord.SeqRecord(Bio.Seq.Seq(seq), id=chrom, description="")
                 SeqIO.write(sr, output_handle, "fasta")
 
