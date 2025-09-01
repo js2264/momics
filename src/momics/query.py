@@ -224,8 +224,8 @@ class MomicsQuery:
             start0 = time.time()
             results = {attr: collections.defaultdict(list) for attr in attrs}
             keys = [f"{c}:{i}-{j}" for c, i, j in zip(ranges.Chromosome, ranges.Start, ranges.End)]
-            channels = ["N", "A", "T", "G", "C"]
-            nucleotide_map = {0: "N", 1: "A", 2: "T", 3: "G", 4: "C"}
+            channels = ["A", "T", "G", "C"]
+            nucleotide_map = {0: "A", 1: "T", 2: "G", 3: "C"}
 
             for attr in attrs:
                 channel_data = {}
@@ -240,9 +240,17 @@ class MomicsQuery:
                 start_idx = 0
                 query_lengths = [s.stop - s.start + 1 for s in query]
                 for i, length in enumerate(query_lengths):
-                    one_hot_slice = np.column_stack([channel_data[j][start_idx : start_idx + length] for j in range(5)])
+                    one_hot_slice = np.column_stack([channel_data[j][start_idx : start_idx + length] for j in range(4)])
                     indices = np.argmax(one_hot_slice, axis=1)
-                    sequence = "".join([nucleotide_map[idx] for idx in indices])
+                    # Handle ambiguous nucleotides (all zeros) as 'N'
+                    max_values = np.max(one_hot_slice, axis=1)
+                    sequence_chars = []
+                    for idx, max_val in zip(indices, max_values):
+                        if max_val == 0:
+                            sequence_chars.append("N")
+                        else:
+                            sequence_chars.append(nucleotide_map[idx])
+                    sequence = "".join(sequence_chars)
                     results[attr][keys[i]] = sequence
                     start_idx += length
 
@@ -275,7 +283,7 @@ class MomicsQuery:
             keys = [f"{c}:{i}-{j}" for c, i, j in zip(ranges.Chromosome, ranges.Start, ranges.End)]
 
             # Extract one-hot channels
-            channels = ["N", "A", "T", "G", "C"]
+            channels = ["A", "T", "G", "C"]
             channel_data = {}
             for i, channel in enumerate(channels):
                 if channel in subarray:
@@ -291,7 +299,7 @@ class MomicsQuery:
 
             for i, length in enumerate(query_lengths):
                 # Extract slice for this query and stack channels
-                one_hot_slice = np.column_stack([channel_data[j][start_idx : start_idx + length] for j in range(5)])
+                one_hot_slice = np.column_stack([channel_data[j][start_idx : start_idx + length] for j in range(4)])
 
                 results[keys[i]] = one_hot_slice
                 start_idx += length

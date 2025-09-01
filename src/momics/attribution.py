@@ -2,7 +2,6 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 import momics.query as mmq
-import momics.utils as mutils
 
 
 DEFAULT_ISM_CMAP = plt.get_cmap("afmhot_r")
@@ -12,20 +11,20 @@ def mutate_sequence(seq: np.ndarray, start: int, end: int) -> tuple[np.ndarray, 
     """
     Generate all possible single nucleotide mutations in the sequence from start to end.
     Args:
-        seq: One-hot encoded sequence, shape (x, 5)
+        seq: One-hot encoded sequence, shape (x, 4)
         start: Start position for mutations (inclusive)
         end: End position for mutations (exclusive)
     Returns:
-        mutated_sequences: Array of mutated sequences, shape (800, x, 5)
+        mutated_sequences: Array of mutated sequences, shape (800, x, 4)
         mutation_info: List of tuples (position, original_nuc, mutated_nuc)
     """
     mutated_sequences = []
     mutation_info = []
-    nuc_names = ["N", "A", "T", "G", "C"]
+    nuc_names = ["A", "T", "G", "C"]
 
     for pos in range(start, end):
         original_nuc_idx = np.argmax(seq[pos, :])
-        for new_nuc_idx in range(1, 5):
+        for new_nuc_idx in range(0, 4):
             mutated_seq = np.copy(seq).reshape(1, seq.shape[0], seq.shape[1])
             mutated_seq[0, pos, :] = 0
             mutated_seq[0, pos, new_nuc_idx] = 1
@@ -118,13 +117,13 @@ def get_ISM(model, seq, viewpoint_width=0, batch=0):
 
     Args:
         model: Trained TensorFlow/Keras model for prediction
-        seq: One-hot encoded sequence, shape (1, x, 5)
+        seq: One-hot encoded sequence, shape (1, x, 4)
         viewpoint_width: Width of the region around the centerpoint to analyze. If 0, uses model output width.
         batch: Batch size for model prediction. If 0, no batching is applied
 
     Returns:
         ism_pos: Dictionary with position as key and nucleotide impacts as values
-        ism: Array of shape (w, 4) with nucleotide effects for each position
+        ism: Array of shape (w, 3) with nucleotide effects for each position
         ism_score: List of average ISM score for each position
     """
 
@@ -142,7 +141,7 @@ def get_ISM(model, seq, viewpoint_width=0, batch=0):
     # Run predictions on mutated sequences
     if batch > 0:
         seq_mutated_ds = tf.data.Dataset.from_generator(
-            lambda: iter(seq_mutated), output_signature=tf.TensorSpec(shape=(in_width, 5), dtype=tf.float32)
+            lambda: iter(seq_mutated), output_signature=tf.TensorSpec(shape=(in_width, 4), dtype=tf.float32)
         ).batch(batch)
     else:
         seq_mutated_ds = seq_mutated
@@ -178,8 +177,8 @@ def get_saliency(model, seq):
         prediction = model(seq_tensor)
         output = tf.reduce_sum(prediction)
 
-    gradients = tape.gradient(output, seq_tensor)[:, :, 1:5]
-    gradient = gradients * seq_tensor[:, :, 1:5]
+    gradients = tape.gradient(output, seq_tensor)
+    gradient = gradients * seq_tensor
     gradient = tf.reduce_sum(gradient, axis=-1).numpy()[0]
     return gradient, gradients.numpy()[0]
 
@@ -242,12 +241,7 @@ def attribution(
     coord_out = f"{chromosome}:{os}-{oe}"
 
     ## Extract sequence and data for the ROI
-    seq_compute = np.reshape(
-        mutils.one_hot_encode(
-            mmq.MomicsQuery(repo, coord_compute).query_sequence().seq["nucleotide"][coord_compute]  # type: ignore
-        ),
-        (1, in_width, 5),
-    )
+    seq_compute = mmq.MomicsQuery(repo, coord_compute).query_sequence(one_hot=True).seq_onehot[coord_compute][None, :, :]
     data_compute = mmq.MomicsQuery(repo, coord_out).query_tracks(tracks=[track_name]).coverage[track_name][coord_out]  # type: ignore
     original_pred = model.predict(seq_compute, verbose=0)
 

@@ -58,14 +58,14 @@ def _set_tiledb_tile(tile, chrom_length) -> int:
 
 def _encode_nucleotides(sequence: str) -> np.ndarray:
     nucleotide_map = {
-        "N": [1, 0, 0, 0, 0],
-        "A": [0, 1, 0, 0, 0],
-        "T": [0, 0, 1, 0, 0],
-        "G": [0, 0, 0, 1, 0],
-        "C": [0, 0, 0, 0, 1],
+        "N": [0, 0, 0, 0],
+        "A": [1, 0, 0, 0],
+        "T": [0, 1, 0, 0],
+        "G": [0, 0, 1, 0],
+        "C": [0, 0, 0, 1],
     }
     sequence = sequence.upper()
-    encoded = np.zeros((len(sequence), 5), dtype=np.uint8)
+    encoded = np.zeros((len(sequence), 4), dtype=np.uint8)
     for i, nucleotide in enumerate(sequence):
         if nucleotide in nucleotide_map:
             encoded[i] = nucleotide_map[nucleotide]
@@ -76,10 +76,17 @@ def _encode_nucleotides(sequence: str) -> np.ndarray:
 
 
 def _decode_nucleotides(encoded_array: np.ndarray) -> str:
-    nucleotides = ["N", "A", "T", "G", "C"]
+    nucleotides = ["A", "T", "G", "C"]
     indices = np.argmax(encoded_array, axis=1)
-    sequence = "".join([nucleotides[idx] for idx in indices])
-    return sequence
+    # Handle ambiguous nucleotides (all zeros) as 'N'
+    max_values = np.max(encoded_array, axis=1)
+    sequence = []
+    for _, (idx, max_val) in enumerate(zip(indices, max_values)):
+        if max_val == 0:
+            sequence.append("N")
+        else:
+            sequence.append(nucleotides[idx])
+    return "".join(sequence)
 
 
 class Momics:
@@ -201,7 +208,6 @@ class Momics:
                 )
             )
             attrs = [
-                tiledb.Attr(name="N", dtype=np.uint8, filters=TILEDB_SEQ_FILTERS),
                 tiledb.Attr(name="A", dtype=np.uint8, filters=TILEDB_SEQ_FILTERS),
                 tiledb.Attr(name="T", dtype=np.uint8, filters=TILEDB_SEQ_FILTERS),
                 tiledb.Attr(name="G", dtype=np.uint8, filters=TILEDB_SEQ_FILTERS),
@@ -504,11 +510,10 @@ class Momics:
             cfg.update({"sm.io_concurrency_level": 1})
             with tiledb.open(tdb, mode="w", config=cfg) as A:
                 A[0:chrom_length] = {
-                    "N": encoded_seq[:, 0],
-                    "A": encoded_seq[:, 1],
-                    "T": encoded_seq[:, 2],
-                    "G": encoded_seq[:, 3],
-                    "C": encoded_seq[:, 4],
+                    "A": encoded_seq[:, 0],
+                    "T": encoded_seq[:, 1],
+                    "G": encoded_seq[:, 2],
+                    "C": encoded_seq[:, 3],
                 }
             cfg.update({"sm.compute_concurrency_level": multiprocessing.cpu_count() - 1})
             cfg.update({"sm.io_concurrency_level": multiprocessing.cpu_count() - 1})
@@ -566,7 +571,7 @@ class Momics:
             Union[pd.DataFrame, str, np.ndarray]:
                 - If label=None: A data frame listing one chromosome per row, with first/last 10 nts.
                 - If label is specified and one_hot=False: A string of the chromosome sequence
-                - If label is specified and one_hot=True: A numpy array of shape (length, 5) with one-hot encoding
+                - If label is specified and one_hot=True: A numpy array of shape (length, 4) with one-hot encoding
         """
         chroms = self.chroms()
         if chroms.empty:
@@ -585,7 +590,7 @@ class Momics:
             tdb = self._build_uri("genome", f"{label}.tdb")
             with tiledb.open(tdb, "r", ctx=self.cfg.ctx) as A:
                 data = A[:]
-                encoded_seq = np.column_stack([data["N"][:-1], data["A"][:-1], data["T"][:-1], data["G"][:-1], data["C"][:-1]])
+                encoded_seq = np.column_stack([data["A"][:-1], data["T"][:-1], data["G"][:-1], data["C"][:-1]])
 
             if one_hot:
                 return encoded_seq
@@ -599,10 +604,8 @@ class Momics:
                 with tiledb.open(tdb, "r", ctx=self.cfg.ctx) as A:
                     start_data = A.df[0:9]
                     end_data = A.df[(chrom_len - 10) : (chrom_len - 1)]
-                    start_encoded = np.column_stack(
-                        [start_data["N"], start_data["A"], start_data["T"], start_data["G"], start_data["C"]]
-                    )
-                    end_encoded = np.column_stack([end_data["N"], end_data["A"], end_data["T"], end_data["G"], end_data["C"]])
+                    start_encoded = np.column_stack([start_data["A"], start_data["T"], start_data["G"], start_data["C"]])
+                    end_encoded = np.column_stack([end_data["A"], end_data["T"], end_data["G"], end_data["C"]])
 
                     start_nt = _decode_nucleotides(start_encoded)
                     end_nt = _decode_nucleotides(end_encoded)

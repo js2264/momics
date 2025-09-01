@@ -7,8 +7,8 @@ import pyranges as pr
 import pyBigWig
 import pyfaidx
 
-DEFAULT_OHE_MAPPING = {"N": 0, "A": 1, "T": 2, "G": 3, "C": 4}
-DEFAULT_OHD_MAPPING = {0: "N", 1: "A", 2: "T", 3: "G", 4: "C"}
+DEFAULT_OHE_MAPPING = {"A": 0, "T": 1, "G": 2, "C": 3}
+DEFAULT_OHD_MAPPING = {0: "A", 1: "T", 2: "G", 3: "C"}
 
 
 def _repo_exists(path, cfg) -> bool:
@@ -255,17 +255,32 @@ def one_hot_encode(sequences, mapping=DEFAULT_OHE_MAPPING, handle_non_standard=F
     Args:
         sequences (Union[str, List[str]]): A single DNA sequence or list of DNA sequences
         handle_non_standard (bool): If True, non-standard nucleotides (not A,T,G,C) will be
-                                   encoded as [0,0,0,0,0]. If False, will raise a KeyError.
+                                   encoded as [0,0,0,0]. If False, will raise a KeyError.
         dtype: NumPy data type for the output array (default: np.int8 to save memory)
 
     Returns:
-        np.ndarray: A one-hot encoded array of shape (len(sequences), seq_length, 5) for multiple
-            sequences or (seq_length, 5) for a single sequence. With the default mapping, columns represent:
-            - Column 0: Non-standard nucleotide (N)
+        np.ndarray: A one-hot encoded array of shape (len(sequences), seq_length, 4) for multiple
+            sequences or (seq_length, 4) for a single sequence. With the default mapping, columns represent:
             - Column 1: Adenine (A)
             - Column 2: Thymine (T)
             - Column 3: Guanine (G)
             - Column 4: Cytosine (C)
+
+    Examples:
+        >>> one_hot_encode("ATGC")
+        array([[1, 0, 0, 0],
+               [0, 1, 0, 0],
+               [0, 0, 1, 0],
+               [0, 0, 0, 1]], dtype=int8)
+        >>> one_hot_encode(["ATGC", "TACG"])
+        array([[[1, 0, 0, 0],
+                [0, 1, 0, 0],
+                [0, 0, 1, 0],
+                [0, 0, 0, 1]],
+               [[0, 1, 0, 0],
+                [1, 0, 0, 0],
+                [0, 0, 0, 1],
+                [0, 0, 1, 0]]], dtype=int8)
     """
     # Handle single sequence
     single_input = isinstance(sequences, str)
@@ -279,7 +294,7 @@ def one_hot_encode(sequences, mapping=DEFAULT_OHE_MAPPING, handle_non_standard=F
     max_len = max(len(seq) for seq in sequences)
 
     # Initialize output array
-    output = np.zeros((len(sequences), max_len, 5), dtype=dtype)
+    output = np.zeros((len(sequences), max_len, 4), dtype=dtype)
 
     # Process each sequence using NumPy vectorization
     for i, seq in enumerate(sequences):
@@ -307,13 +322,13 @@ def one_hot_decode(encoded_sequences: np.ndarray, mapping: dict = DEFAULT_OHD_MA
     Decode one-hot encoded sequences back to their original string representation.
 
     Args:
-        encoded_sequences (np.ndarray): A one-hot encoded array of shape (num_sequences, seq_length, 5).
+        encoded_sequences (np.ndarray): A one-hot encoded array of shape (num_sequences, seq_length, 4).
 
     Returns:
         List[str]: A list of decoded DNA sequences.
 
     Examples:
-        >>> encoded = np.array([[[0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]])
+        >>> encoded = np.array([[[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]])
         >>> one_hot_decode(encoded)
         ['ATGC']
     """

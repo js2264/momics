@@ -52,11 +52,11 @@ def test_streamer(momics_path: str):
     n = next(rg)
     assert len(n) == 2
     assert n.keys() == {"nucleotide", "bw2"}
-    assert n["nucleotide"].shape == (10, 10, 5)
+    assert n["nucleotide"].shape == (10, 10, 4)
     assert n["bw2"].shape == (10, 10, 1)
     n = next(rg)
     assert len(n) == 2
-    assert n["nucleotide"].shape == (10, 10, 5)
+    assert n["nucleotide"].shape == (10, 10, 4)
     assert n["bw2"].shape == (10, 10, 1)
 
     with pytest.raises(ValueError):
@@ -85,7 +85,7 @@ def test_dataset(momics_path: str):
 
     rg = MomicsDataset(mom, b, "nucleotide", "bw2", target_size=2, batch_size=10)
     n = next(iter(rg))
-    assert n[0]["nucleotide"].shape == (10, 10, 5)
+    assert n[0]["nucleotide"].shape == (10, 10, 4)
     assert n[1]["bw2"].shape == (10, 2, 1)
     with pytest.raises(KeyError):
         _ = n[0][1].shape
@@ -95,7 +95,7 @@ def test_dataset(momics_path: str):
     # Only features, list of features
     rg = MomicsDataset(mom, b, ["nucleotide", "bw2"], target_size=2, batch_size=10)
     n = next(iter(rg))
-    assert n["nucleotide"].shape == (10, 10, 5)
+    assert n["nucleotide"].shape == (10, 10, 4)
     assert n["bw2"].shape == (10, 10, 1)
     with pytest.raises(KeyError):
         _ = n[2].shape
@@ -103,7 +103,7 @@ def test_dataset(momics_path: str):
     # List of features and single target
     rg = MomicsDataset(mom, b, ["nucleotide", "bw2"], target="bw3", target_size=2, batch_size=10)
     n = next(iter(rg))
-    assert n[0]["nucleotide"].shape == (10, 10, 5)
+    assert n[0]["nucleotide"].shape == (10, 10, 4)
     assert n[0]["bw2"].shape == (10, 10, 1)
     assert n[1]["bw3"].shape == (10, 2, 1)
     with pytest.raises(KeyError):
@@ -112,7 +112,7 @@ def test_dataset(momics_path: str):
     # List of features and list of targets
     rg = MomicsDataset(mom, b, ["nucleotide", "bw2"], target=["bw3", "bw2"], target_size=2, batch_size=10)
     n = next(iter(rg))
-    assert n[0]["nucleotide"].shape == (10, 10, 5)
+    assert n[0]["nucleotide"].shape == (10, 10, 4)
     assert n[0]["bw2"].shape == (10, 10, 1)
     assert n[1]["bw3"].shape == (10, 2, 1)
     assert n[1]["bw2"].shape == (10, 2, 1)
@@ -125,11 +125,11 @@ def test_dataset_existing_repo():
     ds = MomicsDataset(mom, b, features=["nucleotide", "ATAC"], target=["SCC1"], target_size=2, batch_size=10)
     assert (
         str(ds.element_spec)
-        == """({'nucleotide': TensorSpec(shape=(None, 10, 5), dtype=tf.int32, name='nucleotide'), 'ATAC': TensorSpec(shape=(None, 10, 1), dtype=tf.float32, name='ATAC')}, {'SCC1': TensorSpec(shape=(None, 2, 1), dtype=tf.float32, name='SCC1')})"""  # noqa: E501
+        == """({'nucleotide': TensorSpec(shape=(None, 10, 4), dtype=tf.int32, name='nucleotide'), 'ATAC': TensorSpec(shape=(None, 10, 1), dtype=tf.float32, name='ATAC')}, {'SCC1': TensorSpec(shape=(None, 2, 1), dtype=tf.float32, name='SCC1')})"""  # noqa: E501
     )
 
     ds = MomicsDataset(mom, b, features=["nucleotide", "ATAC"], batch_size=10)
     assert (
         str(ds.element_spec)
-        == """{'nucleotide': TensorSpec(shape=(None, 10, 5), dtype=tf.int32, name=None), 'ATAC': TensorSpec(shape=(None, 10, 1), dtype=tf.float32, name=None)}"""  # noqa: E501
+        == """{'nucleotide': TensorSpec(shape=(None, 10, 4), dtype=tf.int32, name=None), 'ATAC': TensorSpec(shape=(None, 10, 1), dtype=tf.float32, name=None)}"""  # noqa: E501
     )

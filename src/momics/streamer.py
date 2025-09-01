@@ -132,7 +132,7 @@ class MomicsStreamer:
 
             X = np.array(seqs)
             sh = X.shape
-            res["nucleotide"] = X.reshape(-1, sh[1], 5)
+            res["nucleotide"] = X.reshape(-1, sh[1], 4)
 
         # Fetch coverage tracks if needed
         if i > 0:

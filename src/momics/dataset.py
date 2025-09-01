@@ -175,7 +175,7 @@ class MomicsDataset(tf.data.Dataset):
         # Define output signatures
         xsigs = {
             ft: tf.TensorSpec(
-                shape=(None, features_size, 5) if ft == "nucleotide" else (None, features_size, 1),
+                shape=(None, features_size, 4) if ft == "nucleotide" else (None, features_size, 1),
                 dtype=tf.int32 if ft == "nucleotide" else tf.float32,
                 name=ft,
             )

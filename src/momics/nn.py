@@ -103,7 +103,7 @@ class Basenji:  # pragma: no cover
     def __init__(self, input_size=2048, output_size=512) -> None:
 
         # First PooledConvLayer
-        input = layers.Input(shape=(input_size, 5))
+        input = layers.Input(shape=(input_size, 4))
         x = layers.Conv1D(64, 15, padding="same")(input)
         x = layers.ReLU()(x)
         x = layers.MaxPooling1D(4)(x)

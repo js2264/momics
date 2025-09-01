@@ -15,10 +15,10 @@ from tensorflow.keras import layers  # type: ignore
 def test_chromnn_cpu():
 
     ## Initial vars
-    mom = momics.Momics("tests_data/yeast_CNN_data.momics")
-    features = "ATAC_rescaled"
+    mom = momics.Momics("tests_data/test.momics")
+    features = "ATAC"
     features_size = 128
-    target = "MNase_rescaled"
+    target = "SCC1"
     stride = 48
     target_size = 4
     batch_size = 100
@@ -67,17 +67,17 @@ def test_chromnn_cpu():
 
     res = aggregate.aggregate(res, chrom_sizes, type="mean", prefix="prediction")
     assert len(res["f128_s48_t4"]) == 17
-    assert np.sum(res["f128_s48_t4"]["I"]) > 0
+    assert len(res["f128_s48_t4"]["I"]) == 230218
 
 
 @pytest.mark.order(99)
 def test_chromnn_attribution():
 
     ## Initial vars
-    mom = momics.Momics("tests_data/yeast_CNN_data.momics")
+    mom = momics.Momics("tests_data/test.momics")
     features = "nucleotide"
     features_size = 128
-    target = "MNase_rescaled"
+    target = "ATAC"
     stride = 48
     target_size = 4
     batch_size = 100
@@ -126,7 +126,7 @@ def test_chromnn_attribution():
         mom, seqmodel, track_name=target, chromosome="I", centerpoint=512, viewpoint_width=vp_width, batch=10
     )
     assert len(attr) == 8
-    assert attr[0].shape == (1, features_size, 5)
+    assert attr[0].shape == (1, features_size, 4)
     assert attr[1].shape == (vp_width,)
     assert attr[2].shape == (1, target_size)
     assert attr[3].shape == (features_size,)
