@@ -134,3 +134,45 @@ def test_chromnn_attribution():
     assert attr[5].shape == (vp_width, 4)
     assert attr[6].shape == (vp_width,)
     assert attr[7].shape == (vp_width,)
+
+
+def test_rc_augmentation():
+    inputs = {"nucleotide": tf.expand_dims(tf.convert_to_tensor(utils.one_hot_encode("ATTGGGCC")), axis=0)}
+    outputs = {"ATAC": tf.expand_dims(tf.convert_to_tensor(np.arange(8).astype("float32")), axis=0)}
+    tf.random.set_seed(44)
+    np.random.seed(44)
+    augm = nn.tf_rc_augmentation(inputs, outputs)
+    inp_rc = augm[0]["nucleotide"][0:1]
+    out_rc = augm[1]["ATAC"][0:1]
+    assert utils.one_hot_decode(inp_rc) == ["GGCCCAAT"]
+    assert np.array_equal(out_rc.numpy(), np.array([[[7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 0.0]]]))
+
+
+def test_cor():
+    y_true = np.array([[1, 2, 3], [4, 5, 6]], dtype=np.float32)
+    y_pred = np.array([[1, 2, 3], [4, 5, 6]], dtype=np.float32)
+    correlation = nn.cor(y_true, y_pred)
+    assert np.isclose(correlation.numpy(), 1.0)
+
+    y_pred = np.array([[3, 2, 1], [6, 5, 4]], dtype=np.float32)
+    correlation = nn.cor(y_true, y_pred)
+    assert np.isclose(correlation.numpy(), -1.0)
+
+
+def test_loss_mae_cor():
+    y_true = np.array([[1, 2, 3], [4, 5, 6]], dtype=np.float32)
+    y_pred = np.array([[1, 2, 3], [4, 5, 6]], dtype=np.float32)
+    loss = nn.loss_mae_cor(y_true, y_pred, alpha=0)  # loss is just correlation
+    assert np.isclose(loss.numpy(), 0.0, atol=1e-6)
+    loss = nn.loss_mae_cor(y_true, y_pred, alpha=1)  # loss is just mae
+    assert np.isclose(loss.numpy(), 0.0, atol=1e-6)
+    loss = nn.loss_mae_cor(y_true, y_pred, alpha=0.75)  # loss is both mae (75%) and cor (25%)
+    assert np.isclose(loss.numpy(), 0.0, atol=1e-6)
+
+    y_pred = np.array([[3, 2, 1], [6, 5, 4]], dtype=np.float32)
+    loss = nn.loss_mae_cor(y_true, y_pred, alpha=0)  # loss is just correlation
+    assert np.isclose(loss.numpy(), 2.0, atol=1e-6)
+    loss = nn.loss_mae_cor(y_true, y_pred, alpha=1)  # loss is just mae
+    assert np.isclose(loss.numpy(), 1.333333333, atol=1e-6)
+    loss = nn.loss_mae_cor(y_true, y_pred, alpha=0.75)  # loss is both mae (75%) and cor (25%)
+    assert np.isclose(loss.numpy(), 1.5, atol=1e-6)

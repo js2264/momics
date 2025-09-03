@@ -2,6 +2,7 @@ import tensorflow as tf
 from tensorflow.keras import layers  # type: ignore
 
 kernel_init = tf.keras.initializers.VarianceScaling()
+k_init = tf.keras.initializers.VarianceScaling()
 
 DEFAULT_NN_INPUT_LAYER = layers.Input(shape=(2048, 1))
 DEFAULT_NN_OUTPUT_LAYER = layers.Dense(1, activation="linear")
@@ -194,38 +195,38 @@ class BasenjiMulti:  # pragma: no cover
         x = layers.BatchNormalization()(x)
         x = layers.Dropout(0.2)(x)
 
-        # First DilatedConvLayer
+        # DilatedConvLayer
         x = layers.Conv1D(32, 5, padding="same", dilation_rate=2)(x)
         x = layers.ReLU()(x)
         x = layers.BatchNormalization()(x)
         x = layers.Dropout(0.2)(x)
 
-        # First ResidualConcatLayer
+        # First DilatedConvLayer with ResidualConcat
         y = layers.Conv1D(32, 5, padding="same", dilation_rate=4)(x)
         y = layers.ReLU()(y)
         y = layers.BatchNormalization()(y)
         y = layers.Dropout(0.2)(y)
         x = layers.Concatenate()([x, y])
 
-        # Second ResidualConcatLayer
+        # Second DilatedConvLayer with ResidualConcat
         y = layers.Conv1D(32, 5, padding="same", dilation_rate=8)(x)
         y = layers.ReLU()(y)
         y = layers.BatchNormalization()(y)
         y = layers.Dropout(0.2)(y)
         x = layers.Concatenate()([x, y])
 
-        # Third ResidualConcatLayer
+        # Third DilatedConvLayer with ResidualConcat
         y = layers.Conv1D(32, 5, padding="same", dilation_rate=16)(x)
         y = layers.ReLU()(y)
         y = layers.BatchNormalization()(y)
         y = layers.Dropout(0.2)(y)
         x = layers.Concatenate()([x, y])
 
-        # Final conv reduction
+        # Trunk
         x = layers.Conv1D(256, kernel_size=1)(x)
         x = layers.ReLU()(x)
 
-        # Cropping to desired output length
+        # Crop
         if current_length > target_size:
             crop_size = (current_length - target_size) // 2
             x = layers.Cropping1D(cropping=(crop_size, crop_size))(x)
@@ -235,6 +236,11 @@ class BasenjiMulti:  # pragma: no cover
         # Separate head for each track
         output_heads = {}
         for out_name, out_layer in outputs.items():
+            head_out = layers.Conv1D(128, kernel_size=1)(x)
+            head_out = layers.ReLU()(head_out)
+            head_out = layers.Conv1D(1, kernel_size=1)(head_out)
+            head_out = layers.Activation("softplus")(head_out)
+            output_heads[out_name] = out_layer(head_out)
             track_out = layers.Conv1D(1, 1, padding="same")(x)
             track_out = layers.Reshape((target_size,))(track_out)
             output_heads[out_name] = out_layer(track_out)
@@ -615,3 +621,50 @@ def cor(y_true, y_pred):
     std_y = tf.sqrt(tf.reduce_mean(tf.square(y_pred - y_mean), axis=1) + tf.keras.backend.epsilon())
     corr = cov_xy / (std_x * std_y + tf.keras.backend.epsilon())
     return tf.reduce_mean(corr)
+
+
+def tf_rc_augmentation(inputs, outputs, swapped_cols=[1, 0, 3, 2]):
+    """
+    Apply reverse-complement augmentation to nucleotide sequences from inputs and/or outputs.
+    One of the keys in `inputs` or `outputs` should be "nucleotide" with one-hot encoded (ATGC) sequences.
+
+    Args:
+        inputs: Dictionary of input tensors
+        outputs: Dictionary of output tensors
+        swapped_cols: List defining how to swap nucleotide channels for RC (default is for ATGC, ie [1, 0, 3, 2])
+
+    Returns:
+        Tuple of augmented inputs and outputs
+    """
+    inp = next(iter(inputs.keys()))
+    batch_size = tf.shape(inputs[inp])[0]
+    apply_rc = tf.random.uniform([batch_size]) < 0.5
+    apply_rc = tf.reshape(apply_rc, [-1, 1, 1])
+
+    # INPUT: RC sequences and Reverse tracks
+    inputs_augmented = {}
+    for in_name, in_data in inputs.items():
+        if in_name == "nucleotide":
+            nucleotide_r = tf.reverse(in_data, axis=[1])
+            nucleotide_rc = tf.gather(nucleotide_r, swapped_cols, axis=-1)
+            nucleotide_augmented = tf.where(apply_rc, nucleotide_rc, in_data)
+            inputs_augmented[in_name] = nucleotide_augmented
+        else:
+            track_r = tf.reverse(in_data, axis=[1])
+            track_augmented = tf.where(apply_rc, track_r, in_data)
+            inputs_augmented[in_name] = track_augmented
+
+    # OUTPUT: Reverse tracks
+    outputs_augmented = {}
+    for out_name, out_data in outputs.items():
+        if out_name == "nucleotide":
+            nucleotide_r = tf.reverse(out_data, axis=[1])
+            nucleotide_rc = tf.gather(nucleotide_r, swapped_cols, axis=-1)
+            nucleotide_augmented = tf.where(apply_rc, nucleotide_rc, out_data)
+            outputs_augmented[out_name] = nucleotide_augmented
+        else:
+            track_r = tf.reverse(out_data, axis=[1])
+            track_augmented = tf.where(apply_rc, track_r, out_data)
+            outputs_augmented[out_name] = track_augmented
+
+    return inputs_augmented, outputs_augmented

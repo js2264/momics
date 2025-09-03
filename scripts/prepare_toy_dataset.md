@@ -23,3 +23,14 @@ momics delete -y S288c_MTL.momics
 ```
 
 ## Preparing repo for Rossi data
+
+```sh
+momics delete -y S288c_Rossi.momics
+momics create S288c_Rossi.momics
+momics ingest chroms -f tests_data/S288c.chrom.sizes -g S288c S288c_Rossi.momics
+momics ingest seq -f tests_data/S288c.fa S288c_Rossi.momics
+momics ingest bulk --threads 18 --folder data/bws/fixed/ S288c_Rossi.momics
+momics consolidate S288c_Rossi.momics
+cp -rf S288c_Rossi.momics tests_data/
+momics delete -y S288c_Rossi.momics
+```
