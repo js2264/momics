@@ -2,19 +2,6 @@ import tensorflow as tf
 from tensorflow.keras import layers  # type: ignore
 
 kernel_init = tf.keras.initializers.VarianceScaling()
-k_init = tf.keras.initializers.VarianceScaling()
-
-DEFAULT_NN_INPUT_LAYER = layers.Input(shape=(2048, 1))
-DEFAULT_NN_OUTPUT_LAYER = layers.Dense(1, activation="linear")
-
-
-## ---------------------------------------------------------------------------- ##
-## ---------------------------------------------------------------------------- ##
-## ---------------------------------------------------------------------------- ##
-##                                   NETWORKS                                   ##
-## ---------------------------------------------------------------------------- ##
-## ---------------------------------------------------------------------------- ##
-## ---------------------------------------------------------------------------- ##
 
 
 class ChromNN:
@@ -22,542 +9,223 @@ class ChromNN:
     A generic neural network that can handle multiple input and output modalities.
 
     This network processes each input through a separate convolutional branch,
-    concatenates the branches, and then splits into multiple output heads.
+    concatenates the branches, and then splits into multiple output heads for
+    true multi-modal predictions.
 
     Args:
-        inputs: Dictionary of input layers
-        outputs: Dictionary of output layers
-        filters: List of filter counts for each conv layer (default: [64, 16, 8])
-        kernel_sizes: List of kernel sizes for each conv layer (default: [3, 8, 80])
-        pool_sizes: List of pooling sizes for each layer (default: [2, 2, 2])
-        dropout_rates: List of dropout rates for each layer (default: [0.2, 0.2, 0])
-        activation: Activation function to use
+        inputs: Dictionary of input layers; all should have shape (8192, n_channels)
+        outputs: Dictionary of output layers; all should have shape (512, 1)
     """
 
     def __init__(
         self,
         inputs,
         outputs,
-        filters=None,
-        kernel_sizes=None,
-        pool_sizes=None,
-        dropout_rates=None,
-        activation="relu",
     ) -> None:
 
-        if filters is None:
-            filters = [64, 16, 8]
-        if kernel_sizes is None:
-            kernel_sizes = [3, 8, 80]
-        if pool_sizes is None:
-            pool_sizes = [2, 2, 2]
-        if dropout_rates is None:
-            dropout_rates = [0.2, 0.2, 0]
-        n_layers = len(filters)
+        input_branches: list = []
 
-        # If dropout_rates is a single value, expand it to a list
-        if isinstance(dropout_rates, (int, float)):
-            dropout_rates = [dropout_rates] * n_layers
+        for in_name, in_layer in inputs.items():
 
-        # Ensure all parameter lists have the same length
-        assert len(dropout_rates) == n_layers, "dropout_rates must have same length as filters"
-        assert len(kernel_sizes) == n_layers, "kernel_sizes must have same length as filters"
-        assert len(pool_sizes) == n_layers, "pool_sizes must have same length as filters"
+            if in_name == "nucleotide":
+                ## Conv tower for nucleotide input
+                x = Conv1DBlock(64, 3, "relu", drop_out=0.2, name=f"{in_name}_branch_conv1d_64_3")(in_layer)
+                x = Conv1DBlock(64, 8, "relu", drop_out=0.2, name=f"{in_name}_branch_conv1d_64_8")(x)
+                x = Conv1DBlock(64, 31, "relu", drop_out=0.2, name=f"{in_name}_branch_conv1d_64_31")(x)
 
-        # Process each input through its own convolutional branch
-        processed_inputs = []
-        input_tensors = []
+                ## Dilated tower
+                dilated_features = [x]
+                for dilation in [2, 4, 8, 16, 32, 64, 128]:
+                    x = DilatedConvBlock(32, 31, dilation, "relu", drop_out=0.2, name=f"{in_name}_branch_dconv_{dilation}")(x)
+                    dilated_features.append(x)
 
-        for input_layer in inputs.values():
-            input_tensors.append(input_layer)
-            x = input_layer
+                x = layers.Concatenate()(dilated_features)
+                input_branches.append(x)
 
-            # Apply convolutional blocks to this input
-            for i in range(n_layers):
-                x = layers.Conv1D(
-                    filters[i], kernel_size=kernel_sizes[i], padding="same", activation=activation, kernel_initializer=kernel_init
-                )(x)
-                x = layers.MaxPool1D(pool_size=pool_sizes[i], padding="same")(x)
-                x = layers.BatchNormalization()(x)
+            if in_name != "nucleotide":
 
-                if dropout_rates[i] > 0:
-                    x = layers.Dropout(dropout_rates[i])(x)
+                ## Conv tower
+                x = Conv1DBlock(32, 3, "relu", drop_out=0.1, name=f"{in_name}_branch_conv1d_32_3")(in_layer)
+                x = Conv1DBlock(32, 5, "relu", drop_out=0.1, name=f"{in_name}_branch_conv1d_32_5")(x)
+                x = Conv1DBlock(48, 7, "relu", drop_out=0.15, name=f"{in_name}_branch_conv1d_48_7")(x)
+                x = Conv1DBlock(48, 15, "relu", drop_out=0.2, name=f"{in_name}_branch_conv1d_48_15")(x)
 
-            x = layers.Flatten()(x)
-            processed_inputs.append(x)
+                # Dilated convolutions to capture multi-scale accessibility patterns
+                dilated_features = [x]
+                for dilation in [2, 4, 8, 16, 32, 64]:
+                    x = DilatedConvBlock(24, 15, dilation, "relu", drop_out=0.2, name=f"{in_name}_branch_dconv_{dilation}")(x)
+                    dilated_features.append(x)
 
-        # Concatenate all processed inputs if there are multiple
-        if len(processed_inputs) > 1:
-            merged = layers.Concatenate()(processed_inputs)
+                x = layers.Concatenate()(dilated_features)
+                x = Conv1DBlock(64, 1, "relu", drop_out=0.2)(x)
+                input_branches.append(x)
+
+        # Merge input branches
+        if len(input_branches) > 1:
+            x = layers.Concatenate(axis=-1)(input_branches)
         else:
-            merged = processed_inputs[0]
-
-        # Create separate output heads
-        output_tensors = {}
-
-        for output_name, output_layer in outputs.items():
-            output_tensors[output_name] = output_layer(merged)
-
-        # Create model with multiple inputs and outputs
-        self.model = tf.keras.Model(
-            inputs={name: layer for name, layer in zip(inputs.keys(), input_tensors)}, outputs=output_tensors
-        )
-
-
-class Basenji:  # pragma: no cover
-    """
-    This class is a loose adaptation of the Basenji convolutional neural network
-    for the prediction of epigenomic data from DNA sequence (Kelley et al. 2018).
-    """
-
-    def __init__(self, input_size=2048, output_size=512) -> None:
-
-        # First PooledConvLayer
-        input = layers.Input(shape=(input_size, 4))
-        x = layers.Conv1D(64, 15, padding="same")(input)
-        x = layers.ReLU()(x)
-        x = layers.MaxPooling1D(4)(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
-
-        # Second PooledConvLayer
-        x = layers.Conv1D(64, 5, padding="same")(x)
-        x = layers.ReLU()(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
-
-        # Third PooledConvLayer
-        x = layers.Conv1D(64, 5, padding="same")(x)
-        x = layers.ReLU()(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
-
-        # First DilatedConvLayer
-        x = layers.Conv1D(32, 5, padding="same", dilation_rate=2)(x)
-        x = layers.ReLU()(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
-
-        # First ResidualConcatLayer
-        y = layers.Conv1D(32, 5, padding="same", dilation_rate=4)(x)
-        y = layers.ReLU()(y)
-        y = layers.BatchNormalization()(y)
-        y = layers.Dropout(0.2)(y)
-        x = layers.Concatenate()([x, y])
-
-        # Second ResidualConcatLayer
-        y = layers.Conv1D(32, 5, padding="same", dilation_rate=8)(x)
-        y = layers.ReLU()(y)
-        y = layers.BatchNormalization()(y)
-        y = layers.Dropout(0.2)(y)
-        x = layers.Concatenate()([x, y])
-
-        # Third ResidualConcatLayer
-        y = layers.Conv1D(32, 5, padding="same", dilation_rate=16)(x)
-        y = layers.ReLU()(y)
-        y = layers.BatchNormalization()(y)
-        y = layers.Dropout(0.2)(y)
-        x = layers.Concatenate()([x, y])
-
-        # Final layers
-        x = layers.Conv1D(1, 1, padding="same")(x)
-        P = x.shape[1] // output_size
-        if P > 1:
-            x = layers.AveragePooling1D(pool_size=P)(x)
-        x = layers.Reshape((output_size,))(x)
-        output = layers.Dense(output_size, activation="linear")(x)
-
-        self.model = tf.keras.Model(input, output)
-
-
-class BasenjiMulti:  # pragma: no cover
-    def __init__(self, inputs, outputs, features_size, target_size) -> None:
-
-        # init parameters
-        current_length = features_size
-        x = inputs["nucleotide"]
-
-        # First PooledConvLayer
-        x = layers.Conv1D(64, 15, padding="same")(x)
-        x = layers.ReLU()(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
-
-        # Second PooledConvLayer
-        x = layers.Conv1D(64, 5, padding="same")(x)
-        x = layers.ReLU()(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
-
-        # Third PooledConvLayer
-        x = layers.Conv1D(64, 5, padding="same")(x)
-        x = layers.ReLU()(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
-
-        # DilatedConvLayer
-        x = layers.Conv1D(32, 5, padding="same", dilation_rate=2)(x)
-        x = layers.ReLU()(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
-
-        # First DilatedConvLayer with ResidualConcat
-        y = layers.Conv1D(32, 5, padding="same", dilation_rate=4)(x)
-        y = layers.ReLU()(y)
-        y = layers.BatchNormalization()(y)
-        y = layers.Dropout(0.2)(y)
-        x = layers.Concatenate()([x, y])
-
-        # Second DilatedConvLayer with ResidualConcat
-        y = layers.Conv1D(32, 5, padding="same", dilation_rate=8)(x)
-        y = layers.ReLU()(y)
-        y = layers.BatchNormalization()(y)
-        y = layers.Dropout(0.2)(y)
-        x = layers.Concatenate()([x, y])
-
-        # Third DilatedConvLayer with ResidualConcat
-        y = layers.Conv1D(32, 5, padding="same", dilation_rate=16)(x)
-        y = layers.ReLU()(y)
-        y = layers.BatchNormalization()(y)
-        y = layers.Dropout(0.2)(y)
-        x = layers.Concatenate()([x, y])
+            x = input_branches[0]
 
         # Trunk
-        x = layers.Conv1D(256, kernel_size=1)(x)
-        x = layers.ReLU()(x)
+        x = layers.Conv1D(256, kernel_size=1, name="trunk_conv1d_256")(x)
+        x = layers.ReLU(name="trunk_relu")(x)
+        crop_size = (8192 - 512) // 2
+        x = layers.Cropping1D(cropping=(crop_size, crop_size), name="trunk_crop1D")(x)
 
-        # Crop
-        if current_length > target_size:
-            crop_size = (current_length - target_size) // 2
-            x = layers.Cropping1D(cropping=(crop_size, crop_size))(x)
-        elif current_length < target_size:
-            x = layers.UpSampling1D(size=target_size // current_length)(x)
-
-        # Separate head for each track
+        ## Head
         output_heads = {}
         for out_name, out_layer in outputs.items():
-            head_out = layers.Conv1D(128, kernel_size=1)(x)
-            head_out = layers.ReLU()(head_out)
-            head_out = layers.Conv1D(1, kernel_size=1)(head_out)
-            head_out = layers.Activation("softplus")(head_out)
+            head_out = layers.Conv1D(128, kernel_size=1, name=f"{out_name}_head_conv1d_128")(x)
+            head_out = layers.ReLU(name=f"{out_name}_head_relu")(head_out)
+            head_out = layers.Conv1D(1, kernel_size=1, name=f"{out_name}_head_conv1d_1")(head_out)
+            head_out = layers.Activation("softplus", name=f"{out_name}_head_softplus")(head_out)
             output_heads[out_name] = out_layer(head_out)
-            track_out = layers.Conv1D(1, 1, padding="same")(x)
-            track_out = layers.Reshape((target_size,))(track_out)
-            output_heads[out_name] = out_layer(track_out)
 
+        # Create model with multiple inputs and outputs
         self.model = tf.keras.Model(inputs=inputs, outputs=output_heads)
 
 
-class Enformer:  # pragma: no cover
+class Conv1DBlock(layers.Layer):
+    """
+    Custom layer that combines Conv1D, BatchNorm, Activation, and Dropout.
+    """
+
     def __init__(
         self,
-        inputs,
-        outputs,
-        features_size,
-        target_size,
-        conv_channels=[64, 128, 256],
-        conv_kernels=[15, 5, 5],
-        conv_dropout_rates=[0.0, 0.1, 0.2],
-        conv_pools=[2, 2, 2],
-        dilations=[2, 4, 8],
-        dilated_kernel=[3, 3, 3],
-        transformer_blocks=8,
-        transformer_heads=8,
-        transformer_dropout=0.1,
-        attention_dropout=0.1,
-        final_conv_filters=256,
+        n_channels,
+        kernel_size,
+        activation="relu",
+        drop_out=0.0,
+        kernel_initializer="auto",
+        padding="same",
+        use_batch_norm=True,
+        **kwargs,
     ):
+        super(Conv1DBlock, self).__init__(**kwargs)
 
-        # Put these in init parameters
-        current_length = features_size
-        x = inputs["nucleotide"]
+        self.n_channels = n_channels
+        self.kernel_size = kernel_size
+        self.activation = activation
+        self.drop_out = drop_out
+        self.kernel_initializer = kernel_initializer
+        self.padding = padding
+        self.use_batch_norm = use_batch_norm
 
-        # Conv tower
-        for i, _ in enumerate(conv_channels):
-            x = layers.Conv1D(conv_channels[i], kernel_size=conv_kernels[i], padding="same")(x)
-            x = layers.BatchNormalization()(x)
-            x = layers.ReLU()(x)
-            if conv_dropout_rates[i] > 0:
-                x = layers.Dropout(conv_dropout_rates[i])(x)
-            if conv_pools[i] > 0:
-                current_length = current_length // conv_pools[i]
-                x = layers.MaxPooling1D(pool_size=conv_pools[i])(x)
+        # Automatically pick a suitable initializer if not provided
+        if kernel_initializer == "auto":
+            if activation in ["relu", "leaky_relu", "elu", "prelu"]:
+                kernel_initializer = tf.keras.initializers.HeNormal()
+            else:
+                kernel_initializer = tf.keras.initializers.GlorotNormal()
 
-        # Dilated convolutions with residual connections
-        for j, dilation in enumerate(dilations):
-            conv = layers.Conv1D(conv_channels[-1], kernel_size=dilated_kernel[j], dilation_rate=dilation, padding="same")(x)
-            conv = layers.BatchNormalization()(conv)
-            conv = layers.ReLU()(conv)
-            x = layers.Add()([x, conv])
+        # Create layers
+        self.conv1d = layers.Conv1D(n_channels, kernel_size, padding=padding, kernel_initializer=kernel_initializer)
+        if use_batch_norm:
+            self.batch_norm = layers.BatchNormalization()
 
-        # Transformer blocks
-        # x = tf.keras.layers.Lambda(lambda t: t, output_shape=convtower_out_shape[1:])(x)
-        for _ in range(transformer_blocks):
-            transformer = TransformerBlock(
-                num_heads=transformer_heads,
-                embed_dim=conv_channels[-1],
-                ff_dim=conv_channels[-1] * 4,
-                dropout=transformer_dropout,
-                attention_dropout=attention_dropout,
-            )
-            x = transformer(x)
+        self.activation_layer = layers.Activation(activation)
+        if drop_out > 0:
+            self.dropout = layers.Dropout(drop_out)
 
-        # Final conv reduction
-        x = layers.Conv1D(final_conv_filters, kernel_size=1)(x)
-        x = layers.ReLU()(x)
+    def call(self, inputs, training=None):
+        x = self.conv1d(inputs)
+        if self.use_batch_norm:
+            x = self.batch_norm(x, training=training)
 
-        # Cropping to desired output length
-        if current_length > target_size:
-            crop_size = (current_length - target_size) // 2
-            x = layers.Cropping1D(cropping=(crop_size, crop_size))(x)
-        elif current_length < target_size:
-            x = layers.UpSampling1D(size=target_size // current_length)(x)
+        x = self.activation_layer(x)
+        if self.drop_out > 0:
+            x = self.dropout(x, training=training)
 
-        # Multi-head outputs
-        output_heads = {}
-        for out_name, out_layer in outputs.items():
-            head_out = layers.Conv1D(128, kernel_size=1)(x)
-            head_out = layers.ReLU()(head_out)
-            head_out = layers.Conv1D(1, kernel_size=1)(head_out)
-            head_out = layers.Activation("softplus")(head_out)
-            output_heads[out_name] = out_layer(head_out)
+        return x
 
-        self.model = tf.keras.Model(inputs=inputs, outputs=output_heads)
-
-
-class OriginalEnformer:  # pragma: no cover
-    def __init__(
-        self,
-        inputs,
-        outputs,
-        features_size,
-        target_size,
-        conv_channels=[64, 128, 256],
-        conv_pools=[2, 2, 2],
-        dilations=[2, 4, 8],
-        dilated_kernel=[3, 3, 3],
-        transformer_blocks=8,
-        transformer_heads=8,
-        transformer_dropout=0.1,
-        attention_dropout=0.1,
-        final_conv_filters=256,
-    ):
-
-        # Put these in init parameters
-        current_length = features_size
-        x = inputs["nucleotide"]
-
-        # Stem
-        x = ConvBlock(features_size // 2, 15, 1, dilation=0)(x)
-        x = RConvBlock(features_size // 2, 1, dilation=0)(x)
-        x = layers.MaxPooling1D(pool_size=2)(x)
-
-        # Conv tower
-        for i, _ in enumerate(conv_channels):
-            x = ConvBlock(conv_channels[i], 5, 1, dilation=dilations[i])(x)
-            x = RConvBlock(conv_channels[i], 1, dilation=dilations[i])(x)
-            # if conv_dropout_rates[i] > 0:
-            #     x = layers.Dropout(conv_dropout_rates[i])(x)
-            if conv_pools[i] > 0:
-                current_length = current_length // conv_pools[i]
-                x = layers.MaxPooling1D(pool_size=conv_pools[i])(x)
-
-        # Dilated convolutions with residual connections
-        for j, dilation in enumerate(dilations):
-            conv = layers.Conv1D(conv_channels[-1], kernel_size=dilated_kernel[j], dilation_rate=dilation, padding="same")(x)
-            conv = layers.BatchNormalization()(conv)
-            conv = layers.ReLU()(conv)
-            x = layers.Add()([x, conv])
-
-        # Transformer blocks
-        # x = tf.keras.layers.Lambda(lambda t: t, output_shape=convtower_out_shape[1:])(x)
-        for _ in range(transformer_blocks):
-            transformer = TransformerBlock(
-                num_heads=transformer_heads,
-                embed_dim=conv_channels[-1],
-                ff_dim=conv_channels[-1] * 4,
-                dropout=transformer_dropout,
-                attention_dropout=attention_dropout,
-            )
-            x = transformer(x)
-
-        # Final conv reduction
-        x = layers.Conv1D(final_conv_filters, kernel_size=1)(x)
-        x = layers.ReLU()(x)
-
-        # Cropping to desired output length
-        if current_length > target_size:
-            crop_size = (current_length - target_size) // 2
-            x = layers.Cropping1D(cropping=(crop_size, crop_size))(x)
-        elif current_length < target_size:
-            x = layers.UpSampling1D(size=target_size // current_length)(x)
-
-        # Multi-head outputs
-        output_heads = {}
-        for out_name, out_layer in outputs.items():
-            head_out = layers.Conv1D(128, kernel_size=1)(x)
-            head_out = layers.ReLU()(head_out)
-            head_out = layers.Conv1D(1, kernel_size=1)(head_out)
-            head_out = layers.Activation("softplus")(head_out)
-            output_heads[out_name] = out_layer(head_out)
-
-        self.model = tf.keras.Model(inputs=inputs, outputs=output_heads)
-
-
-class Scerevisiae_Scc1:
-    def __init__(
-        self,
-        input={"nucleotide": layers.Input(shape=(32768, 4))},
-        output={"SCC1": layers.Dense(128, activation="relu", name="SCC1")},
-    ):
-
-        k_init = tf.keras.initializers.VarianceScaling()
-        x = input["nucleotide"]
-
-        x = layers.Conv1D(32, kernel_size=12, padding="same", activation="relu", kernel_initializer=k_init)(x)
-        x = layers.MaxPool1D(pool_size=8, padding="same")(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
-
-        x = layers.Conv1D(32, kernel_size=5, padding="same", activation="relu", kernel_initializer=k_init)(x)
-        x = layers.MaxPool1D(pool_size=4, padding="same")(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
-
-        x = layers.Conv1D(32, kernel_size=5, padding="same", activation="relu", kernel_initializer=k_init)(x)
-        x = layers.MaxPool1D(pool_size=4, padding="same")(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
-
-        x = layers.Conv1D(16, kernel_size=5, padding="same", activation="relu", kernel_initializer=k_init, dilation_rate=2)(x)
-        x = layers.BatchNormalization()(x)
-        x1 = layers.Dropout(0.2)(x)
-
-        x = x1
-        x = layers.Conv1D(16, kernel_size=5, padding="same", activation="relu", kernel_initializer=k_init, dilation_rate=4)(x)
-        x = layers.BatchNormalization()(x)
-        x2 = layers.Dropout(0.2)(x)
-
-        x = layers.concatenate([x1, x2], axis=2)
-        x = layers.Conv1D(16, kernel_size=5, padding="same", activation="relu", kernel_initializer=k_init, dilation_rate=8)(x)
-        x = layers.BatchNormalization()(x)
-        x3 = layers.Dropout(0.2)(x)
-
-        x = layers.concatenate([x1, x2, x3], axis=2)
-        x = layers.Conv1D(16, kernel_size=5, padding="same", activation="relu", kernel_initializer=k_init, dilation_rate=16)(x)
-        x = layers.BatchNormalization()(x)
-        x4 = layers.Dropout(0.2)(x)
-
-        x = layers.concatenate([x1, x2, x3, x4], axis=2)
-        output = layers.Conv1D(1, kernel_size=1, padding="same", activation="relu", kernel_initializer=k_init)(x)
-
-        model = tf.keras.Model(input, output)
-        self.model = model
-
-
-class Scerevisiae_MNase:
-    def __init__(self, features_size):
-
-        k_init = tf.keras.initializers.VarianceScaling()
-        input = layers.Input(shape=(features_size, 4))
-        x = input
-
-        x = layers.Conv1D(64, kernel_size=3, padding="same", activation="relu", kernel_initializer=k_init)(x)
-        x = layers.MaxPool1D(2, padding="same")(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
-        x = layers.Conv1D(16, kernel_size=8, padding="same", activation="relu", kernel_initializer=k_init)(x)
-        x = layers.MaxPool1D(2, padding="same")(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Dropout(0.2)(x)
-        x = layers.Conv1D(8, kernel_size=80, padding="same", activation="relu", kernel_initializer=k_init)(x)
-        x = layers.MaxPool1D(2, padding="same")(x)
-        x = layers.BatchNormalization()(x)
-        x = layers.Flatten()(x)
-        x = layers.Dense(1, activation="relu")(x)
-        output = layers.Reshape((1, 1))(x)
-
-        model = tf.keras.Model(input, output)
-        self.model = model
-
-
-## ---------------------------------------------------------------------------- ##
-## ---------------------------------------------------------------------------- ##
-## ---------------------------------------------------------------------------- ##
-## ---------------------------------------------------------------------------- ##
-##                                   COMPONENTS                                 ##
-## ---------------------------------------------------------------------------- ##
-## ---------------------------------------------------------------------------- ##
-## ---------------------------------------------------------------------------- ##
-
-
-class MHABlock(layers.Layer):
-    def __init__(self, num_heads, embed_dim, attention_dropout=0.1):
-        super().__init__()
-        self.layernorm1 = layers.LayerNormalization(epsilon=1e-6)
-        self.att = layers.MultiHeadAttention(num_heads=num_heads, key_dim=embed_dim // num_heads, dropout=attention_dropout)
-        self.drop = layers.Dropout(attention_dropout)
-
-    def call(self, inputs):
-        norm = self.layernorm1(inputs)
-        attn_output = self.att(norm, norm)
-        drop = self.drop(attn_output)
-        return inputs + drop
-
-
-class TransformerBlock(layers.Layer):
-    def __init__(self, num_heads, embed_dim, ff_dim, dropout=0.1, attention_dropout=0.1):
-        super().__init__()
-        self.att = layers.MultiHeadAttention(num_heads=num_heads, key_dim=embed_dim // num_heads, dropout=attention_dropout)
-        self.ffn = tf.keras.Sequential(
-            [layers.Dense(ff_dim, activation="relu"), layers.Dropout(dropout), layers.Dense(embed_dim), layers.Dropout(dropout)]
+    def get_config(self):
+        config = super().get_config()
+        config.update(
+            {
+                "n_channels": self.n_channels,
+                "kernel_size": self.kernel_size,
+                "activation": self.activation,
+                "drop_out": self.drop_out,
+                "kernel_initializer": self.kernel_initializer,
+                "padding": self.padding,
+                "use_batch_norm": self.use_batch_norm,
+            }
         )
-        self.layernorm1 = layers.LayerNormalization(epsilon=1e-6)
-        self.layernorm2 = layers.LayerNormalization(epsilon=1e-6)
-
-    def call(self, inputs):
-        attn_output = self.att(inputs, inputs)
-        out1 = self.layernorm1(inputs + attn_output)
-        ffn_output = self.ffn(out1)
-        return self.layernorm2(out1 + ffn_output)
+        return config
 
 
-class ConvBlock(layers.Layer):
-    def __init__(self, filters, kernel_size, dilation, padding="same"):
-        super().__init__()
-        self.bn = layers.BatchNormalization()
-        self.act = layers.GeLU()
-        self.conv = layers.Conv1D(filters, kernel_size, padding=padding)
+class DilatedConvBlock(layers.Layer):
+    """
+    Custom layer that combines dilated Conv1D, BatchNorm, Activation, and Dropout.
+    """
 
-    def call(self, inputs):
-        x = self.bn(inputs)
-        x = self.act(x)
-        x = self.conv(x)
+    def __init__(
+        self,
+        n_channels,
+        kernel_size,
+        dilation_rate,
+        activation="relu",
+        drop_out=0.0,
+        kernel_initializer="auto",
+        padding="same",
+        use_batch_norm=True,
+        **kwargs,
+    ):
+        super(DilatedConvBlock, self).__init__(**kwargs)
+
+        self.n_channels = n_channels
+        self.kernel_size = kernel_size
+        self.dilation_rate = dilation_rate
+        self.activation = activation
+        self.drop_out = drop_out
+        self.kernel_initializer = kernel_initializer
+        self.padding = padding
+        self.use_batch_norm = use_batch_norm
+
+        # Automatically pick a suitable initializer if not provided
+        if kernel_initializer == "auto":
+            if activation in ["relu", "leaky_relu", "elu", "prelu"]:
+                kernel_initializer = tf.keras.initializers.HeNormal()
+            else:
+                kernel_initializer = tf.keras.initializers.GlorotNormal()
+
+        # Create layers
+        self.conv1d = layers.Conv1D(
+            n_channels, kernel_size, padding=padding, dilation_rate=dilation_rate, kernel_initializer=kernel_initializer
+        )
+        if use_batch_norm:
+            self.batch_norm = layers.BatchNormalization()
+
+        self.activation_layer = layers.Activation(activation)
+        if drop_out > 0:
+            self.dropout = layers.Dropout(drop_out)
+
+    def call(self, inputs, training=None):
+        x = self.conv1d(inputs)
+        if self.use_batch_norm:
+            x = self.batch_norm(x, training=training)
+
+        x = self.activation_layer(x)
+        if self.drop_out > 0:
+            x = self.dropout(x, training=training)
+
         return x
 
-
-class RConvBlock(layers.Layer):
-    def __init__(self, filters, kernel_size, dilation, padding="same"):
-        super().__init__()
-        self.bn = layers.BatchNormalization()
-        self.act = layers.GeLU()
-        self.conv = layers.Conv1D(filters, kernel_size, padding=padding)
-
-    def call(self, inputs):
-        x = self.bn(inputs)
-        x = self.act(x)
-        x = self.conv(x)
-        x = layers.Add()([x, inputs])
-        return x
-
-
-## ---------------------------------------------------------------------------- ##
-## ---------------------------------------------------------------------------- ##
-## ---------------------------------------------------------------------------- ##
-##                                   UTILS                                      ##
-## ---------------------------------------------------------------------------- ##
-## ---------------------------------------------------------------------------- ##
-## ---------------------------------------------------------------------------- ##
+    def get_config(self):
+        config = super().get_config()
+        config.update(
+            {
+                "n_channels": self.n_channels,
+                "kernel_size": self.kernel_size,
+                "dilation_rate": self.dilation_rate,
+                "activation": self.activation,
+                "drop_out": self.drop_out,
+                "kernel_initializer": self.kernel_initializer,
+                "padding": self.padding,
+                "use_batch_norm": self.use_batch_norm,
+            }
+        )
+        return config
 
 
 def loss_mae_cor(y_true, y_pred, alpha=0.5):

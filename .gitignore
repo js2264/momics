@@ -58,6 +58,7 @@ test.csv
 *bins*tsv
 out.*
 *test.bed*
+.tests_*
 ranges*
 gcs_creds.json
 output*
@@ -82,3 +83,4 @@ REP1_*
 Rep1_*
 ABF1_*
 Abf1_*
+_nn*
