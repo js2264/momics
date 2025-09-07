@@ -85,9 +85,44 @@ class ChromNN:
         self.model = tf.keras.Model(inputs=inputs, outputs=output_heads)
 
 
+class Basenji:
+    """
+    This class is a loose adaptation of the Basenji convolutional neural network
+    for the prediction of epigenomic data from DNA sequence (Kelley et al. 2018).
+    """
+
+    def __init__(self, input_size=2048, output_size=512) -> None:
+
+        input = layers.Input(shape=(input_size, 4))
+
+        # Conv tower
+        x = Conv1DBlock(64, 15, "relu", drop_out=0.2, pool_size=4, name="conv1d_64_15")(input)
+        x = Conv1DBlock(64, 5, "relu", drop_out=0.2, name="conv1d_64_5")(x)
+        x = Conv1DBlock(64, 5, "relu", drop_out=0.2, name="conv1d_64_5_2")(x)
+
+        # Dilated tower
+        x = DilatedConvBlock(32, 5, activation="relu", drop_out=0.2, dilation_rate=2, name="dconv_2")(x)
+        y = DilatedConvBlock(32, 5, activation="relu", drop_out=0.2, dilation_rate=4, name="dconv_4")(x)
+        x = layers.Concatenate()([x, y])
+        y = DilatedConvBlock(32, 5, activation="relu", drop_out=0.2, dilation_rate=8, name="dconv_8")(x)
+        x = layers.Concatenate()([x, y])
+        y = DilatedConvBlock(32, 5, activation="relu", drop_out=0.2, dilation_rate=16, name="dconv_16")(x)
+        x = layers.Concatenate()([x, y])
+
+        # Final layers
+        x = layers.Conv1D(1, 1, padding="same")(x)
+        P = x.shape[1] // output_size
+        if P > 1:
+            x = layers.AveragePooling1D(pool_size=P)(x)
+        x = layers.Reshape((output_size,))(x)
+        output = layers.Dense(output_size, activation="linear")(x)
+
+        self.model = tf.keras.Model(input, output)
+
+
 class Conv1DBlock(layers.Layer):
     """
-    Custom layer that combines Conv1D, BatchNorm, Activation, and Dropout.
+    Custom layer that combines Conv1D, BatchNorm, Activation, MaxPooling, and Dropout.
     """
 
     def __init__(
@@ -99,6 +134,7 @@ class Conv1DBlock(layers.Layer):
         kernel_initializer="auto",
         padding="same",
         use_batch_norm=True,
+        pool_size=None,
         **kwargs,
     ):
         super(Conv1DBlock, self).__init__(**kwargs)
@@ -110,6 +146,7 @@ class Conv1DBlock(layers.Layer):
         self.kernel_initializer = kernel_initializer
         self.padding = padding
         self.use_batch_norm = use_batch_norm
+        self.pool_size = pool_size
 
         # Automatically pick a suitable initializer if not provided
         if kernel_initializer == "auto":
@@ -124,6 +161,10 @@ class Conv1DBlock(layers.Layer):
             self.batch_norm = layers.BatchNormalization()
 
         self.activation_layer = layers.Activation(activation)
+
+        if pool_size is not None and pool_size > 1:
+            self.maxpool = layers.MaxPooling1D(pool_size=pool_size, padding="same")
+
         if drop_out > 0:
             self.dropout = layers.Dropout(drop_out)
 
@@ -133,6 +174,10 @@ class Conv1DBlock(layers.Layer):
             x = self.batch_norm(x, training=training)
 
         x = self.activation_layer(x)
+
+        if self.pool_size is not None and self.pool_size > 1:
+            x = self.maxpool(x)
+
         if self.drop_out > 0:
             x = self.dropout(x, training=training)
 
@@ -149,6 +194,7 @@ class Conv1DBlock(layers.Layer):
                 "kernel_initializer": self.kernel_initializer,
                 "padding": self.padding,
                 "use_batch_norm": self.use_batch_norm,
+                "pool_size": self.pool_size,
             }
         )
         return config
@@ -156,7 +202,7 @@ class Conv1DBlock(layers.Layer):
 
 class DilatedConvBlock(layers.Layer):
     """
-    Custom layer that combines dilated Conv1D, BatchNorm, Activation, and Dropout.
+    Custom layer that combines dilated Conv1D, BatchNorm, Activation, MaxPooling, and Dropout.
     """
 
     def __init__(
@@ -169,6 +215,7 @@ class DilatedConvBlock(layers.Layer):
         kernel_initializer="auto",
         padding="same",
         use_batch_norm=True,
+        pool_size=None,
         **kwargs,
     ):
         super(DilatedConvBlock, self).__init__(**kwargs)
@@ -181,6 +228,7 @@ class DilatedConvBlock(layers.Layer):
         self.kernel_initializer = kernel_initializer
         self.padding = padding
         self.use_batch_norm = use_batch_norm
+        self.pool_size = pool_size
 
         # Automatically pick a suitable initializer if not provided
         if kernel_initializer == "auto":
@@ -197,6 +245,10 @@ class DilatedConvBlock(layers.Layer):
             self.batch_norm = layers.BatchNormalization()
 
         self.activation_layer = layers.Activation(activation)
+
+        if pool_size is not None and pool_size > 1:
+            self.maxpool = layers.MaxPooling1D(pool_size=pool_size, padding="same")
+
         if drop_out > 0:
             self.dropout = layers.Dropout(drop_out)
 
@@ -206,6 +258,10 @@ class DilatedConvBlock(layers.Layer):
             x = self.batch_norm(x, training=training)
 
         x = self.activation_layer(x)
+
+        if self.pool_size is not None and self.pool_size > 1:
+            x = self.maxpool(x)
+
         if self.drop_out > 0:
             x = self.dropout(x, training=training)
 
@@ -223,6 +279,7 @@ class DilatedConvBlock(layers.Layer):
                 "kernel_initializer": self.kernel_initializer,
                 "padding": self.padding,
                 "use_batch_norm": self.use_batch_norm,
+                "pool_size": self.pool_size,
             }
         )
         return config

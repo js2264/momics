@@ -14,15 +14,18 @@ from tensorflow.keras import layers  # type: ignore
 @pytest.mark.order(99)
 def test_chromnn_cpu():
 
+    ## Deactivate GPU
+    tf.config.set_visible_devices([], "GPU")
+
     ## Initial vars
     mom = momics.Momics("tests_data/test.momics")
     features = "ATAC"
-    features_size = 128
+    features_size = 8192
     target = "SCC1"
     stride = 48
-    target_size = 4
+    target_size = 512
     batch_size = 100
-    bins = mom.bins(width=features_size, stride=stride, cut_last_bin_out=True).sample(1000)
+    bins = mom.bins(width=features_size, stride=stride, cut_last_bin_out=True).sample(100)
     bins2 = bins.copy()
     bins2.Start = bins2.Start + features_size // 2 - target_size // 2
     bins2.End = bins2.Start + target_size
@@ -46,18 +49,16 @@ def test_chromnn_cpu():
 
     # Train model
     input = {features: layers.Input(shape=(features_size, 1), name=features)}
-    output = {target: layers.Dense(target_size, activation="linear", name=target)}
+    output = {target: layers.Reshape((target_size,), name=target)}
     model = nn.ChromNN(input, output).model
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), loss="mse")
     model.fit(train_dataset, epochs=2, steps_per_epoch=len(X_train) // batch_size)
 
     ## Predict
-    bb = mom.bins(width=features_size, stride=5, cut_last_bin_out=True)["I", 0:50000]
+    bb = mom.bins(width=features_size, stride=5, cut_last_bin_out=True)["I", 0:100]
     dat = query.MomicsQuery(mom, bb).query_tracks(tracks=[features]).coverage[features]
     dat = np.array([dat[chrom] for chrom in dat.keys()])
-    bb2 = bb.copy()
-    bb2.Start = bb2.Start + features_size // 2 - target_size // 2
-    bb2.End = bb2.Start + target_size
+    bb2 = bb.extend(-(features_size - target_size) // 2)
     chrom_sizes = {chrom: length for chrom, length in zip(mom.chroms().chrom, mom.chroms().length)}
     keys = [f"{chrom}:{start}-{end}" for chrom, start, end in zip(bb2.Chromosome, bb2.Start, bb2.End)]
     predictions = model.predict(dat)[target]
@@ -66,8 +67,8 @@ def test_chromnn_cpu():
         res[f"f{features_size}_s{stride}_t{target_size}"][key] = predictions[i]
 
     res = aggregate.aggregate(res, chrom_sizes, type="mean", prefix="prediction")
-    assert len(res["f128_s48_t4"]) == 17
-    assert len(res["f128_s48_t4"]["I"]) == 230218
+    assert len(res["f8192_s48_t512"]) == 17
+    assert len(res["f8192_s48_t512"]["I"]) == 230218
 
 
 @pytest.mark.order(99)
