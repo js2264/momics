@@ -42,6 +42,8 @@ _scratch/
 example.py
 *.momics/
 !tests_data/*.momics/
+tests_data/S288c_Rossi.momics/
+tests_data/mm10.momics/
 .tox
 benchmark.py
 /*py
