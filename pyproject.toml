@@ -35,6 +35,8 @@ dependencies = [
     "numpy",
     "pandas",
     "pyarrow>=1.0",
+    "matplotlib",
+    "seaborn",
     "click>=7",
     "cloup",
     "packaging",
@@ -44,12 +46,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-all = [
-    "biopython",
-    "dask[array,dataframe]",
-    "matplotlib",
-    "psutil",
-]
 and-tf = [
     "tensorflow",
 ]
@@ -83,7 +79,7 @@ docs = [
     "lxml[html_clean]",
 ]
 dev = [
-    "momics[all,test]",
+    "momics[test]",
     "python-semantic-release",
     "pre-commit",
     "pylint",
