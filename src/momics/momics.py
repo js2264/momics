@@ -139,6 +139,10 @@ class Momics:
         else:
             logger.debug(f"Found {self.path}")
 
+    def __repr__(self):
+        """Shows path to momics repository."""
+        return f"Momics('{self.path}') <{self.__class__.__module__}.{self.__class__.__name__} at {hex(id(self))}>"
+
     def _is_cloud_hosted(self) -> Union[str, Literal[False]]:
         if self.path.startswith(("s3://", "gcs://", "azure://")):
             return self.path.split("://")[0]

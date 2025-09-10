@@ -214,7 +214,7 @@ class MomicsConfig:
                 if not _has_logged:
                     _has_logged = True
                     logger.info(
-                        "No cloud config found for momics."
+                        "No cloud config found for momics. "
                         "Consider populating `~/.momics.ini` file with "
                         "configuration settings for cloud access."
                     )
