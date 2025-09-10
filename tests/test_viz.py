@@ -127,7 +127,7 @@ def test_viz_functions_return_types():
 
 
 @pytest.mark.order(10)
-def test_viz_functions_with_empty_coverage(momics_path: str):
+def test_viz_functions_with_empty_coverage():
     """Test visualization functions behavior with tracks containing zeros."""
     mom = Momics("tests_data/test.momics")
     q = MomicsQuery(mom, "I:5000-5020").query_tracks(tracks=["ATAC", "SCC1"])
@@ -137,4 +137,15 @@ def test_viz_functions_with_empty_coverage(momics_path: str):
     q_multi = MomicsQuery(mom, ranges).query_tracks(tracks=["ATAC", "SCC1"])
     ax = viz.aggrcoverage(q_multi)
     assert ax is not None
+    plt.close("all")
+
+
+@pytest.mark.order(10)
+def test_heatcoverage():
+    """Test heatcoverage plotting function."""
+    mom = Momics("tests_data/test.momics")
+    bins = mom.bins(1000, 1000, cut_last_bin_out=True)["I"]
+    q = MomicsQuery(mom, bins).query_tracks(tracks=["ATAC", "SCC1"])
+    axes = viz.heatcoverage(q, order_by="SCC1", cmap={"ATAC": "red", "SCC1": "blue"})
+    assert axes is not None
     plt.close("all")
