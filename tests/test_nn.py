@@ -11,12 +11,12 @@ from momics import attribution
 from tensorflow.keras import layers  # type: ignore
 
 
+## Deactivate GPU
+tf.config.set_visible_devices([], "GPU")
+
+
 @pytest.mark.order(99)
 def test_chromnn_cpu():
-
-    ## Deactivate GPU
-    tf.config.set_visible_devices([], "GPU")
-
     ## Initial vars
     mom = momics.Momics("tests_data/test.momics")
     features = "ATAC"
