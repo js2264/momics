@@ -57,7 +57,7 @@ class ChromNN:
                     dilated_features.append(x)
 
                 x = layers.Concatenate()(dilated_features)
-                x = Conv1DBlock(64, 1, "relu", drop_out=0.2)(x)
+                x = Conv1DBlock(64, 1, "relu", drop_out=0.2, name=f"{in_name}_branch_conv1d_64_1")(x)
                 input_branches.append(x)
 
         # Merge input branches
