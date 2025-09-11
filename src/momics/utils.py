@@ -1,6 +1,7 @@
 import collections
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
+from momics.logging import logger
 
 import numpy as np
 import pyranges as pr
@@ -369,6 +370,7 @@ def scale_track(cov, quartile: float = 99.99, blacklist: Optional[pr.PyRanges] =
 
         all_cov = np.concatenate(all_cov)
         threshold = np.nanpercentile(all_cov, quartile)
+        logger.info(f"Inferring threshold from {quartile} percentile: {threshold:.4f}")
 
     for chrom in cov.keys():
         arr = cov[chrom]
@@ -376,7 +378,7 @@ def scale_track(cov, quartile: float = 99.99, blacklist: Optional[pr.PyRanges] =
         arr = np.minimum(arr, threshold)
         chrom_max = np.nanmax(arr)
         ratio = threshold / chrom_max
-        print(f"Scaling-- {chrom} by {ratio:.4f}")
+        logger.info(f"Scaling-- {chrom} by {ratio:.4f}")
         arr = (arr - np.nanmin(arr)) / (np.nanmax(arr) - np.nanmin(arr)) / ratio
         cov[chrom] = arr
     return cov
