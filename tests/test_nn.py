@@ -10,6 +10,8 @@ from momics import aggregate
 from momics import attribution
 from tensorflow.keras import layers  # type: ignore
 
+from momics.dataset import MomicsDataset  # type: ignore
+
 
 ## Deactivate GPU
 tf.config.set_visible_devices([], "GPU")
@@ -69,6 +71,37 @@ def test_chromnn_cpu():
     res = aggregate.aggregate(res, chrom_sizes, type="mean", prefix="prediction")
     assert len(res["f8192_s48_t512"]) == 17
     assert len(res["f8192_s48_t512"]["I"]) == 230218
+
+
+@pytest.mark.order(99)
+def test_chromnn_multi():
+    ## ChromNN works for multiple inputs (including seq) and outputs
+    mom = momics.Momics("tests_data/S288c_MTL.momics")
+    features = ["nucleotide", "ATAC"]
+    features_size = 8192
+    targets = ["SCC1", "MNASE"]
+    stride = 48
+    target_size = 512
+    batch_size = 100
+    bins = mom.bins(width=features_size, stride=stride, cut_last_bin_out=True).sample(100)
+    bins2 = bins.copy()
+    bins2.Start = bins2.Start + features_size // 2 - target_size // 2
+    bins2.End = bins2.Start + target_size
+
+    ## Make tf reproducible
+    tf.random.set_seed(42)
+    np.random.seed(42)
+    train_dataset = MomicsDataset(mom, bins, features, targets, target_size)
+
+    # Train model
+    input = {
+        "nucleotide": layers.Input(shape=(features_size, 4), name="nucleotide"),
+        "ATAC": layers.Input(shape=(features_size, 1), name="ATAC"),
+    }
+    output = {t: layers.Reshape((target_size,), name=t) for t in targets}
+    model = nn.ChromNN(input, output).model
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), loss="mse")
+    model.fit(train_dataset, epochs=2, steps_per_epoch=len(bins) // batch_size)
 
 
 @pytest.mark.order(99)
