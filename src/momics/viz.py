@@ -5,12 +5,16 @@ import numpy as np
 from typing import Optional, Tuple
 
 
-def coverage(q: MomicsQuery, fig_size: Optional[Tuple[int, int]] = None) -> plt.Axes:
+DEFAULT_ISM_CMAP = plt.get_cmap("afmhot_r")
+
+
+def coverage(q: MomicsQuery, cmap: Optional[dict] = None, fig_size: Optional[Tuple[int, int]] = None) -> plt.Axes:
     """
     Plot the coverage of tracks queried over a single genomic window.
 
     Args:
         q (MomicsQuery): A MomicsQuery object containing the coverage data.
+        cmap (dict, optional): A dictionary mapping track names to colors. Defaults to None.
         fig_size (Tuple[int, int], optional): Size of the figure. Defaults to (10, 1.5 * n_tracks).
 
     Returns:
@@ -40,14 +44,19 @@ def coverage(q: MomicsQuery, fig_size: Optional[Tuple[int, int]] = None) -> plt.
     if fig_size is None:
         fig_size = (10, int(1.5 * n_tracks))
 
+    if cmap is not None:
+        sns.set_palette(sns.color_palette([cmap[track] for track in tracks if track in cmap]))
+    else:
+        sns.set_palette(sns.color_palette("tab10", n_colors=len(tracks)))
+
     _, axes = plt.subplots(n_tracks, 1, figsize=fig_size, sharex=True)
     if n_tracks == 1:
         axes = [axes]
     for i, track in enumerate(tracks):
         ax = axes[i]
         coverage = cov_arr[i]
-        sns.lineplot(x=idx, y=coverage, ax=ax, label=track, color=sns.color_palette("tab10")[i])
-        ax.fill_between(idx, coverage, alpha=0.3, color=sns.color_palette("tab10")[i])
+        sns.lineplot(x=idx, y=coverage, ax=ax, label=track, color=sns.color_palette()[i])
+        ax.fill_between(idx, coverage, alpha=0.3, color=sns.color_palette()[i])
         ax.set_ylabel(track)
         ax.set_ylim(bottom=0)
         ax.set_xlim(st, en)
@@ -214,3 +223,45 @@ def heatcoverage(
     plt.tight_layout()
 
     return plt.gca()
+
+
+def plot_ISM_heatmap(
+    ism_pos,
+    figsize=(50, 2),
+    cmap=DEFAULT_ISM_CMAP,
+    figname="tmp.pdf",
+):
+    """
+    Plot a heatmap of mutation impacts.
+    Args:
+        ism_pos: Dictionary with position as key and nucleotide impacts as values
+        figsize: Size of the figure
+        cmap: Colormap for the heatmap
+        figname: Filename to save the figure
+    """
+    fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, figsize=figsize)
+    positions = sorted(ism_pos.keys())
+    positions_labs = [next(iter(ism_pos[pos].values())) for pos in positions]
+    impacts = np.array([list(ism_pos[pos].values())[1:] for pos in positions])
+    impacts0 = np.clip(impacts, np.quantile(impacts, 0.01), np.quantile(impacts, 0.99))
+
+    cax = ax1.imshow(impacts0.T, aspect="auto", cmap=cmap, interpolation="nearest")
+    ax1.set_xticks(np.arange(len(positions)))
+    ax1.set_yticks(np.arange(4))
+    ax1.set_yticklabels(["A", "T", "G", "C"])
+    ax1.set_ylabel("Nucleotide")
+    ax1.set_title("Impact of Mutations on ATAC Predictions")
+    fig.colorbar(cax, ax=ax1, orientation="vertical", label="Impact Score")
+
+    # Plot a second heatmap, below the first one
+    impact_merged = np.sum(impacts, axis=1)
+    cax = ax2.imshow(impact_merged.reshape(1, -1), aspect="auto", cmap=plt.get_cmap("afmhot_r"), interpolation="nearest")
+    ax2.set_xticks(np.arange(len(positions)))
+    ax2.set_xticklabels(positions_labs)
+    ax2.set_yticks(np.arange(1))
+    ax2.set_yticklabels(["N"])
+    ax2.set_xlabel("Position")
+    ax2.set_ylabel("Nucleotide")
+    fig.colorbar(cax, ax=ax2, orientation="vertical", label="Impact Score")
+
+    plt.savefig(figname, dpi=300, bbox_inches="tight")
