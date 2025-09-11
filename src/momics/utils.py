@@ -341,12 +341,42 @@ def one_hot_decode(encoded_sequences: np.ndarray, mapping: dict = DEFAULT_OHD_MA
     return decoded_sequences
 
 
-def scale_track(cov):
-    q99 = np.nanpercentile(np.concatenate(list(cov.values())), 99.99)
+def scale_track(cov, quartile: float = 99.99, blacklist: Optional[pr.PyRanges] = None, threshold: Optional[float] = None) -> dict:
+    """
+    Scale coverage values in a dictionary of chromosome coverages to the range [0, 1].
+    The scaling is done by dividing each value by the maximum value in the chromosome,
+    after capping values at a specified percentile threshold.
+    Args:
+        cov (dict): A dictionary where keys are chromosome names and values are coverage arrays.
+        quartile (float): The *genome-wide* percentile to use for capping coverage values.
+        blacklist (Optional[pr.PyRanges]): A blacklist of regions to exclude when computing quartile.
+        threshold (Optional[float]): If provided, by-passes quartile calculation and uses this value for capping.
+    Returns:
+        dict: A dictionary with scaled coverage values.
+    """
+    if threshold is None:
+        all_cov = []
+        for chrom in cov.keys():
+            if blacklist is None:
+                all_cov.append(cov[chrom])
+            else:
+                mask = np.ones_like(cov[chrom], dtype=bool)
+                gr = blacklist[chrom]
+                if len(gr) > 0:
+                    for start, end in zip(gr.Start, gr.End):
+                        mask[start:end] = False
+                all_cov.append(cov[chrom][mask])
+
+        all_cov = np.concatenate(all_cov)
+        threshold = np.nanpercentile(all_cov, quartile)
+
     for chrom in cov.keys():
         arr = cov[chrom]
-        arr = np.minimum(arr, q99)
-        arr = (arr - np.nanmin(arr)) / (np.nanmax(arr) - np.nanmin(arr))
         arr = np.nan_to_num(arr, nan=0)
+        arr = np.minimum(arr, threshold)
+        chrom_max = np.nanmax(arr)
+        ratio = threshold / chrom_max
+        print(f"Scaling-- {chrom} by {ratio:.4f}")
+        arr = (arr - np.nanmin(arr)) / (np.nanmax(arr) - np.nanmin(arr)) / ratio
         cov[chrom] = arr
     return cov
