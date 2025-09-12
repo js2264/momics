@@ -28,10 +28,16 @@ class ChromNN:
         for in_name, in_layer in inputs.items():
 
             if in_name == "nucleotide":
-                ## Conv tower for nucleotide input
-                x = Conv1DBlock(64, 3, "relu", drop_out=0.2, name=f"{in_name}_branch_conv1d_64_3")(in_layer)
-                x = Conv1DBlock(64, 8, "relu", drop_out=0.2, name=f"{in_name}_branch_conv1d_64_8")(x)
-                x = Conv1DBlock(64, 31, "relu", drop_out=0.2, name=f"{in_name}_branch_conv1d_64_31")(x)
+
+                ## Extract TF-level seq features
+                x0 = in_layer
+                x1 = Conv1DBlock(64, 3, "relu", drop_out=0.2, name=f"{in_name}_branch_conv1d_64_3")(x0)
+                x2 = Conv1DBlock(64, 8, "relu", drop_out=0.2, name=f"{in_name}_branch_conv1d_64_8")(x1)
+                x3 = Conv1DBlock(64, 31, "relu", drop_out=0.2, name=f"{in_name}_branch_conv1d_64_31")(x2)
+
+                ## Combine multi-scale features
+                x = layers.Concatenate()([x1, x2, x3])
+                x = layers.Conv1D(128, 1, name=f"{in_name}_projection")(x)
 
                 ## Dilated tower
                 dilated_features = [x]
@@ -39,6 +45,7 @@ class ChromNN:
                     x = DilatedConvBlock(32, 31, dilation, "relu", drop_out=0.2, name=f"{in_name}_branch_dconv_{dilation}")(x)
                     dilated_features.append(x)
 
+                ## Combine multi-scale features
                 x = layers.Concatenate()(dilated_features)
                 input_branches.append(x)
 
