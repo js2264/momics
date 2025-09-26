@@ -1,0 +1,10 @@
+body {
+    --themecolor: #4f4f4f;
+}
+
+.wy-side-nav-search {
+    background-color: var(--themecolor);
+}
+.wy-nav-top {
+    background-color: var(--themecolor);
+}
