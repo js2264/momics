@@ -127,50 +127,27 @@ class MomicsDataset(tf.data.Dataset):
             target = [target]
 
         # Define list of streamers for features data
-        xstreamers = {}
-        for ft in features:
-            xstreamers[ft] = MomicsStreamer(
-                repo, ranges, batch_size, features=[ft], preprocess_func=preprocess_func, silent=silent
-            )
+        xstreamers = MomicsStreamer(repo, ranges, batch_size, features=features, preprocess_func=preprocess_func, silent=silent)
 
         # Define list of streamers for target data
-        ystreamers = {}
         if target is not None:
-            for tg in target:
-                ystreamers[tg] = MomicsStreamer(
-                    repo, ranges_target, batch_size, features=[tg], preprocess_func=preprocess_func, silent=silent
-                )
+            ystreamers = MomicsStreamer(
+                repo, ranges_target, batch_size, features=target, preprocess_func=preprocess_func, silent=silent
+            )
 
         # Callable for combined generator
         def combined_generator():  # pragma: no cover
             """Generate combined features and targets."""
-            feature_generators = {ft: xstreamers[ft].generator() for ft in features}
+            feature_generators = xstreamers.generator()
             if target is not None:
-                target_generators = {tg: ystreamers[tg].generator() for tg in target}
-            else:
-                target_generators = {}
+                target_generators = ystreamers.generator()
 
-            primary_feature = features[0]
-            primary_gen = feature_generators[primary_feature]
-
-            for x_batch in primary_gen:
-                feature_batches = {}
-                target_batches = {}
-
-                feature_batches[primary_feature] = x_batch[primary_feature]  # Store primary feature data
-                for ft in features:
-                    if ft == primary_feature:
-                        continue  # Skip primary feature (already processed)
-
-                    feature_batch = next(feature_generators[ft])
-                    feature_batches[ft] = feature_batch[ft]
-
+            for feature_batch in feature_generators:
                 if target is not None:
-                    for tg in target:
-                        target_batch = next(target_generators[tg])
-                        target_batches[tg] = target_batch[tg]
-
-                yield (feature_batches, target_batches)
+                    target_batch = next(target_generators)
+                    yield (feature_batch, target_batch)
+                else:
+                    yield (feature_batch, {})
 
         # Define output signatures
         xsigs = {
