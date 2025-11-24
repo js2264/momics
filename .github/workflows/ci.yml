@@ -26,7 +26,7 @@ jobs:
       GCS_CREDS_PASSPHRASE: ${{ secrets.GCS_CREDS_PASSPHRASE }}
     steps:
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -67,7 +67,7 @@ jobs:
     needs: Test
     steps:
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up Python
         uses: actions/setup-python@v5
